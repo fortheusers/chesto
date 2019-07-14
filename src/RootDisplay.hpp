@@ -1,4 +1,3 @@
-#include "AppList.hpp"
 #include "Element.hpp"
 #include "ImageCache.hpp"
 #include "ImageElement.hpp"
@@ -18,7 +17,7 @@
 class RootDisplay : public Element
 {
 public:
-	RootDisplay(Get* get);
+	RootDisplay();
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	void background(int r, int g, int b);
@@ -29,11 +28,9 @@ public:
 
 	static SDL_Renderer* mainRenderer;
 	static Element* subscreen;
-	static RootDisplay* RootDisplay;
+	static RootDisplay* mainDisplay;
 
-	Get* get = NULL;
 	ImageCache* imageCache = NULL;
-	bool error = false;
 
 	int lastFrameTime = 99;
 	SDL_Event needsRender;
@@ -42,7 +39,6 @@ public:
 	Mix_Music* music;
 #endif
 
-	bool showingSplash = true;
 	int count = 0;
 };
 

@@ -15,3 +15,5 @@ public:
 
 	void resize(int width, int height);
 };
+
+Uint32 getpixel(SDL_Surface* surface, int x, int y);
