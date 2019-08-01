@@ -1,5 +1,4 @@
 #include "Element.hpp"
-#include "ImageCache.hpp"
 #include "ImageElement.hpp"
 #include "TextElement.hpp"
 #include <unordered_map>
@@ -29,8 +28,6 @@ public:
 	static SDL_Renderer* mainRenderer;
 	static Element* subscreen;
 	static RootDisplay* mainDisplay;
-
-	ImageCache* imageCache = NULL;
 
 	int lastFrameTime = 99;
 	SDL_Event needsRender;

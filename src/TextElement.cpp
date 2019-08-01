@@ -41,8 +41,8 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, int font_ty
 	std::string key = message + std::to_string(size);
 
 	// try to find it in the cache first
-	if (ImageCache::cache.count(key))
-		return ImageCache::cache[key];
+	if (ImageElement::cache.count(key))
+		return ImageElement::cache[key];
 
 	// not found, make/render it
 
@@ -74,7 +74,7 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, int font_ty
 	TTF_CloseFont(font);
 
 	// save it to the cache for later
-	ImageCache::cache[key] = texture;
+	ImageElement::cache[key] = texture;
 
 	return texture;
 }

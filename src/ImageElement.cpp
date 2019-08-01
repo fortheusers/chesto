@@ -2,6 +2,8 @@
 #include <SDL2/SDL2_rotozoom.h>
 #include <string.h>
 
+std::unordered_map<std::string, SDL_Texture*> ImageElement::cache;
+
 ImageElement::ImageElement(const char* incoming, bool calcFirstPixel)
 {
 	this->path = incoming;
@@ -9,9 +11,9 @@ ImageElement::ImageElement(const char* incoming, bool calcFirstPixel)
 	std::string key = std::string(this->path);
 
 	// try to find it in the cache first
-	if (ImageCache::cache.count(key))
+	if (ImageElement::cache.count(key))
 	{
-		this->imgSurface = ImageCache::cache[key];
+		this->imgSurface = ImageElement::cache[key];
 
 		// don't go through cache if we are trying to calculate the pixel on this element
 		if (!calcFirstPixel)
@@ -42,7 +44,7 @@ ImageElement::ImageElement(const char* incoming, bool calcFirstPixel)
 
 	// add to cache for next time
 	if (this->imgSurface != NULL)
-		ImageCache::cache[key] = (this->imgSurface);
+		ImageElement::cache[key] = (this->imgSurface);
 }
 
 void ImageElement::render(Element* parent)
