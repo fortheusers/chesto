@@ -77,6 +77,17 @@ RootDisplay::RootDisplay()
 	this->needsRender.type = SDL_USEREVENT;
 }
 
+RootDisplay::~RootDisplay()
+{
+	IMG_Quit();
+	TTF_Quit();
+
+	SDL_Delay(10);
+	SDL_DestroyWindow(RootDisplay::mainDisplay->window);
+
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	SDL_Quit();
+}
 
 bool RootDisplay::process(InputEvents* event)
 {
@@ -108,32 +119,6 @@ void RootDisplay::render(Element* parent)
 
 	// commit everything to the screen
 	this->update();
-}
-
-void RootDisplay::exit()
-{
-	quit();
-}
-
-void quit()
-{
-	IMG_Quit();
-	TTF_Quit();
-
-	SDL_Delay(10);
-	SDL_DestroyWindow(RootDisplay::mainDisplay->window);
-
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-	SDL_Quit();
-
-#if defined(__WIIU__)
-	romfsExit();
-#endif
-
-#if defined(SWITCH)
-	socketExit();
-#endif
-	exit(0);
 }
 
 void RootDisplay::background(int r, int g, int b)

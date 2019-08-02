@@ -17,11 +17,12 @@ class RootDisplay : public Element
 {
 public:
 	RootDisplay();
+	~RootDisplay();
+
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	void background(int r, int g, int b);
 	void update();
-	void exit();
 
 	TextElement* notice = NULL;
 
@@ -38,5 +39,3 @@ public:
 
 	int count = 0;
 };
-
-void quit();
