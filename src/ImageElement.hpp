@@ -1,7 +1,8 @@
+#pragma once
+
 #include "Element.hpp"
 #include <SDL2/SDL_image.h>
 #include <unordered_map>
-#pragma once
 
 class ImageElement : public Element
 {

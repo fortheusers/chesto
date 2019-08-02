@@ -1,5 +1,6 @@
-#include "Element.hpp"
 #pragma once
+
+#include "Element.hpp"
 
 // ListElement keeps track of a currently highlighted piece, as well as handling scrolling as a unit
 class ListElement : public Element

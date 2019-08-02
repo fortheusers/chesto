@@ -1,3 +1,5 @@
+#pragma once
+
 #include "InputEvents.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -14,8 +16,6 @@
 #else
 #define ROMFS ""
 #endif
-
-#pragma once
 
 class Element
 {

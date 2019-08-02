@@ -1,6 +1,7 @@
+#pragma once
+
 #include "Element.hpp"
 #include <string>
-#pragma once
 
 #define NORMAL 0
 #define MONOSPACED 1

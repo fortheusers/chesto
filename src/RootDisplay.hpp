@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Element.hpp"
 #include "ImageElement.hpp"
 #include "TextElement.hpp"

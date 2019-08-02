@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SDL2/SDL.h>
 
 // clang-format off
