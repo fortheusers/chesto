@@ -103,8 +103,21 @@ void Texture::render(Element* parent)
 		rect.y += (height - rect.h) / 2;
 	}
 
-	// render the texture
-	SDL_RenderCopy(RootDisplay::mainRenderer, mTexture, NULL, &rect);
+	if ((texScaleMode == SCALE_STRETCH) && angle)
+	{
+		// render the texture with a rotation
+
+		// only supported for SCALE_STRETCH textures,
+		// as the colored background wouldn't get rotated
+
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+		SDL_RenderCopyEx(RootDisplay::mainRenderer, mTexture, NULL, &rect, this->angle, NULL, SDL_FLIP_NONE);
+	}
+	else
+	{
+		// render the texture normally
+		SDL_RenderCopy(RootDisplay::mainRenderer, mTexture, NULL, &rect);
+	}
 }
 
 void Texture::resize(int w, int h)
