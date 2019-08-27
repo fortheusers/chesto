@@ -1,3 +1,5 @@
+#if defined(NETWORK)
+
 #include "DownloadQueue.hpp"
 
 #define MAX_PARALLEL_DOWNLOADS	4
@@ -129,3 +131,5 @@ int DownloadQueue::process()
 
 	return ((still_alive) || (msgs_left > 0) || (queue.size() > 0));
 }
+
+#endif
