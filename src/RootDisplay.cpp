@@ -51,6 +51,11 @@ RootDisplay::RootDisplay()
 
 	//    printf("initialized SDL\n");
 
+	// initialize the romfs for switch/wiiu	
+#if defined(SWITCH) || defined(__WIIU__)
+	romfsInit();
+#endif
+
 	int height = 720;
 	int width = 1280;
 
