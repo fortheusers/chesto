@@ -20,6 +20,8 @@
 class Element
 {
 public:
+	virtual ~Element();
+
 	// process any input that is received for this element
 	virtual bool process(InputEvents* event);
 

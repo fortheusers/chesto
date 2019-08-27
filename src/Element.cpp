@@ -1,6 +1,11 @@
 #include "Element.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
+Element::~Element()
+{
+	wipeElements();
+}
+
 bool Element::process(InputEvents* event)
 {
 	// whether or not we need to update the screen
