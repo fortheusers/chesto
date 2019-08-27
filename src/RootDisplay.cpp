@@ -8,6 +8,9 @@
 #define PLATFORM "Console"
 #endif
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
 #include "RootDisplay.hpp"
 #include "Button.hpp"
 
@@ -56,17 +59,13 @@ RootDisplay::RootDisplay()
 	romfsInit();
 #endif
 
-	int height = 720;
-	int width = 1280;
-
-
 	#if defined(__WIIU__)
 		backgroundColor = {0x54, 0x55, 0x6e};
 	#else
 		backgroundColor = {0x42, 0x45, 0x48};
 	#endif
 
-	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
+	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
 	//Detach the texture
