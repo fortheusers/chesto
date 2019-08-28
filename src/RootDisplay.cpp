@@ -51,7 +51,7 @@ RootDisplay::RootDisplay()
 
 	//    printf("initialized SDL\n");
 
-	// initialize the romfs for switch/wiiu	
+	// initialize the romfs for switch/wiiu
 #if defined(SWITCH) || defined(__WIIU__)
 	romfsInit();
 #endif
@@ -67,7 +67,7 @@ RootDisplay::RootDisplay()
 	#endif
 
 	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
-	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
+	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
 	//Detach the texture
 	SDL_SetRenderTarget(this->renderer, NULL);
