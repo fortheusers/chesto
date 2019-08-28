@@ -55,7 +55,8 @@ void ImageElement::render(Element* parent)
 	imgLocation.w = this->width;
 	imgLocation.h = this->height;
 
-	SDL_RenderCopy(RootDisplay::mainRenderer, this->imgSurface, NULL, &imgLocation);
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+	SDL_RenderCopyEx(RootDisplay::mainRenderer, this->imgSurface, NULL, &imgLocation, this->angle, NULL, SDL_FLIP_NONE);
 }
 
 void ImageElement::resize(int width, int height)

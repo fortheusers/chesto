@@ -9,13 +9,19 @@ TextElement::TextElement(const char* text, int size, SDL_Color* color, int font_
 		this->color = { 0xff, 0xff, 0xff };
 	else
 		this->color = *color;
-
 	this->textSurface = this->renderText(*(this->text), size, font_type, wrapped_width);
-
 	int w, h;
-	SDL_QueryTexture(this->textSurface, NULL, NULL, &w, &h);
-	this->width = w;
-	this->height = h;
+	if(!textureTooBig)
+	{
+		SDL_QueryTexture(this->textSurface, NULL, NULL, &w, &h);
+		this->width = w;
+		this->height = h;
+	}
+	else
+	{
+		this->width = fallback->w;
+		this->height = fallback->h;
+	}
 }
 
 void TextElement::render(Element* parent)
@@ -28,12 +34,21 @@ void TextElement::render(Element* parent)
 	textLocation.y = this->y + parent->y;
 	textLocation.w = this->width;
 	textLocation.h = this->height;
+	if(textureTooBig) //Texture was too big, so we crop surface at rendertime and texturize. TODO: make this fallback more efficient.
+	{
+		SDL_Surface* cropsurf=SDL_CreateRGBSurfaceWithFormat(0, 1280, 720, 32, SDL_PIXELFORMAT_RGBA32);
+		SDL_BlitSurface(fallback, NULL, cropsurf, &textLocation); //Forcibly crops surface to visible region.
+		textLocation = {0, 0, 1280, 720}; //New surface is a fullscreen overlay, so this location is a dummy location now.
+		this->textSurface = SDL_CreateTextureFromSurface(RootDisplay::mainRenderer, cropsurf);
+		SDL_FreeSurface(cropsurf);
+	}
 
 	// std::cout << this->text->c_str() << " [" << this->x << " " << parent->x << " " <<
 	// this->y << " " << parent->y << " " <<
 	// textLocation.w << " " << textLocation.h << std::endl;
 
-	SDL_RenderCopy(RootDisplay::mainRenderer, this->textSurface, NULL, &textLocation);
+	SDL_RenderCopyEx(RootDisplay::mainRenderer, this->textSurface, NULL, &textLocation, this->angle, NULL, SDL_FLIP_NONE);
+	if(textureTooBig) SDL_DestroyTexture(this->textSurface);
 }
 
 SDL_Texture* TextElement::renderText(std::string& message, int size, int font_type, int wrapped_width)
@@ -45,7 +60,6 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, int font_ty
 		return ImageElement::cache[key];
 
 	// not found, make/render it
-
 	TTF_Font* font;
 
 	if (font_type == MONOSPACED)
@@ -68,7 +82,12 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, int font_ty
 		surf = TTF_RenderText_Blended_Wrapped(font, message.c_str(), this->color, wrapped_width);
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(RootDisplay::mainRenderer, surf);
-	SDL_FreeSurface(surf);
+	if(texture==NULL) //Usually occurs because the surface is too large for the texture limit.
+	{
+		fallback=surf; //Store the surface for later.
+		textureTooBig=true; //Flag element to be texturized at rendertime.
+	}
+	else SDL_FreeSurface(surf);
 
 	//	SDL_FreeSurface(surf);
 	TTF_CloseFont(font);
