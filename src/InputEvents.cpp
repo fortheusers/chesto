@@ -34,7 +34,7 @@ bool InputEvents::update()
 	if (this->type == SDL_QUIT)
 	{
 		this->quitaction();
-		return true; //Quitting overrides all other events.
+		return false; //Quitting overrides all other events.
 	}
 	else if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))
 	{
