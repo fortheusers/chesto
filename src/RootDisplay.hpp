@@ -3,6 +3,7 @@
 #include "Element.hpp"
 #include "ImageElement.hpp"
 #include "TextElement.hpp"
+#include "colorspaces.hpp"
 #include <unordered_map>
 
 #if defined(MUSIC)
@@ -25,6 +26,8 @@ public:
 	void render(Element* parent);
 	void background(int r, int g, int b);
 	void update();
+
+	rgb backgroundColor;
 
 	TextElement* notice = NULL;
 

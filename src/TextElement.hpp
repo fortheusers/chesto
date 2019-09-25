@@ -14,11 +14,13 @@ public:
 	void render(Element* parent);
 	SDL_Texture* renderText(std::string& message, int size, int font_type, int wrapped_width);
 
-	SDL_Texture* textSurface = NULL;
+	SDL_Texture* textSurface = NULL; //MISNOMER dangit, it's a texture!
 	SDL_Color color;
 
 	std::string* text;
 
 private:
 	int size;
+	bool textureTooBig=false;
+	SDL_Surface* fallback;
 };

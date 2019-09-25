@@ -5,6 +5,7 @@ ProgressBar::ProgressBar()
 {
 	// total width of full progress bar
 	this->width = 450;
+	this->height = 5; //HACKY: progress bars are 9 px tall and erroneously extend 4 px above their y-position (other elements use y-position as top, not center)
 	this->color = 0x56c1dfff;
 }
 

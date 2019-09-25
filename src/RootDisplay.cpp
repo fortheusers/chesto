@@ -51,11 +51,23 @@ RootDisplay::RootDisplay()
 
 	//    printf("initialized SDL\n");
 
+	// initialize the romfs for switch/wiiu
+#if defined(SWITCH) || defined(__WIIU__)
+	romfsInit();
+#endif
+
 	int height = 720;
 	int width = 1280;
 
+
+	#if defined(__WIIU__)
+		rgb backgroundColor = {0x54, 0x55, 0x6e};
+	#else
+		rgb backgroundColor = {0x42, 0x45, 0x48};
+	#endif
+
 	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
-	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
+	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
 	//Detach the texture
 	SDL_SetRenderTarget(this->renderer, NULL);
@@ -101,11 +113,7 @@ bool RootDisplay::process(InputEvents* event)
 void RootDisplay::render(Element* parent)
 {
 	// set the background color
-	RootDisplay::background(0x42, 0x45, 0x48);
-//    RootDisplay::background(0x60, 0x7d, 0x8b);
-#if defined(__WIIU__)
-	RootDisplay::background(0x54, 0x55, 0x6e);
-#endif
+	RootDisplay::background((int)(backgroundColor.r*255), (int)(backgroundColor.g*255), (int)(backgroundColor.b*255));
 
 	if (RootDisplay::subscreen)
 	{
