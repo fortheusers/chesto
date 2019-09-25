@@ -31,7 +31,12 @@ bool InputEvents::update()
 		this->wheelScroll = event.wheel.y;
 #endif
 
-	if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))
+	if (this->type == SDL_QUIT)
+	{
+		this->quitaction();
+		return true; //Quitting overrides all other events.
+	}
+	else if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))
 	{
 		this->keyCode = event.key.keysym.sym;
 	}

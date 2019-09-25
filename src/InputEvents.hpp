@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <functional>
 
 // clang-format off
 #define LEFT_BUTTON       0b00000000000001
@@ -80,6 +81,8 @@ public:
 	bool held_directions[4] = { false, false, false, false };
 	int rapidFireRate = 12; // fire duplicate events if curframe mod rapidFireRate is 0 (higher = slower)
 	int curFrame = 0;
+
+	std::function<void()> quitaction; //Called for an SDL_Quit event, usually caused by a SIGINT
 
 #ifdef PC
 	int wheelScroll = 0;
