@@ -61,9 +61,9 @@ RootDisplay::RootDisplay()
 
 
 	#if defined(__WIIU__)
-		rgb backgroundColor = {0x54, 0x55, 0x6e};
+		backgroundColor = {0x54, 0x55, 0x6e};
 	#else
-		rgb backgroundColor = {0x42, 0x45, 0x48};
+		backgroundColor = {0x42, 0x45, 0x48};
 	#endif
 
 	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
@@ -91,6 +91,10 @@ RootDisplay::RootDisplay()
 
 RootDisplay::~RootDisplay()
 {
+#if defined(SWITCH) || defined(__WIIU__)
+	romfsExit();
+#endif
+
 	IMG_Quit();
 	TTF_Quit();
 
@@ -113,7 +117,7 @@ bool RootDisplay::process(InputEvents* event)
 void RootDisplay::render(Element* parent)
 {
 	// set the background color
-	RootDisplay::background((int)(backgroundColor.r*255), (int)(backgroundColor.g*255), (int)(backgroundColor.b*255));
+	RootDisplay::background((int)(backgroundColor.r), (int)(backgroundColor.g), (int)(backgroundColor.b));
 
 	if (RootDisplay::subscreen)
 	{

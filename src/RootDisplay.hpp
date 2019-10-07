@@ -20,7 +20,7 @@ class RootDisplay : public Element
 {
 public:
 	RootDisplay();
-	~RootDisplay();
+	virtual ~RootDisplay();
 
 	bool process(InputEvents* event);
 	void render(Element* parent);
