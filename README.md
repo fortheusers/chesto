@@ -109,3 +109,9 @@ this->elements.push_back(pbar);
 
 ## License
 This software is licensed under the GPLv3.
+
+## Example
+For an example of what an app that integrates Chesto looks like, see [https://gitlab.com/4TU/chestotesto](chestotesto).
+
+### Dependencies
+Chesto makes use of [resinfs](https://gitlab.com/4TU/resinfs) (aka. [yawut/libromfs-wiiu](https://github.com/yawut/libromfs-wiiu)) to display images and other assets from memory rather than files. Any files in the top-level `romfs` folder will be bundled using this dependency.
