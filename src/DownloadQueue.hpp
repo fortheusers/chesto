@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(NETWORK)
+
 #include <curl/curl.h>
 #include <curl/easy.h>
 
@@ -67,3 +69,5 @@ private:
 	// number of active transfers
 	int transfers = 0;
 };
+
+#endif

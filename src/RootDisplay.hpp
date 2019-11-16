@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Element.hpp"
-#include "ImageElement.hpp"
-#include "TextElement.hpp"
 #include "colorspaces.hpp"
 #include <unordered_map>
 
@@ -15,6 +13,9 @@
 #else
 #define ICON_SIZE 150
 #endif
+
+#define SCREEN_WIDTH	1280
+#define SCREEN_HEIGHT	720
 
 class RootDisplay : public Element
 {
@@ -29,8 +30,6 @@ public:
 
 	rgb backgroundColor;
 
-	TextElement* notice = NULL;
-
 	static SDL_Renderer* mainRenderer;
 	static Element* subscreen;
 	static RootDisplay* mainDisplay;
@@ -41,6 +40,4 @@ public:
 #if defined(MUSIC)
 	Mix_Music* music;
 #endif
-
-	int count = 0;
 };

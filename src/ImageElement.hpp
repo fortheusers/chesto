@@ -1,24 +1,12 @@
 #pragma once
 
-#include "Element.hpp"
-#include <SDL2/SDL_image.h>
-#include <unordered_map>
+#include "Texture.hpp"
+#include <string>
 
-class ImageElement : public Element
+class ImageElement : public Texture
 {
 public:
-	ImageElement(const char* path, bool calcFirstPixel = false);
-	void render(Element* parent);
-
-	SDL_Texture* imgSurface = NULL;
-	const char* path;
-
-	SDL_Color* firstPixel = NULL;
-
-	void resize(int width, int height);
-
-	// a map of all SDL surfaces that have been displayed
-	static std::unordered_map<std::string, SDL_Texture*> cache;
+	// Creates a new image element, loading the image
+	// from the specified filesystem path
+	ImageElement(const char* path);
 };
-
-Uint32 getpixel(SDL_Surface* surface, int x, int y);
