@@ -17,7 +17,7 @@ public:
 	// or the destructor is called
 	// If immediateLoad is set to false, the loading won't begin until
 	// load() is called
-	NetImageElement(const char *url, std::function<Texture *(void)> getImageFallback, bool immediateLoad = true);
+	NetImageElement(const char *url, std::function<Texture *(void)> getImageFallback = NULL, bool immediateLoad = true);
 	~NetImageElement();
 
 	// Start downloading the image (called in the constructor unless immediateLoad is false)
