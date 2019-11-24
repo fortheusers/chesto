@@ -2,9 +2,9 @@
 #include "RootDisplay.hpp"
 
 const char *TextElement::fontPaths[] = {
-	ROMFS "./res/opensans.ttf", // 0 = NORMAL
-	ROMFS "./res/mono.ttf", // 1 = MONOSPACED
-	ROMFS "./res/nxicons.ttf", // 2 = ICON
+	RAMFS "./res/opensans.ttf", // 0 = NORMAL
+	RAMFS "./res/mono.ttf", // 1 = MONOSPACED
+	RAMFS "./res/nxicons.ttf", // 2 = ICON
 };
 
 TextElement::TextElement(const char* text, int size, SDL_Color* color, int font_type, int wrapped_width)

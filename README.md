@@ -45,7 +45,7 @@ If a touch event is successfully received, the Element will be highlighted and t
 The [ImageElement](src/ImageElement.hpp) class can be used to display images either from disk or the network. For example, a romfs image can be instantiated and positioned like this at coordinates (5, 10) relative to the current Element (`this`):
 
 ```C++
-ImageElement* icon = new ImageElement(ROMFS "res/icon.png");
+ImageElement* icon = new ImageElement(RAMFS "res/icon.png");
 icon->position(this->x + 5, this->y + 10);
 icon->resize(30, 30);
 this->elements.push_back(icon);

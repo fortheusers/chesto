@@ -11,10 +11,10 @@
 #define HIGHLIGHT 100
 #define NO_HIGHLIGHT 0
 
-#if defined(SWITCH) || defined(__WIIU__)
-#define ROMFS "romfs:/"
+#if defined(USE_RAMFS)
+#define RAMFS "resin:/"
 #else
-#define ROMFS ""
+#define RAMFS "resin/"
 #endif
 
 class Element

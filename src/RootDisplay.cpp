@@ -2,10 +2,13 @@
 #include <switch.h>
 #define PLATFORM "Switch"
 #elif defined(__WIIU__)
-#include <romfs-wiiu.h>
 #define PLATFORM "Wii U"
 #else
 #define PLATFORM "Console"
+#endif
+
+#if defined(USE_RAMFS)
+#include "../libs/resinfs/include/romfs-wiiu.h"
 #endif
 
 #include <SDL2/SDL.h>
@@ -32,7 +35,7 @@ RootDisplay::RootDisplay()
 #if defined(MUSIC)
 	Mix_Init(MIX_INIT_MP3);
 	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
-	this->music = Mix_LoadMUS(ROMFS "./res/music.mp3");
+	this->music = Mix_LoadMUS(RAMFS "./res/music.mp3");
 	if (music)
 	{
 		Mix_FadeInMusic(music, -1, 300);
@@ -55,9 +58,9 @@ RootDisplay::RootDisplay()
 	//    printf("initialized SDL\n");
 
 	// initialize the romfs for switch/wiiu
-#if defined(SWITCH) || defined(__WIIU__)
-	romfsInit();
-#endif
+  #if defined(USE_RAMFS)
+	  ramfsInit();
+  #endif
 
 	#if defined(__WIIU__)
 		backgroundColor = {0x54, 0x55, 0x6e};
@@ -90,8 +93,8 @@ RootDisplay::RootDisplay()
 
 RootDisplay::~RootDisplay()
 {
-#if defined(SWITCH) || defined(__WIIU__)
-	romfsExit();
+#if defined(USE_RAMFS)
+	ramfsExit();
 #endif
 
 	IMG_Quit();
