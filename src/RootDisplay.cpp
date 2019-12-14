@@ -19,6 +19,7 @@
 
 SDL_Renderer* RootDisplay::mainRenderer = NULL;
 Element* RootDisplay::subscreen = NULL;
+Element* RootDisplay::nextsubscreen = NULL;
 RootDisplay* RootDisplay::mainDisplay = NULL;
 
 RootDisplay::RootDisplay()
@@ -109,6 +110,13 @@ RootDisplay::~RootDisplay()
 
 bool RootDisplay::process(InputEvents* event)
 {
+	if (nextsubscreen != subscreen)
+	{
+		delete subscreen;
+		subscreen = nextsubscreen;
+		return true;
+	}
+
 	if (RootDisplay::subscreen)
 		return RootDisplay::subscreen->process(event);
 
@@ -153,4 +161,11 @@ void RootDisplay::update()
 
 	SDL_RenderPresent(this->renderer);
 	//    this->lastFrameTime = now;
+}
+
+void RootDisplay::switchSubscreen(Element* next)
+{
+	if (nextsubscreen != subscreen)
+		delete nextsubscreen;
+	nextsubscreen = next;
 }

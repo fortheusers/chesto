@@ -1,9 +1,10 @@
 #include "Element.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <algorithm>
 
 Element::~Element()
 {
-	wipeElements();
+	removeAll();
 }
 
 bool Element::process(InputEvents* event)
@@ -152,13 +153,21 @@ void Element::hide()
 	this->hidden = true;
 }
 
-void Element::wipeElements()
+void Element::append(Element *element)
 {
-	for (int x = 0; x < this->elements.size(); x++)
-	{
-		Element* elem = this->elements[x];
-		delete elem;
-	}
+	auto position = std::find(elements.begin(), elements.end(), element);
+	if (position == elements.end())
+		elements.push_back(element);
+}
 
-	this->elements.clear();
+void Element::remove(Element *element)
+{
+	auto position = std::find(elements.begin(), elements.end(), element);
+	if (position != elements.end())
+		elements.erase(position);
+}
+
+void Element::removeAll(void)
+{
+	elements.clear();
 }

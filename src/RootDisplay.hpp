@@ -31,8 +31,11 @@ public:
 	rgb backgroundColor;
 
 	static SDL_Renderer* mainRenderer;
-	static Element* subscreen;
 	static RootDisplay* mainDisplay;
+
+	static void switchSubscreen(Element* next);
+	static Element* subscreen;
+	static Element* nextsubscreen;
 
 	int lastFrameTime = 99;
 	SDL_Event needsRender;
