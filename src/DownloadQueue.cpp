@@ -65,6 +65,10 @@ void DownloadQueue::transferStart(DownloadOperation *download)
 	curl_easy_setopt(download->eh, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(download->eh, CURLOPT_WRITEDATA, download);
 	curl_easy_setopt(download->eh, CURLOPT_PRIVATE, download);
+#if defined(SWITCH)
+	curl_easy_setopt(download->eh, CURLOPT_SSL_VERIFYPEER, 0L);
+    curl_easy_setopt(download->eh, CURLOPT_SSL_VERIFYHOST, 0L);
+#endif
 
 	curl_multi_add_handle(cm, download->eh);
 
