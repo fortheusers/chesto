@@ -17,9 +17,10 @@ bool Texture::loadFromSurface(SDL_Surface *surface)
 		return false;
 
 	// load first pixel color
-	Uint32 pixelcolor = 0;
-	for (int i = 0; i < surface->format->BytesPerPixel; i++)
-		pixelcolor = (pixelcolor << 8) + *((Uint8*)surface->pixels + i);
+	Uint32 pixelcolor = *(Uint32*)surface->pixels;
+	Uint32 emptybits = 8 * (4 - surface->format->BytesPerPixel);
+	pixelcolor >>= emptybits * (SDL_BYTEORDER == SDL_BIG_ENDIAN);
+	pixelcolor &= 0xffffffff >> emptybits;
 	SDL_GetRGB(pixelcolor, surface->format, &texFirstPixel.r, &texFirstPixel.g, &texFirstPixel.b);
 
 	// load texture size
