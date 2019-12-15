@@ -13,6 +13,24 @@ bool ListElement::process(InputEvents* event)
 	return ret;
 }
 
+bool ListElement::processUpDown(InputEvents* event)
+{
+  bool ret = false;
+  int SPEED = 60;
+
+	// handle up and down for the scroll view
+	if (event->isKeyDown())
+	{
+		// scroll the view
+		this->y += (SPEED * event->held(UP_BUTTON) - SPEED * event->held(DOWN_BUTTON));
+		if (this->y > 0)
+			this->y = 0;
+		ret |= event->held(UP_BUTTON) || event->held(DOWN_BUTTON);
+	}
+
+  return ret;
+}
+
 bool ListElement::handleInertiaScroll(InputEvents* event)
 {
 	bool ret = false;

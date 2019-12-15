@@ -10,4 +10,5 @@ public:
 	int initialTouchDown = -1;
 	bool process(InputEvents* event);
 	bool handleInertiaScroll(InputEvents* event);
+  bool processUpDown(InputEvents* event);
 };
