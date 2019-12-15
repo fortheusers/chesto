@@ -1,65 +1,52 @@
 #include "Button.hpp"
 
+SDL_Color Button::colors[2] = {
+	{ 0x00, 0x00, 0x00, 0xff }, // light
+	{ 0xff, 0xff, 0xff, 0xff }, // dark
+};
+
 Button::Button(const char* message, int button, bool dark, int size, int width)
+	: dark(dark)
+	, physical(button)
+	, icon(getUnicode(button), size * 1.25, &colors[dark], ICON)
+	, text(message, size, &colors[dark])
 {
 	int PADDING = 10;
-	SDL_Color color;
 
-	if (dark)
-		color = { 0xff, 0xff, 0xff, 0xff };
-	else
-		color = { 0x00, 0x00, 0x00, 0xff };
+	int bWidth = PADDING * 0.5 * (icon.width != 0); // gap space between button
 
-	this->dark = dark;
+	text.position(PADDING * 2 + bWidth + icon.width, PADDING);
+	super::append(&text);
 
-	const char* unicode;
+	icon.position(PADDING * 1.7, PADDING + (text.height - icon.height) / 2);
+	super::append(&icon);
 
-	switch (button)
-	{
-	case A_BUTTON:
-		unicode = "\ue0a0";
-		break;
-	case B_BUTTON:
-		unicode = "\ue0a1";
-		break;
-	case Y_BUTTON:
-		unicode = "\ue0a2";
-		break;
-	case X_BUTTON:
-		unicode = "\ue0a3";
-		break;
-	case START_BUTTON:
-		unicode = "\ue0a4";
-		break;
-	case SELECT_BUTTON:
-		unicode = "\ue0a5";
-		break;
-	default:
-		unicode = "";
-	}
-
-	this->physical = button;
-
-	TextElement* icon = new TextElement(unicode, size * 1.25, &color, ICON);
-	this->elements.push_back(icon);
-	icon->position(PADDING * 2, PADDING);
-
-	TextElement* text = new TextElement(message, size, &color);
-	//    icon->resize(text->height, text->height);
-
-	int bWidth = PADDING * 0.5 * (icon->width != 0); // gap space between button
-
-	text->position(PADDING * 2 + bWidth + icon->width, PADDING);
-	this->elements.push_back(text);
-
-	this->width = (width > 0) ? width : text->width + PADDING * 4 + bWidth + icon->width;
-	this->height = text->height + PADDING * 2;
-
-	icon->position(PADDING * 1.7, PADDING + (text->height - icon->height) / 2);
+	this->width = (width > 0) ? width : text.width + PADDING * 4 + bWidth + icon.width;
+	this->height = text.height + PADDING * 2;
 
 	this->touchable = true;
+}
 
-	// TODO: add icon and make room for it in the x, y dimens
+const char* Button::getUnicode(int button)
+{
+	switch (button)
+	{
+		case A_BUTTON:
+			return "\ue0a0";
+		case B_BUTTON:
+			return "\ue0a1";
+		case Y_BUTTON:
+			return "\ue0a2";
+		case X_BUTTON:
+			return "\ue0a3";
+		case START_BUTTON:
+			return "\ue0a4";
+		case SELECT_BUTTON:
+			return "\ue0a5";
+		default:
+			break;
+	}
+	return "";
 }
 
 void Button::position(int x, int y)

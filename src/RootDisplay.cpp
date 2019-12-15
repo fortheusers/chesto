@@ -19,10 +19,16 @@
 
 SDL_Renderer* RootDisplay::mainRenderer = NULL;
 Element* RootDisplay::subscreen = NULL;
+Element* RootDisplay::nextsubscreen = NULL;
 RootDisplay* RootDisplay::mainDisplay = NULL;
 
 RootDisplay::RootDisplay()
 {
+	// initialize the romfs for switch/wiiu
+#if defined(USE_RAMFS)
+	ramfsInit();
+#endif
+
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
 	{
 		return;
@@ -57,11 +63,6 @@ RootDisplay::RootDisplay()
 
 	//    printf("initialized SDL\n");
 
-	// initialize the romfs for switch/wiiu
-  #if defined(USE_RAMFS)
-	  ramfsInit();
-  #endif
-
 	#if defined(__WIIU__)
 		backgroundColor = {0x54, 0x55, 0x6e};
 	#else
@@ -93,10 +94,6 @@ RootDisplay::RootDisplay()
 
 RootDisplay::~RootDisplay()
 {
-#if defined(USE_RAMFS)
-	ramfsExit();
-#endif
-
 	IMG_Quit();
 	TTF_Quit();
 
@@ -105,10 +102,21 @@ RootDisplay::~RootDisplay()
 
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	SDL_Quit();
+
+#if defined(USE_RAMFS)
+	ramfsExit();
+#endif
 }
 
 bool RootDisplay::process(InputEvents* event)
 {
+	if (nextsubscreen != subscreen)
+	{
+		delete subscreen;
+		subscreen = nextsubscreen;
+		return true;
+	}
+
 	if (RootDisplay::subscreen)
 		return RootDisplay::subscreen->process(event);
 
@@ -153,4 +161,11 @@ void RootDisplay::update()
 
 	SDL_RenderPresent(this->renderer);
 	//    this->lastFrameTime = now;
+}
+
+void RootDisplay::switchSubscreen(Element* next)
+{
+	if (nextsubscreen != subscreen)
+		delete nextsubscreen;
+	nextsubscreen = next;
 }
