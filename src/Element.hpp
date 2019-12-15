@@ -33,6 +33,7 @@ public:
 	bool onTouchDrag(InputEvents* event);
 	bool onTouchUp(InputEvents* event);
 
+
 	// hide the element
 	void hide();
 
@@ -43,11 +44,12 @@ public:
 	// visible GUI child elements of this element
 	std::vector<Element*> elements;
 
+	void append(Element *element);
+	void remove(Element *element);
+	void removeAll(void);
+
 	// position the element (x and y are percents of the screen)
 	void position(int x, int y);
-
-	// remove all elements and free their memory
-	void wipeElements();
 
 	// the scale of the element (and its subelements!)
 	float scale = 1.0f;

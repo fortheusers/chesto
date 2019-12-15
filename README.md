@@ -39,7 +39,7 @@ The base Element class provides super `process` and `render` methods that go thr
 
 If a touch event is successfully received, the Element will be highlighted and the bound `action` will be invoked, which must be set ahead of time by the subclassing Element. For an example of how this looks, see the Button section.
 
-`wipeElements()` can also be called on an Element to completely remove and de-allocate its children, for instance to replace lists of elements, or clean up old elements between page changes.
+`removeAll()` can also be called on an Element to completely remove its children, for instance to replace lists of elements, or clean up old elements between page changes.
 
 ### Drawing Images
 The [ImageElement](src/ImageElement.hpp) class can be used to display images either from disk or the network. For example, a romfs image can be instantiated and positioned like this at coordinates (5, 10) relative to the current Element (`this`):
@@ -48,7 +48,7 @@ The [ImageElement](src/ImageElement.hpp) class can be used to display images eit
 ImageElement* icon = new ImageElement(RAMFS "res/icon.png");
 icon->position(this->x + 5, this->y + 10);
 icon->resize(30, 30);
-this->elements.push_back(icon);
+super::append(icon);
 ```
 
 **TODO:** Network image example (with fallback disk path)
@@ -61,7 +61,7 @@ SDL_Color gray = { 80, 80, 80, 0xff };
 int fontSize = 12;
 TextElement* status = new TextElement("All good here!", fontSize, &gray);
 status->position(this->x + 40, this->y + 20);
-this->elements.push_back(status);
+super::append(status);
 ```
 
 **TODO:** Use our own colors instead of exposing SDL_Color
@@ -84,7 +84,7 @@ To create a button, give it the text, the button which corresponds to it, whethe
 Button* start = new Button("Begin!", START_BUTTON, true, 20);
 start->position(70, 50);
 start->action = std::bind(&TitlePage::launch, this);
-this->elements.push_back(start);
+super::append(start);
 ```
 
 ### Displaying Progress
@@ -98,7 +98,7 @@ pbar->width = 740;
 pbar->position(1280 / 2 - pbar->width / 2, 720 / 2);
 pbar->color = 0xff0000ff;
 pbar->dimBg = true;
-this->elements.push_back(pbar);
+super::append(pbar);
 ```
 
 **TODO:** Show how to provide a callback to networking utilities to update the progress bar rather than always reacting to an input.
