@@ -6,6 +6,14 @@ Texture::~Texture()
 {
 }
 
+void Texture::clear(void)
+{
+	mTexture = nullptr;
+	texW = 0;
+	texH = 0;
+	texFirstPixel = (SDL_Color){0,0,0,0};
+}
+
 bool Texture::loadFromSurface(SDL_Surface *surface)
 {
 	if (!surface)

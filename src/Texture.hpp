@@ -26,6 +26,10 @@ class Texture : public Element
 public:
 	virtual ~Texture();
 
+	// Reinitialize Texture
+	// Resets texture content, size and color
+	void clear(void);
+
 	// Loads the texture from a surface
 	// Returns true if successful
 	bool loadFromSurface(SDL_Surface *surface);

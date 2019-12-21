@@ -7,19 +7,59 @@ const char *TextElement::fontPaths[] = {
 	RAMFS "./res/nxicons.ttf", // 2 = ICON
 };
 
+TextElement::TextElement()
+{
+}
+
 TextElement::TextElement(const char* text, int size, SDL_Color* color, int font_type, int wrapped_width)
 {
-	std::string key = std::string(text) + std::to_string(size);
+	std::string sText = std::string(text);
+	setText(sText);
+	setSize(size);
+	if (color) setColor(*color);
+	setFont(font_type);
+	setWrappedWidth(wrapped_width);
+	update();
+}
+
+void TextElement::setText(const std::string& text)
+{
+	this->text = text;
+}
+
+void TextElement::setSize(int size)
+{
+	this->textSize = size;
+}
+
+void TextElement::setColor(const SDL_Color& color)
+{
+	this->textColor = color;
+}
+
+void TextElement::setFont(int font_type)
+{
+	this->textFont = font_type;
+}
+
+void TextElement::setWrappedWidth(int wrapped_width)
+{
+	this->textWrappedWidth = wrapped_width;
+}
+
+void TextElement::update(void)
+{
+	std::string key = text + std::to_string(textSize);
+
+	clear();
 
 	if (!loadFromCache(key))
 	{
-		TTF_Font* font = TTF_OpenFont(fontPaths[font_type % 3],	size);
+		TTF_Font* font = TTF_OpenFont(fontPaths[textFont % 3], textSize);
 
-		SDL_Color textColor = (color) ? *color : (SDL_Color){ 0xff, 0xff, 0xff };
-
-		SDL_Surface *textSurface = ((font_type == ICON) || (wrapped_width == 0)) ?
-			TTF_RenderUTF8_Blended(font, text, textColor) :
-			TTF_RenderText_Blended_Wrapped(font, text, textColor, wrapped_width);
+		SDL_Surface *textSurface = ((textFont == ICON) || (textWrappedWidth == 0)) ?
+			TTF_RenderUTF8_Blended(font, text.c_str(), textColor) :
+			TTF_RenderText_Blended_Wrapped(font, text.c_str(), textColor, textWrappedWidth);
 
 		loadFromSurfaceSaveToCache(key, textSurface);
 
