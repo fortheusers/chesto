@@ -63,6 +63,8 @@ private:
 	// curl multi handle
 	CURLM *cm;
 
+  void setPlatformCurlFlags(CURL* c);
+
 	// queue of downloads
 	std::list<DownloadOperation*> queue;
 

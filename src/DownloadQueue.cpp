@@ -50,25 +50,34 @@ void DownloadQueue::downloadCancel(DownloadOperation *download)
 		queue.remove(download);
 }
 
+void DownloadQueue::setPlatformCurlFlags(CURL* c)
+{
+#if defined(__WIIU__)
+  // enable ssl support (TLSv1 only)
+	curl_easy_setopt(c, CURLOPT_NSSL_CONTEXT, nsslctx);
+	curl_easy_setopt(c, (CURLoption)211, 0);
+
+	// network optimizations
+	curl_easy_setopt(c, (CURLoption)213, 1);
+	curl_easy_setopt(c, (CURLoption)212, 0x8000);
+#endif
+
+  // ignore cert verification (TODO: not have to do this in the future)
+  curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
+  curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
+}
+
 // start a transfer operation
 void DownloadQueue::transferStart(DownloadOperation *download)
 {
 	download->eh = curl_easy_init();
 
-#if defined(__WIIU__)
-	// network optimizations
-	curl_easy_setopt(download->eh, (CURLoption)213, 1);
-	curl_easy_setopt(download->eh, (CURLoption)212, 0x8000);
-#endif
+  setPlatformCurlFlags(download->eh);
 
 	curl_easy_setopt(download->eh, CURLOPT_URL, download->url.c_str());
 	curl_easy_setopt(download->eh, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(download->eh, CURLOPT_WRITEDATA, download);
 	curl_easy_setopt(download->eh, CURLOPT_PRIVATE, download);
-#if defined(SWITCH)
-	curl_easy_setopt(download->eh, CURLOPT_SSL_VERIFYPEER, 0L);
-    curl_easy_setopt(download->eh, CURLOPT_SSL_VERIFYHOST, 0L);
-#endif
 
 	curl_multi_add_handle(cm, download->eh);
 
