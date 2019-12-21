@@ -11,15 +11,16 @@ SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, S
 // our own "buttons" that correspond to the above SDL ones
 unsigned int ie_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
 
-bool InputEvents::update()
+
+bool InputEvents::processSDLEvents()
 {
 	// get an event from SDL
 	SDL_Event event;
-	int ret = SDL_PollEvent(&event);
+	if (!SDL_PollEvent(&event))
+		return false;
 
 	// update our variables
 	this->type = event.type;
-	this->keyCode = -1;
 	this->noop = false;
 
 	// proces joystick hotplugging events
@@ -59,14 +60,17 @@ bool InputEvents::update()
 
 	toggleHeldButtons();
 
-	// no more events to process
-	if (ret == 0)
-	{
-		this->noop = processDirectionalButtons();
-		return ret;
-	}
-
 	return true;
+}
+
+bool InputEvents::update()
+{
+	this->type = 0;
+	this->keyCode = -1;
+	this->noop = true;
+
+	// process SDL or directional events
+	return processSDLEvents() || processDirectionalButtons();
 }
 
 void InputEvents::toggleHeldButtons()
@@ -108,20 +112,19 @@ bool InputEvents::processDirectionalButtons()
 	{
 		for (int x = 0; x < 4; x++)
 		{
-			if (held_directions[x])
-			{
-				// send a corresponding directional event
-				SDL_Event sdlevent;
-				sdlevent.type = SDL_KEYDOWN;
-				sdlevent.key.keysym.sym = key_buttons[4 + x]; // send up through right directions
-				sdlevent.key.repeat = 0;
-				SDL_PushEvent(&sdlevent);
-				return false; // only one direction at a time
-			}
+			if (!held_directions[x])
+				continue;
+
+			// send a corresponding directional event
+			this->type = SDL_KEYDOWN;
+			this->keyCode = key_buttons[4 + x]; // send up through right directions
+			this->noop = false;
+
+			return true;
 		}
 	}
 
-	return true;
+	return false;
 }
 
 int InputEvents::directionForKeycode()

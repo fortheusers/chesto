@@ -56,6 +56,7 @@ public:
 	bool touchIn(int x, int width, int y, int height);
 
 	// update which buttons are pressed
+	bool processSDLEvents();
 	bool update();
 
 	bool allowTouch = true;
