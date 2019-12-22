@@ -4,6 +4,12 @@
 
 #define MAX_PARALLEL_DOWNLOADS	4
 
+#if defined(__WIIU__)
+#include <nsysnet/socket.h>
+#include <nsysnet/nssl.h>
+#include <nn/ac.h>
+#endif
+
 DownloadQueue* DownloadQueue::downloadQueue = NULL;
 
 void DownloadQueue::init()
@@ -62,9 +68,11 @@ void DownloadQueue::setPlatformCurlFlags(CURL* c)
 	curl_easy_setopt(c, (CURLoption)212, 0x8000);
 #endif
 
+#if defined(SWITCH)
   // ignore cert verification (TODO: not have to do this in the future)
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
+#endif
 }
 
 // start a transfer operation
