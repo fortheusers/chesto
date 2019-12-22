@@ -4,12 +4,6 @@
 
 #define MAX_PARALLEL_DOWNLOADS	4
 
-#if defined(__WIIU__)
-#include <nsysnet/socket.h>
-#include <nsysnet/nssl.h>
-#include <nn/ac.h>
-#endif
-
 DownloadQueue* DownloadQueue::downloadQueue = NULL;
 
 void DownloadQueue::init()
@@ -59,10 +53,6 @@ void DownloadQueue::downloadCancel(DownloadOperation *download)
 void DownloadQueue::setPlatformCurlFlags(CURL* c)
 {
 #if defined(__WIIU__)
-  // enable ssl support (TLSv1 only)
-	curl_easy_setopt(c, CURLOPT_NSSL_CONTEXT, nsslctx);
-	curl_easy_setopt(c, (CURLoption)211, 0);
-
 	// network optimizations
 	curl_easy_setopt(c, (CURLoption)213, 1);
 	curl_easy_setopt(c, (CURLoption)212, 0x8000);
