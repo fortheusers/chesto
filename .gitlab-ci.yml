@@ -1,0 +1,38 @@
+image: ubuntu:18.10
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+  DEVKITPRO: "/opt/devkitpro"
+  DEVKITPPC: "/opt/devkitpro/devkitPPC"
+  WUT_ROOT: "/opt/devkitpro/wut"
+
+.common: &common
+  script:
+    - apt-get update && apt-get -y install git
+    - git clone https://gitlab.com/4TU/chestotesto.git /chestotesto
+    - /chestotesto/dependency_helper.sh
+    - cp -rf . /chestotesto/libs/chesto
+    - (cd /chestotesto && make -f Makefile.$PLATFORM)
+    - cp /chestotesto/chestotesto.$EXT chestotesto.$EXT
+  artifacts:
+    paths:
+      - chestotesto.$EXT
+
+PC:
+  <<: *common
+  variables:
+    PLATFORM: pc
+    EXT: bin
+
+WiiU:
+  <<: *common
+  variables:
+    PLATFORM: wiiu
+    EXT: rpx
+
+Switch:
+  <<: *common
+  variables:
+    PLATFORM: switch
+    EXT: nro
