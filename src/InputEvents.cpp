@@ -179,13 +179,6 @@ bool InputEvents::held(int buttons)
 	return false;
 }
 
-//bool InputEvents::held(int buttons)
-//{
-//    // held is the same as held internal, except it works with a timer
-//    // will return true for 1. a press down event or 2. 128ms after that
-//    // and then
-//}
-
 bool InputEvents::pressed(int buttons)
 {
 	return isKeyDown() && held(buttons);

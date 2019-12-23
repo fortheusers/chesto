@@ -26,6 +26,7 @@ public:
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	void background(int r, int g, int b);
+  void initAndStartMusic();
 	void update();
 
 	rgb backgroundColor;

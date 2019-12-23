@@ -37,17 +37,6 @@ RootDisplay::RootDisplay()
 	// use linear filtering when available
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-//Initialize SDL_mixer
-#if defined(MUSIC)
-	Mix_Init(MIX_INIT_MP3);
-	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
-	this->music = Mix_LoadMUS(RAMFS "./res/music.mp3");
-	if (music)
-	{
-		Mix_FadeInMusic(music, -1, 300);
-	}
-#endif
-
 	if (TTF_Init() < 0)
 	{
 		//        printf("SDL ttf init failed: %s\n", SDL_GetError());
@@ -90,6 +79,20 @@ RootDisplay::RootDisplay()
 
 	// set up the SDL needsRender event
 	this->needsRender.type = SDL_USEREVENT;
+}
+
+void RootDisplay::initAndStartMusic()
+{
+  //Initialize SDL_mixer
+#if defined(MUSIC)
+	Mix_Init(MIX_INIT_MP3);
+	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
+	this->music = Mix_LoadMUS(RAMFS "./res/music.mp3");
+	if (music)
+	{
+		Mix_FadeInMusic(music, -1, 300);
+	}
+#endif
 }
 
 RootDisplay::~RootDisplay()
