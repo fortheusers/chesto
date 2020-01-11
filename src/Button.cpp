@@ -1,6 +1,6 @@
 #include "Button.hpp"
 
-SDL_Color Button::colors[2] = {
+CST_Color Button::colors[2] = {
 	{ 0x00, 0x00, 0x00, 0xff }, // light
 	{ 0xff, 0xff, 0xff, 0xff }, // dark
 };
@@ -80,19 +80,19 @@ void Button::render(Element* parent)
 	this->y = oy + parent->y;
 
 	// draw bg for button
-	SDL_Rect dimens = { x, y, width, height };
+	CST_Rect dimens = { x, y, width, height };
 
 	if (dark)
 	{
-		SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
+		CST_SetDrawColor(parent->renderer, (CST_Color){ 0x67, 0x6a, 0x6d, 0xFF } );
 #if defined(__WIIU__)
-		SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
+		CST_SetDrawColor(parent->renderer, (CST_Color){ 0x3b, 0x3c, 0x4e, 0xFF } );
 #endif
 	}
 	else
-		SDL_SetRenderDrawColor(parent->renderer, 0xee, 0xee, 0xee, 0xFF);
+		CST_SetDrawColor(parent->renderer, (CST_Color){ 0xee, 0xee, 0xee, 0xFF } );
 
-	SDL_RenderFillRect(parent->renderer, &dimens);
+	CST_FillRect(parent->renderer, &dimens);
 
 	super::render(this);
 }

@@ -1,5 +1,4 @@
 #include "Element.hpp"
-#include <SDL2/SDL2_gfxPrimitives.h>
 #include <algorithm>
 
 Element::~Element()
@@ -42,15 +41,15 @@ void Element::render(Element* parent)
 	// if we're touchable, and we have some animation counter left, draw a rectangle+overlay
 	if (this->touchable && this->elasticCounter > THICK_HIGHLIGHT)
 	{
-		SDL_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10 };
-		SDL_SetRenderDrawBlendMode(parent->renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(parent->renderer, 0xad, 0xd8, 0xe6, 0x90);
-		SDL_RenderFillRect(parent->renderer, &d);
+		CST_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10 };
+		CST_SetDrawBlend(parent->renderer, true);
+		CST_SetDrawColorRGBA(parent->renderer, 0xad, 0xd8, 0xe6, 0x90);
+		CST_FillRect(parent->renderer, &d);
 	}
 
 	if (this->touchable && this->elasticCounter > NO_HIGHLIGHT)
 	{
-		SDL_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10 };
+		CST_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10 };
 		rectangleRGBA(parent->renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
 
 		if (this->elasticCounter == THICK_HIGHLIGHT)

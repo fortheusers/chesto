@@ -1,8 +1,8 @@
 #pragma once
 
 #include "InputEvents.hpp"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include "DrawUtils.hpp"
+
 #include <functional>
 #include <vector>
 
@@ -54,9 +54,9 @@ public:
 	// the scale of the element (and its subelements!)
 	float scale = 1.0f;
 
-	// SDL main graphics variables
-	SDL_Window* window = NULL;
-	SDL_Renderer* renderer = NULL;
+	// Chesto main graphics variables
+	CST_Window* window = NULL;
+	CST_Renderer* renderer = NULL;
 
 	// whether or not this element can be touched (highlights bounds)
 	bool touchable = false;

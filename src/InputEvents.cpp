@@ -3,7 +3,7 @@
 int TOTAL_BUTTONS = 18;
 
 // computer key mappings
-SDL_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_q };
+CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_q };
 
 //SDL_GameControllerButton pad_buttons[] = { 0, 1, 2, 3, 13, 15, 12, 14, 10, 6, 7, 8, 11 };
 SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR };
@@ -28,8 +28,10 @@ bool InputEvents::processSDLEvents()
 
 #ifdef PC
 	this->allowTouch = false;
+#ifndef SDL1
 	if (event.type == SDL_MOUSEWHEEL)
 		this->wheelScroll = event.wheel.y;
+#endif
 #endif
 
 	if (this->type == SDL_QUIT)
@@ -43,7 +45,11 @@ bool InputEvents::processSDLEvents()
 	}
 	else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
 	{
+  #ifndef SDL1
 		this->keyCode = event.jbutton.button;
+  #else
+    this->keyCode = event.button.button;
+  #endif
 	}
 	else if (this->type == SDL_MOUSEMOTION || this->type == SDL_MOUSEBUTTONUP || this->type == SDL_MOUSEBUTTONDOWN)
 	{

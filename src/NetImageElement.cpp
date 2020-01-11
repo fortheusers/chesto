@@ -1,7 +1,6 @@
 #if defined(NETWORK)
 
 #include "NetImageElement.hpp"
-#include <SDL2/SDL_image.h>
 
 NetImageElement::NetImageElement(const char *url, std::function<Texture *(void)> getImageFallback, bool immediateLoad)
 {
@@ -50,9 +49,9 @@ void NetImageElement::imgDownloadComplete(DownloadOperation *download)
 
 	if (download->status == DownloadStatus::COMPLETE)
 	{
-		SDL_Surface *surface = IMG_Load_RW(SDL_RWFromMem((void*)download->buffer.c_str(), download->buffer.size()), 1);
+		CST_Surface *surface = IMG_Load_RW(SDL_RWFromMem((void*)download->buffer.c_str(), download->buffer.size()), 1);
 		success = loadFromSurfaceSaveToCache(download->url, surface);
-		SDL_FreeSurface(surface);
+		CST_FreeSurface(surface);
 	}
 
 	if (success)

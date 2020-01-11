@@ -13,7 +13,7 @@ public:
 	void position(int x, int y);
 
 private:
-	static SDL_Color colors[2];
+	static CST_Color colors[2];
 	const char* getUnicode(int button);
 
 	// the physical button to activate this button
