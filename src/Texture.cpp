@@ -120,12 +120,12 @@ void Texture::render(Element* parent)
 		// as the colored background wouldn't get rotated
 
 		CST_SetQualityHint("best");
-		SDL_RenderCopyEx(RootDisplay::mainRenderer, mTexture, NULL, &rect, this->angle, NULL, SDL_FLIP_NONE);
+		CST_RenderCopyRotate(RootDisplay::mainRenderer, mTexture, NULL, &rect, this->angle);
 	}
 	else
 	{
 		// render the texture normally
-		SDL_RenderCopy(RootDisplay::mainRenderer, mTexture, NULL, &rect);
+		CST_RenderCopy(RootDisplay::mainRenderer, mTexture, NULL, &rect);
 	}
 }
 

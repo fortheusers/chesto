@@ -36,6 +36,10 @@ void CST_DrawExit();
 void CST_RenderPresent(CST_Renderer* render);
 void CST_FreeSurface(CST_Surface* surface);
 
+void CST_RenderCopy(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CST_Rect* dest_rect);
+void CST_RenderCopyRotate(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CST_Rect* dest_rect, int angle);
+
+
 void CST_SetDrawColor(CST_Renderer* renderer, CST_Color c);
 void CST_SetDrawColorRGBA(CST_Renderer* renderer, uint32_t r, uint32_t g, uint32_t b, uint32_t a);
 void CST_FillRect(CST_Renderer* renderer, CST_Rect* dimens);

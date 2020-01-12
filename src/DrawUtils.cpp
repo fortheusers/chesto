@@ -60,9 +60,11 @@ void CST_DrawExit()
 	TTF_Quit();
 
 	SDL_Delay(10);
+#ifndef SDL1
 	SDL_DestroyWindow(RootDisplay::mainDisplay->window);
-
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+#endif
+
 	SDL_Quit();
 }
 
@@ -72,21 +74,44 @@ void CST_MixerInit(RootDisplay* root)
   Mix_Init(MIX_INIT_MP3);
 	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
 	root->music = Mix_LoadMUS(RAMFS "./res/music.mp3");
-	if (music)
+	if (root->music)
 	{
-		Mix_FadeInMusic(music, -1, 300);
+		Mix_FadeInMusic(root->music, -1, 300);
 	}
 #endif
 }
 
-void CST_RenderPresent(CST_Renderer* render)
+void CST_RenderPresent(CST_Renderer* renderer)
 {
-  SDL_RenderPresent(render);
+#ifndef SDL1
+  SDL_RenderPresent(renderer);
+#else
+  SDL_Flip(renderer);
+#endif
 }
 
 void CST_FreeSurface(CST_Surface* surface)
 {
   SDL_FreeSurface(surface);
+}
+
+void CST_RenderCopy(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CST_Rect* dest_rect)
+{
+#ifndef SDL1
+  SDL_RenderCopy(dest, src, src_rect, dest_rect);
+#else
+  SDL_BlitSurface(src, src_rect, dest, dest_rect);
+#endif
+}
+
+void CST_RenderCopyRotate(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CST_Rect* dest_rect, int angle)
+{
+#ifndef SDL1
+  SDL_RenderCopyEx(dest, src, src_rect, dest_rect, angle, NULL, SDL_FLIP_NONE);
+#else
+  // TODO: figure out rotation on SDL1
+  CST_RenderCopy(dest, src, src_rect, dest_rect);
+#endif
 }
 
 void CST_SetDrawColor(CST_Renderer* renderer, CST_Color c)
