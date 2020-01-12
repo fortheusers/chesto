@@ -116,38 +116,64 @@ void CST_RenderCopyRotate(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_re
 
 void CST_SetDrawColor(CST_Renderer* renderer, CST_Color c)
 {
+#ifndef SDL1
   CST_SetDrawColorRGBA(renderer, c.r, c.g, c.b, c.a);
+#else
+  CST_SetDrawColorRGBA(renderer, c.r, c.g, c.b, c.unused);
+#endif
 }
 
 void CST_SetDrawColorRGBA(CST_Renderer* renderer, uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 {
+#ifndef SDL1
   SDL_SetRenderDrawColor(renderer, r, g, b, a);
+#else
+  CUR_DRAW_COLOR = SDL_MapRGBA(RootDisplay::mainRenderer->format, r, g, b, a);
+#endif
 }
 
 void CST_FillRect(CST_Renderer* renderer, CST_Rect* dimens)
 {
+#ifndef SDL1
   SDL_RenderFillRect(renderer, dimens);
+#else
+  SDL_FillRect(renderer, dimens, CUR_DRAW_COLOR);
+#endif
 }
 
 void CST_SetDrawBlend(CST_Renderer* renderer, bool enabled)
 {
+#ifndef SDL1
   SDL_BlendMode mode = enabled ? SDL_BLENDMODE_BLEND : SDL_BLENDMODE_NONE;
   SDL_SetRenderDrawBlendMode(renderer, mode);
+#endif
 }
 
 void CST_QueryTexture(CST_Texture* texture, int* w, int* h)
 {
+#ifndef SDL1
   SDL_QueryTexture(texture, nullptr, nullptr, w, h);
+#else
+  *w = texture->w;
+  *h = texture->h;
+#endif
 }
 
 CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface)
 {
+#ifndef SDL1
   return SDL_CreateTextureFromSurface(renderer, surface);
+#else
+  // it's a secret to everyone
+  return surface;
+#endif
 }
 
 void CST_SetQualityHint(const char* quality)
 {
+#ifndef SDL1
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, quality);
+#endif
 }
 
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a)

@@ -5,8 +5,14 @@ int TOTAL_BUTTONS = 18;
 // computer key mappings
 CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_q };
 
-//SDL_GameControllerButton pad_buttons[] = { 0, 1, 2, 3, 13, 15, 12, 14, 10, 6, 7, 8, 11 };
+#ifndef SDL1
 SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR };
+#else
+int pad_buttons[] = { 0, 1, 2, 3, 13, 15, 12, 14, 10, 6, 7, 8, 11 };
+#define SDL_FINGERDOWN SDL_MOUSEBUTTONDOWN
+#define SDL_FINGERUP SDL_MOUSEBUTTONUP
+#define SDL_FINGERMOTION SDL_MOUSEMOTION
+#endif
 
 // our own "buttons" that correspond to the above SDL ones
 unsigned int ie_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
@@ -39,10 +45,13 @@ bool InputEvents::processSDLEvents()
 		this->quitaction();
 		return false; //Quitting overrides all other events.
 	}
+#ifndef SDL1
+// TODO: key down/up input on SDL1
 	else if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))
 	{
 		this->keyCode = event.key.keysym.sym;
 	}
+#endif
 	else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
 	{
   #ifndef SDL1
@@ -58,11 +67,13 @@ bool InputEvents::processSDLEvents()
 		this->yPos = isMotion ? event.motion.y : event.button.y;
 		this->xPos = isMotion ? event.motion.x : event.button.x;
 	}
+#ifndef SDL1
 	else if (allowTouch && (this->type == SDL_FINGERMOTION || this->type == SDL_FINGERUP || this->type == SDL_FINGERDOWN))
 	{
 		this->yPos = event.tfinger.y * 720;
 		this->xPos = event.tfinger.x * 1280;
 	}
+#endif
 
 	toggleHeldButtons();
 
@@ -139,6 +150,8 @@ int InputEvents::directionForKeycode()
 	if (this->type == SDL_KEYDOWN && this->keyCode == SDLK_RETURN)
 		return -1;
 
+#ifndef SDL1
+// TODO: joysticks in SDL1
 	// returns 0 1 2 or 3 for up down left or right
 	switch (this->keyCode)
 	{
@@ -161,6 +174,7 @@ int InputEvents::directionForKeycode()
 	default:
 		return -1;
 	}
+#endif
 	return -1;
 }
 
@@ -232,6 +246,7 @@ bool InputEvents::isKeyUp()
 
 void InputEvents::processJoystickHotplugging(SDL_Event *event)
 {
+  #ifndef SDL1
 	SDL_Joystick *j;
 	switch(event->type)
 	{
@@ -251,4 +266,5 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 	default:
 		break;
 	}
+  #endif
 }

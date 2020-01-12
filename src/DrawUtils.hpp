@@ -21,6 +21,8 @@ typedef SDL_Texture CST_Texture;
 typedef SDL_Surface CST_Window;
 typedef SDL_Surface CST_Renderer;
 typedef SDL_Surface CST_Texture;
+
+#define TTF_RenderText_Blended_Wrapped(a, b, c, d) TTF_RenderUTF8_Blended(a, b, c)
 #endif
 
 typedef SDL_Surface CST_Surface;
@@ -29,6 +31,8 @@ typedef SDL_Color CST_Color;
 typedef SDL_Rect CST_Rect;
 
 class RootDisplay;
+
+static uint32_t CUR_DRAW_COLOR = 0x00000000;
 
 void CST_DrawInit(RootDisplay* root);
 void CST_MixerInit(RootDisplay* root);

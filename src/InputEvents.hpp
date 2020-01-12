@@ -5,7 +5,7 @@
 typedef SDL_Keycode CST_Keycode;
 #else
 #include <SDL/SDL.h>
-typedef uint8_t CST_Keycode;
+typedef uint32_t CST_Keycode;
 #endif
 #include <functional>
 
