@@ -60,7 +60,8 @@ void TextElement::update(void)
 		CST_Surface *textSurface = ((textFont == ICON) || (textWrappedWidth == 0)) ?
 			TTF_RenderUTF8_Blended(font, text.c_str(), textColor) :
 			TTF_RenderText_Blended_Wrapped(font, text.c_str(), textColor, textWrappedWidth);
-			if(textSurface==NULL) printf("TTF_GetError: %s\n", TTF_GetError());
+		if(textSurface==NULL) printf("TTF_GetError: %s\n", TTF_GetError());
+		//ACNOTE: sdl1 renders this surface fine, but segfaults when it's a "texture"
 
 		loadFromSurfaceSaveToCache(key, textSurface);
 

@@ -36,16 +36,6 @@ void CST_DrawInit(RootDisplay* root)
   SDL_WM_SetCaption("chesto", NULL);
   root->renderer = SDL_SetVideoMode(1280, 720, 0, SDL_DOUBLEBUF);
   root->window = root->renderer;
-
-  SDL_Rect testrect;
-	testrect.x=10;
-	testrect.y=10;
-	testrect.w=10;
-	testrect.h=10;
-	if(SDL_FillRect(root->renderer, &testrect, 0xFFFFFFFF)==-1) printf("TESTRECT ERR");
-	SDL_Flip(root->renderer);
-	SDL_Delay(1000);
-
 #endif
 
   RootDisplay::mainRenderer = root->renderer;
@@ -179,7 +169,7 @@ CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* s
   return SDL_CreateTextureFromSurface(renderer, surface);
 #else
   // it's a secret to everyone
-  return surface;
+  return SDL_ConvertSurface(surface, surface->format, NULL);
 #endif
 }
 
