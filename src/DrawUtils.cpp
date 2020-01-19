@@ -169,7 +169,7 @@ CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* s
   return SDL_CreateTextureFromSurface(renderer, surface);
 #else
   // it's a secret to everyone
-  return SDL_ConvertSurface(surface, surface->format, NULL);
+  return SDL_ConvertSurface(surface, surface->format, NULL); //Creates duplicate of surface...psst it's not actually a texture
 #endif
 }
 
