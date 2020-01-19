@@ -20,12 +20,12 @@ void CST_DrawInit(RootDisplay* root)
     return;
   }
 
-  int imgFlags = IMG_INIT_PNG;
+  /*int imgFlags = IMG_INIT_PNG;
   if (!(IMG_Init(imgFlags) & imgFlags))
   {
     printf("Failed to initialize SDL IMG library: %s\n", SDL_GetError());
     return;
-  }
+  }*/
 
 #ifndef SDL1
   root->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
@@ -34,7 +34,7 @@ void CST_DrawInit(RootDisplay* root)
   SDL_SetRenderTarget(root->renderer, NULL);
 #else
   SDL_WM_SetCaption("chesto", NULL);
-  root->renderer = SDL_SetVideoMode(1280, 720, 0, SDL_DOUBLEBUF);
+  root->renderer = SDL_SetVideoMode(640, 480, 0, SDL_DOUBLEBUF);
   root->window = root->renderer;
 #endif
 
@@ -57,7 +57,7 @@ void CST_DrawInit(RootDisplay* root)
 
 void CST_DrawExit()
 {
-  IMG_Quit();
+  //IMG_Quit();
 	TTF_Quit();
 
 	SDL_Delay(10);
