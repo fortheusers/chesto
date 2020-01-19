@@ -32,7 +32,7 @@ typedef SDL_Rect CST_Rect;
 
 class RootDisplay;
 
-static uint32_t CUR_DRAW_COLOR = 0x00000000;
+static uint32_t CUR_DRAW_COLOR = 0xFFFFFFFF;
 
 void CST_DrawInit(RootDisplay* root);
 void CST_MixerInit(RootDisplay* root);

@@ -6,7 +6,8 @@
 
 void CST_DrawInit(RootDisplay* root)
 {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
+  //if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
   {
     printf("Failed to initialize SDL2 drawing library: %s\n", SDL_GetError());
     return;
@@ -32,9 +33,19 @@ void CST_DrawInit(RootDisplay* root)
   //Detach the texture
   SDL_SetRenderTarget(root->renderer, NULL);
 #else
-  SDL_WM_SetCaption(NULL, "chesto");
-  root->renderer = SDL_SetVideoMode(640, 480, 0, SDL_FULLSCREEN | SDL_OPENGL);
+  SDL_WM_SetCaption("chesto", NULL);
+  root->renderer = SDL_SetVideoMode(1280, 720, 0, SDL_DOUBLEBUF);
   root->window = root->renderer;
+
+  SDL_Rect testrect;
+	testrect.x=10;
+	testrect.y=10;
+	testrect.w=10;
+	testrect.h=10;
+	if(SDL_FillRect(root->renderer, &testrect, 0xFFFFFFFF)==-1) printf("TESTRECT ERR");
+	SDL_Flip(root->renderer);
+	SDL_Delay(1000);
+
 #endif
 
   RootDisplay::mainRenderer = root->renderer;
@@ -97,6 +108,9 @@ void CST_FreeSurface(CST_Surface* surface)
 
 void CST_RenderCopy(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CST_Rect* dest_rect)
 {
+//if(src_rect==NULL) {
+	//printf("WARNING: CST_RenderCopy fed a null src_rect, ignoring\n");
+	//return;}
 #ifndef SDL1
   SDL_RenderCopy(dest, src, src_rect, dest_rect);
 #else

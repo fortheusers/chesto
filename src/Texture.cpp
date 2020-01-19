@@ -112,7 +112,7 @@ void Texture::render(Element* parent)
 		rect.y += (height - rect.h) / 2;
 	}
 
-	if ((texScaleMode == SCALE_STRETCH) && angle)
+	if ((texScaleMode == SCALE_STRETCH) && angle!=0)
 	{
 		// render the texture with a rotation
 
