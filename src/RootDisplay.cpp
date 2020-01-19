@@ -30,9 +30,9 @@ RootDisplay::RootDisplay()
   CST_DrawInit(this);
 
 #if defined(__WIIU__)
-  backgroundColor = {0x54, 0x55, 0x6e};
+  backgroundColor = {0x54/255.0, 0x55/255.0, 0x6e/255.0};
 #else
-  backgroundColor = {0x42, 0x45, 0x48};
+  backgroundColor = {0x42/255.0, 0x45/255.0, 0x48/255.0};
 #endif
 }
 
@@ -70,7 +70,7 @@ bool RootDisplay::process(InputEvents* event)
 void RootDisplay::render(Element* parent)
 {
 	// set the background color
-	RootDisplay::background((int)(backgroundColor.r), (int)(backgroundColor.g), (int)(backgroundColor.b));
+	RootDisplay::background((uint8_t)(backgroundColor.r*255), (uint8_t)(backgroundColor.g*255), (uint8_t)(backgroundColor.b*255));
 
 	if (RootDisplay::subscreen)
 	{
@@ -86,7 +86,7 @@ void RootDisplay::render(Element* parent)
 	this->update();
 }
 
-void RootDisplay::background(int r, int g, int b)
+void RootDisplay::background(uint8_t r, uint8_t g, uint8_t b)
 {
 	CST_SetDrawColorRGBA(this->renderer, r, g, b, 0xFF );
   CST_FillRect(this->renderer, NULL);

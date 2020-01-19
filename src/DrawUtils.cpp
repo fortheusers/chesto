@@ -127,7 +127,7 @@ void CST_SetDrawColor(CST_Renderer* renderer, CST_Color c)
 #endif
 }
 
-void CST_SetDrawColorRGBA(CST_Renderer* renderer, uint32_t r, uint32_t g, uint32_t b, uint32_t a)
+void CST_SetDrawColorRGBA(CST_Renderer* renderer, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
 #ifndef SDL1
   SDL_SetRenderDrawColor(renderer, r, g, b, a);
