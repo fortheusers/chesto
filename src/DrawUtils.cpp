@@ -87,7 +87,9 @@ void CST_RenderPresent(CST_Renderer* renderer)
 #ifndef SDL1
   SDL_RenderPresent(renderer);
 #else
-  SDL_Flip(renderer);
+	while (SDL_GetTicks()-LAST_SDL1_FLIP<=16.67) continue; //TODO BAD HACK: framelimit to 60fps by blocking
+	SDL_Flip(renderer); //TODO: replace this hack with SDL_gfx framerate limiter
+	LAST_SDL1_FLIP = SDL_GetTicks();
 #endif
 }
 
@@ -98,13 +100,14 @@ void CST_FreeSurface(CST_Surface* surface)
 
 void CST_RenderCopy(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CST_Rect* dest_rect)
 {
-//if(src_rect==NULL) {
-	//printf("WARNING: CST_RenderCopy fed a null src_rect, ignoring\n");
-	//return;}
 #ifndef SDL1
   SDL_RenderCopy(dest, src, src_rect, dest_rect);
 #else
-  SDL_BlitSurface(src, src_rect, dest, dest_rect);
+	double xFactor=(dest_rect ? dest_rect->w : dest->w)/(double)(src_rect ? src_rect->w : src->w);
+	double yFactor=(dest_rect ? dest_rect->h : dest->h)/(double)(src_rect ? src_rect->h : src->h);
+	SDL_Surface* zoomed = zoomSurface(src, xFactor, yFactor, SMOOTHING_ON);
+	SDL_BlitSurface(zoomed, src_rect, dest, dest_rect);
+	SDL_FreeSurface(zoomed);
 #endif
 }
 
@@ -113,8 +116,16 @@ void CST_RenderCopyRotate(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_re
 #ifndef SDL1
   SDL_RenderCopyEx(dest, src, src_rect, dest_rect, angle, NULL, SDL_FLIP_NONE);
 #else
-  // TODO: figure out rotation on SDL1
-  CST_RenderCopy(dest, src, src_rect, dest_rect);
+	int xCenter = (dest_rect ? dest_rect->x : 0)+((dest_rect ? dest_rect->w : dest->w)/2);
+	int yCenter = (dest_rect ? dest_rect->y : 0)+((dest_rect ? dest_rect->h : dest->h)/2);
+	double xFactor=(dest_rect ? dest_rect->w : dest->w)/(double)(src_rect ? src_rect->w : src->w);
+	double yFactor=(dest_rect ? dest_rect->h : dest->h)/(double)(src_rect ? src_rect->h : src->h);
+	SDL_Surface* rotozoomed = rotozoomSurfaceXY(src, (double) angle, xFactor, yFactor, SMOOTHING_ON);
+	SDL_Rect recentered;
+	recentered.x=xCenter-(rotozoomed->w)/2;
+	recentered.y=yCenter-(rotozoomed->h)/2;
+	SDL_BlitSurface(rotozoomed, src_rect, dest, &recentered);
+	SDL_FreeSurface(rotozoomed);
 #endif
 }
 

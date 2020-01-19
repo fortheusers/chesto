@@ -17,6 +17,7 @@ typedef SDL_Texture CST_Texture;
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_gfxPrimitives.h>
+#include <SDL/SDL_rotozoom.h>
 
 typedef SDL_Surface CST_Window;
 typedef SDL_Surface CST_Renderer;
@@ -33,6 +34,9 @@ typedef SDL_Rect CST_Rect;
 class RootDisplay;
 
 static uint32_t CUR_DRAW_COLOR = 0xFFFFFFFF;
+#ifdef SDL1
+static uint32_t LAST_SDL1_FLIP = 0;
+#endif
 
 void CST_DrawInit(RootDisplay* root);
 void CST_MixerInit(RootDisplay* root);
