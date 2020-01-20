@@ -38,7 +38,7 @@ static uint32_t CUR_DRAW_COLOR = 0xFFFFFFFF;
 static uint32_t LAST_SDL1_FLIP = 0;
 #endif
 
-void CST_DrawInit(RootDisplay* root);
+bool CST_DrawInit(RootDisplay* root);
 void CST_MixerInit(RootDisplay* root);
 void CST_DrawExit();
 void CST_RenderPresent(CST_Renderer* render);

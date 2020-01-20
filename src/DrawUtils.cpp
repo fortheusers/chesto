@@ -4,20 +4,20 @@
 #include "DrawUtils.hpp"
 #include "RootDisplay.hpp"
 
-void CST_DrawInit(RootDisplay* root)
+bool CST_DrawInit(RootDisplay* root)
 {
   //if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
   {
     printf("Failed to initialize SDL2 drawing library: %s\n", SDL_GetError());
-    return;
+    return false;
   }
 
 	CST_SetQualityHint("linear");
   if (TTF_Init() < 0)
   {
     printf("Failed to initialize TTF font library: %s\n", SDL_GetError());
-    return;
+    return false;
   }
 
   /*int imgFlags = IMG_INIT_PNG;
@@ -27,16 +27,41 @@ void CST_DrawInit(RootDisplay* root)
     return;
   }*/
 
+  int SDLFlags = 0;
+
+#ifndef SDL1
+  SDLFlags |= SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+#else
+  SDLFlags |= SDL_DOUBLEBUF;
+#ifdef _3DS
+  SDLFlags |= SDL_HWSURFACE | SDL_FULLSCREEN | SDL_DUALSCR;
+#endif
+#endif 
+
 #ifndef SDL1
   root->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-  root->renderer = SDL_CreateRenderer(root->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  root->renderer = SDL_CreateRenderer(root->window, -1, SDLFlags);
   //Detach the texture
   SDL_SetRenderTarget(root->renderer, NULL);
 #else
   SDL_WM_SetCaption("chesto", NULL);
-  root->renderer = SDL_SetVideoMode(640, 480, 0, SDL_DOUBLEBUF);
+  #ifdef _3DS
+  root->renderer = SDL_SetVideoMode(400, 480, 8, SDLFlags);
+  #else
+  root->renderer = SDL_SetVideoMode(640, 480, 8, SDLFlags);
+  #endif
   root->window = root->renderer;
 #endif
+
+  if (root->renderer == NULL || root->window == NULL)
+  {
+    char* err = SDL_GetError();
+    FILE *file = fopen("error.txt", "w");
+    fprintf(file, "%s", err);
+    fclose(file);
+    SDL_Quit();
+    return false;
+  }
 
   RootDisplay::mainRenderer = root->renderer;
   RootDisplay::mainDisplay = root;
@@ -47,12 +72,13 @@ void CST_DrawInit(RootDisplay* root)
     {
       printf("SDL_JoystickOpen: %s\n", SDL_GetError());
       SDL_Quit();
-      return;
+      return false;
     }
   }
 
   // set up the SDL needsRender event
   root->needsRender.type = SDL_USEREVENT;
+  return true;
 }
 
 void CST_DrawExit()
@@ -151,7 +177,7 @@ void CST_SetDrawColorRGBA(CST_Renderer* renderer, uint8_t r, uint8_t g, uint8_t 
 #ifndef SDL1
   SDL_SetRenderDrawColor(renderer, r, g, b, a);
 #else
-  CUR_DRAW_COLOR = SDL_MapRGBA(RootDisplay::mainRenderer->format, r, g, b, a);
+  //CUR_DRAW_COLOR = SDL_MapRGBA(RootDisplay::mainRenderer->format, r, g, b, a);
 #endif
 }
 

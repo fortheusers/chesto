@@ -3,6 +3,8 @@
 #define PLATFORM "Switch"
 #elif defined(__WIIU__)
 #define PLATFORM "Wii U"
+#elif defined(_3DS)
+#define PLATFORM "3DS"
 #else
 #define PLATFORM "Console"
 #endif
