@@ -105,9 +105,13 @@ void CST_RenderCopy(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CS
 #else
 	double xFactor=(dest_rect ? dest_rect->w : dest->w)/(double)(src_rect ? src_rect->w : src->w);
 	double yFactor=(dest_rect ? dest_rect->h : dest->h)/(double)(src_rect ? src_rect->h : src->h);
-	SDL_Surface* zoomed = zoomSurface(src, xFactor, yFactor, SMOOTHING_ON);
-	SDL_BlitSurface(zoomed, src_rect, dest, dest_rect);
-	SDL_FreeSurface(zoomed);
+	if (xFactor != 1.0 || yFactor != 1.0) //Avoid slow software zoom if at all possible
+	{
+		SDL_Surface* zoomed = zoomSurface(src, xFactor, yFactor, SMOOTHING_ON);
+		SDL_BlitSurface(zoomed, src_rect, dest, dest_rect);
+		SDL_FreeSurface(zoomed);
+	}
+	else SDL_BlitSurface(src, src_rect, dest, dest_rect);
 #endif
 }
 
@@ -116,16 +120,20 @@ void CST_RenderCopyRotate(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_re
 #ifndef SDL1
   SDL_RenderCopyEx(dest, src, src_rect, dest_rect, angle, NULL, SDL_FLIP_NONE);
 #else
-	int xCenter = (dest_rect ? dest_rect->x : 0)+((dest_rect ? dest_rect->w : dest->w)/2);
-	int yCenter = (dest_rect ? dest_rect->y : 0)+((dest_rect ? dest_rect->h : dest->h)/2);
-	double xFactor=(dest_rect ? dest_rect->w : dest->w)/(double)(src_rect ? src_rect->w : src->w);
-	double yFactor=(dest_rect ? dest_rect->h : dest->h)/(double)(src_rect ? src_rect->h : src->h);
-	SDL_Surface* rotozoomed = rotozoomSurfaceXY(src, (double) angle, xFactor, yFactor, SMOOTHING_ON);
-	SDL_Rect recentered;
-	recentered.x=xCenter-(rotozoomed->w)/2;
-	recentered.y=yCenter-(rotozoomed->h)/2;
-	SDL_BlitSurface(rotozoomed, src_rect, dest, &recentered);
-	SDL_FreeSurface(rotozoomed);
+	if(angle==0) CST_RenderCopy(dest, src, src_rect, dest_rect); //Avoid slow software rotozoom if at all possible
+	else
+	{
+		int xCenter = (dest_rect ? dest_rect->x : 0)+((dest_rect ? dest_rect->w : dest->w)/2);
+		int yCenter = (dest_rect ? dest_rect->y : 0)+((dest_rect ? dest_rect->h : dest->h)/2);
+		double xFactor=(dest_rect ? dest_rect->w : dest->w)/(double)(src_rect ? src_rect->w : src->w);
+		double yFactor=(dest_rect ? dest_rect->h : dest->h)/(double)(src_rect ? src_rect->h : src->h);
+		SDL_Surface* rotozoomed = rotozoomSurfaceXY(src, (double) angle, xFactor, yFactor, SMOOTHING_ON);
+		SDL_Rect recentered;
+		recentered.x=xCenter-(rotozoomed->w)/2;
+		recentered.y=yCenter-(rotozoomed->h)/2;
+		SDL_BlitSurface(rotozoomed, src_rect, dest, &recentered);
+		SDL_FreeSurface(rotozoomed);
+	}
 #endif
 }
 
