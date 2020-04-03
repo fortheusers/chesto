@@ -32,9 +32,11 @@ RootDisplay::RootDisplay()
   CST_DrawInit(this);
 
 #if defined(__WIIU__)
-  backgroundColor = {0x54/255.0, 0x55/255.0, 0x6e/255.0};
+  backgroundColor = { 0x54/255.0, 0x55/255.0, 0x6e/255.0 };
+#elif defined(_3DS)
+	backgroundColor = { 0xe4/255.0, 0x00/255.0, 0x0/255.0f };
 #else
-  backgroundColor = {0x42/255.0, 0x45/255.0, 0x48/255.0};
+  backgroundColor = { 0x42/255.0, 0x45/255.0, 0x48/255.0 };
 #endif
 }
 
