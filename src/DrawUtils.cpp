@@ -54,10 +54,12 @@ bool CST_DrawInit(RootDisplay* root)
 
   if (root->renderer == NULL || root->window == NULL)
   {
+#ifdef _3DS
     char* err = SDL_GetError();
     FILE *file = fopen("error.txt", "w");
     fprintf(file, "%s", err);
     fclose(file);
+#endif
     SDL_Quit();
     return false;
   }
