@@ -6,8 +6,7 @@
 
 bool CST_DrawInit(RootDisplay* root)
 {
-  //if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
   {
     printf("Failed to initialize SDL2 drawing library: %s\n", SDL_GetError());
     return false;
@@ -177,7 +176,7 @@ void CST_SetDrawColorRGBA(CST_Renderer* renderer, uint8_t r, uint8_t g, uint8_t 
 #ifndef SDL1
   SDL_SetRenderDrawColor(renderer, r, g, b, a);
 #else
-  //CUR_DRAW_COLOR = SDL_MapRGBA(RootDisplay::mainRenderer->format, r, g, b, a);
+  CUR_DRAW_COLOR = SDL_MapRGBA(RootDisplay::mainRenderer->format, r, g, b, a);
 #endif
 }
 
@@ -187,6 +186,15 @@ void CST_FillRect(CST_Renderer* renderer, CST_Rect* dimens)
   SDL_RenderFillRect(renderer, dimens);
 #else
   SDL_FillRect(renderer, dimens, CUR_DRAW_COLOR);
+#endif
+}
+
+void CST_DrawRect(CST_Renderer* renderer, CST_Rect* dimens)
+{
+#ifndef SDL1
+  SDL_RenderDrawRect(renderer, dimens);
+#else
+  // SDL_DrawRect(renderer, dimens, CUR_DRAW_COLOR);
 #endif
 }
 
@@ -228,4 +236,14 @@ void CST_SetQualityHint(const char* quality)
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 {
   filledCircleRGBA(renderer, x, y, radius, r, g, b, a);
+}
+
+void CST_Delay(int time)
+{
+  SDL_Delay(time);
+}
+
+int CST_GetTicks()
+{
+  return SDL_GetTicks();
 }

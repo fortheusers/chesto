@@ -47,10 +47,10 @@ void CST_FreeSurface(CST_Surface* surface);
 void CST_RenderCopy(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CST_Rect* dest_rect);
 void CST_RenderCopyRotate(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CST_Rect* dest_rect, int angle);
 
-
 void CST_SetDrawColor(CST_Renderer* renderer, CST_Color c);
 void CST_SetDrawColorRGBA(CST_Renderer* renderer, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 void CST_FillRect(CST_Renderer* renderer, CST_Rect* dimens);
+void CST_DrawRect(CST_Renderer* renderer, CST_Rect* dimens);
 void CST_SetDrawBlend(CST_Renderer* renderer, bool enabled);
 
 void CST_QueryTexture(CST_Texture* texture, int* w, int* h);
@@ -58,3 +58,6 @@ CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* s
 void CST_SetQualityHint(const char* quality);
 
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a);
+void CST_Delay(int time);
+
+int CST_GetTicks();
