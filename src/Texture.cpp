@@ -11,16 +11,16 @@ void Texture::clear(void)
 	mTexture = nullptr;
 	texW = 0;
 	texH = 0;
-	texFirstPixel = (SDL_Color){0,0,0,0};
+	texFirstPixel = (CST_Color){0,0,0,0};
 }
 
-bool Texture::loadFromSurface(SDL_Surface *surface)
+bool Texture::loadFromSurface(CST_Surface *surface)
 {
 	if (!surface)
 		return false;
 
 	// try to create a texture from the surface
-	SDL_Texture *texture = SDL_CreateTextureFromSurface(RootDisplay::mainRenderer, surface);
+	CST_Texture *texture = CST_CreateTextureFromSurface(RootDisplay::mainRenderer, surface);
 	if (!texture)
 		return false;
 
@@ -32,7 +32,7 @@ bool Texture::loadFromSurface(SDL_Surface *surface)
 	SDL_GetRGB(pixelcolor, surface->format, &texFirstPixel.r, &texFirstPixel.g, &texFirstPixel.b);
 
 	// load texture size
-	SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
+	CST_QueryTexture(texture, &texW, &texH);
 
 	// load texture
 	mTexture = texture;
@@ -48,14 +48,14 @@ bool Texture::loadFromCache(std::string &key)
 		TextureData *texData = &texCache[key];
 		mTexture = texData->texture;
 		texFirstPixel = texData->firstPixel;
-		SDL_QueryTexture(mTexture, nullptr, nullptr, &texW, &texH);
+		CST_QueryTexture(mTexture, &texW, &texH);
 		return true;
 	}
 
 	return false;
 }
 
-bool Texture::loadFromSurfaceSaveToCache(std::string &key, SDL_Surface *surface)
+bool Texture::loadFromSurfaceSaveToCache(std::string &key, CST_Surface *surface)
 {
 	bool success = loadFromSurface(surface);
 
@@ -81,7 +81,7 @@ void Texture::render(Element* parent)
 		return;
 
 	// rect of element's size
-	SDL_Rect rect;
+	CST_Rect rect;
 	rect.x = x + parent->x;
 	rect.y = y + parent->y;
 	rect.w = width;
@@ -90,8 +90,8 @@ void Texture::render(Element* parent)
 	if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG)
 	{
 		// draw colored background
-		SDL_SetRenderDrawColor(RootDisplay::mainRenderer, texFirstPixel.r, texFirstPixel.g, texFirstPixel.b, 0xFF);
-		SDL_RenderFillRect(RootDisplay::mainRenderer, &rect);
+		CST_SetDrawColor(RootDisplay::mainRenderer, texFirstPixel);
+		CST_FillRect(RootDisplay::mainRenderer, &rect);
 
 		// recompute drawing rect
 		if ((width * texH) > (height * texW))
@@ -112,20 +112,20 @@ void Texture::render(Element* parent)
 		rect.y += (height - rect.h) / 2;
 	}
 
-	if ((texScaleMode == SCALE_STRETCH) && angle)
+	if ((texScaleMode == SCALE_STRETCH) && angle!=0)
 	{
 		// render the texture with a rotation
 
 		// only supported for SCALE_STRETCH textures,
 		// as the colored background wouldn't get rotated
 
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-		SDL_RenderCopyEx(RootDisplay::mainRenderer, mTexture, NULL, &rect, this->angle, NULL, SDL_FLIP_NONE);
+		CST_SetQualityHint("best");
+		CST_RenderCopyRotate(RootDisplay::mainRenderer, mTexture, NULL, &rect, this->angle);
 	}
 	else
 	{
 		// render the texture normally
-		SDL_RenderCopy(RootDisplay::mainRenderer, mTexture, NULL, &rect);
+		CST_RenderCopy(RootDisplay::mainRenderer, mTexture, NULL, &rect);
 	}
 }
 

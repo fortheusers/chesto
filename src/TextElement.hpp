@@ -12,12 +12,12 @@ class TextElement : public Texture
 public:
 	// constructors
 	TextElement();
-	TextElement(const char* text, int size, SDL_Color* color = 0, int font_type = NORMAL, int wrapped_width = 0);
+	TextElement(const char* text, int size, CST_Color* color = 0, int font_type = NORMAL, int wrapped_width = 0);
 
 	// change TextElement
 	void setText(const std::string& text);
 	void setSize(int size);
-	void setColor(const SDL_Color& color);
+	void setColor(const CST_Color& color);
 	void setFont(int font_type);
 	void setWrappedWidth(int wrapped_width);
 
@@ -28,7 +28,7 @@ private:
 	// default values
 	std::string text = "";
 	int textSize = 16;
-	SDL_Color textColor = (SDL_Color){ 0xff, 0xff, 0xff };
+	CST_Color textColor = (CST_Color){ 0xff, 0xff, 0xff };
 	int textFont = NORMAL;
 	int textWrappedWidth = 0;
 

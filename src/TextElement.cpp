@@ -11,7 +11,7 @@ TextElement::TextElement()
 {
 }
 
-TextElement::TextElement(const char* text, int size, SDL_Color* color, int font_type, int wrapped_width)
+TextElement::TextElement(const char* text, int size, CST_Color* color, int font_type, int wrapped_width)
 {
 	std::string sText = std::string(text);
 	setText(sText);
@@ -32,7 +32,7 @@ void TextElement::setSize(int size)
 	this->textSize = size;
 }
 
-void TextElement::setColor(const SDL_Color& color)
+void TextElement::setColor(const CST_Color& color)
 {
 	this->textColor = color;
 }
@@ -57,13 +57,14 @@ void TextElement::update(void)
 	{
 		TTF_Font* font = TTF_OpenFont(fontPaths[textFont % 3], textSize);
 
-		SDL_Surface *textSurface = ((textFont == ICON) || (textWrappedWidth == 0)) ?
+		CST_Surface *textSurface = ((textFont == ICON) || (textWrappedWidth == 0)) ?
 			TTF_RenderUTF8_Blended(font, text.c_str(), textColor) :
 			TTF_RenderText_Blended_Wrapped(font, text.c_str(), textColor, textWrappedWidth);
+		if(textSurface==NULL) printf("TTF_GetError: %s\n", TTF_GetError());
 
 		loadFromSurfaceSaveToCache(key, textSurface);
 
-		SDL_FreeSurface(textSurface);
+		CST_FreeSurface(textSurface);
 		TTF_CloseFont(font);
 	}
 

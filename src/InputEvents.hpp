@@ -1,6 +1,12 @@
 #pragma once
 
+#ifndef SDL1
 #include <SDL2/SDL.h>
+typedef SDL_Keycode CST_Keycode;
+#else
+#include <SDL/SDL.h>
+typedef uint32_t CST_Keycode;
+#endif
 #include <functional>
 
 // clang-format off
@@ -77,7 +83,7 @@ public:
 	// joystick device events processing
 	void processJoystickHotplugging(SDL_Event *event);
 
-	SDL_Keycode keyCode = -1;
+	CST_Keycode keyCode = -1;
 
 	bool held_directions[4] = { false, false, false, false };
 	int rapidFireRate = 12; // fire duplicate events if curframe mod rapidFireRate is 0 (higher = slower)

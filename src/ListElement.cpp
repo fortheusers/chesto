@@ -1,5 +1,4 @@
 #include "ListElement.hpp"
-#include <SDL2/SDL2_gfxPrimitives.h>
 
 bool ListElement::process(InputEvents* event)
 {

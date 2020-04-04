@@ -3,6 +3,8 @@
 #define PLATFORM "Switch"
 #elif defined(__WIIU__)
 #define PLATFORM "Wii U"
+#elif defined(_3DS)
+#define PLATFORM "3DS"
 #else
 #define PLATFORM "Console"
 #endif
@@ -11,13 +13,10 @@
 #include "../libs/resinfs/include/romfs-wiiu.h"
 #endif
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
 #include "RootDisplay.hpp"
 #include "Button.hpp"
 
-SDL_Renderer* RootDisplay::mainRenderer = NULL;
+CST_Renderer* RootDisplay::mainRenderer = NULL;
 Element* RootDisplay::subscreen = NULL;
 Element* RootDisplay::nextsubscreen = NULL;
 RootDisplay* RootDisplay::mainDisplay = NULL;
@@ -29,82 +28,27 @@ RootDisplay::RootDisplay()
 	ramfsInit();
 #endif
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
-	{
-		return;
-	}
+	// initialize internal drawing library
+  CST_DrawInit(this);
 
-	// use linear filtering when available
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-
-	if (TTF_Init() < 0)
-	{
-		//        printf("SDL ttf init failed: %s\n", SDL_GetError());
-		return;
-	}
-
-	int imgFlags = IMG_INIT_PNG;
-	if (!(IMG_Init(imgFlags) & imgFlags))
-	{
-		//        printf("SDL image init failed: %s\n", SDL_GetError());
-		return;
-	}
-
-	//    printf("initialized SDL\n");
-
-	#if defined(__WIIU__)
-		backgroundColor = {0x54, 0x55, 0x6e};
-	#else
-		backgroundColor = {0x42, 0x45, 0x48};
-	#endif
-
-	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-	//Detach the texture
-	SDL_SetRenderTarget(this->renderer, NULL);
-
-	RootDisplay::mainRenderer = this->renderer;
-	RootDisplay::mainDisplay = this;
-
-	for (int i = 0; i < SDL_NumJoysticks(); i++)
-	{
-		if (SDL_JoystickOpen(i) == NULL)
-		{
-			//                printf("SDL_JoystickOpen: %s\n", SDL_GetError());
-			SDL_Quit();
-			return;
-		}
-	}
-
-	// set up the SDL needsRender event
-	this->needsRender.type = SDL_USEREVENT;
+#if defined(__WIIU__)
+  backgroundColor = { 0x54/255.0, 0x55/255.0, 0x6e/255.0 };
+#elif defined(_3DS)
+	backgroundColor = { 0xe4/255.0, 0x00/255.0, 0x0/255.0f };
+#else
+  backgroundColor = { 0x42/255.0, 0x45/255.0, 0x48/255.0 };
+#endif
 }
 
 void RootDisplay::initAndStartMusic()
 {
-  //Initialize SDL_mixer
-#if defined(MUSIC)
-	Mix_Init(MIX_INIT_MP3);
-	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
-	this->music = Mix_LoadMUS(RAMFS "./res/music.mp3");
-	if (music)
-	{
-		Mix_FadeInMusic(music, -1, 300);
-	}
-#endif
+  //Initialize CST_mixer
+	CST_MixerInit(this);
 }
 
 RootDisplay::~RootDisplay()
 {
-	IMG_Quit();
-	TTF_Quit();
-
-	SDL_Delay(10);
-	SDL_DestroyWindow(RootDisplay::mainDisplay->window);
-
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-	SDL_Quit();
+	CST_DrawExit();
 
 #if defined(USE_RAMFS)
 	ramfsExit();
@@ -130,7 +74,7 @@ bool RootDisplay::process(InputEvents* event)
 void RootDisplay::render(Element* parent)
 {
 	// set the background color
-	RootDisplay::background((int)(backgroundColor.r), (int)(backgroundColor.g), (int)(backgroundColor.b));
+	RootDisplay::background((uint8_t)(backgroundColor.r*255), (uint8_t)(backgroundColor.g*255), (uint8_t)(backgroundColor.b*255));
 
 	if (RootDisplay::subscreen)
 	{
@@ -146,23 +90,23 @@ void RootDisplay::render(Element* parent)
 	this->update();
 }
 
-void RootDisplay::background(int r, int g, int b)
+void RootDisplay::background(uint8_t r, uint8_t g, uint8_t b)
 {
-	SDL_SetRenderDrawColor(this->renderer, r, g, b, 0xFF);
-	SDL_RenderFillRect(this->renderer, NULL);
+	CST_SetDrawColorRGBA(this->renderer, r, g, b, 0xFF );
+  CST_FillRect(this->renderer, NULL);
 }
 
 void RootDisplay::update()
 {
 	// never exceed 60fps because there's no point
 
-	//    int now = SDL_GetTicks();
+	//    int now = CST_GetTicks();
 	//    int diff = now - this->lastFrameTime;
 	//
 	//    if (diff < 16)
 	//        return;
 
-	SDL_RenderPresent(this->renderer);
+	CST_RenderPresent(this->renderer);
 	//    this->lastFrameTime = now;
 }
 

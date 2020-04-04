@@ -4,10 +4,6 @@
 #include "colorspaces.hpp"
 #include <unordered_map>
 
-#if defined(MUSIC)
-#include <SDL2/SDL_mixer.h>
-#endif
-
 #if defined(__WIIU__)
 #define ICON_SIZE 90
 #else
@@ -25,13 +21,13 @@ public:
 
 	bool process(InputEvents* event);
 	void render(Element* parent);
-	void background(int r, int g, int b);
+	void background(uint8_t r, uint8_t g, uint8_t b);
   void initAndStartMusic();
 	void update();
 
 	rgb backgroundColor;
 
-	static SDL_Renderer* mainRenderer;
+	static CST_Renderer* mainRenderer;
 	static RootDisplay* mainDisplay;
 
 	static void switchSubscreen(Element* next);
