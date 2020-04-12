@@ -3,10 +3,6 @@ image: ubuntu:18.04
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-  DEVKITPRO: "/opt/devkitpro"
-  DEVKITPPC: "/opt/devkitpro/devkitPPC"
-  WUT_ROOT: "/opt/devkitpro/wut"
-
 .common: &common
   script:
     - apt-get update && apt-get -y install git
@@ -42,3 +38,9 @@ Switch:
   variables:
     PLATFORM: switch
     EXT: nro
+
+3ds:
+  <<: *common
+  variables:
+    PLATFORM: 3ds
+    EXT: 3dsx
