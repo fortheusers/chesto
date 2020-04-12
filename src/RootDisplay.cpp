@@ -101,14 +101,14 @@ void RootDisplay::update()
 {
 	// never exceed 60fps because there's no point
 
-	//    int now = CST_GetTicks();
-	//    int diff = now - this->lastFrameTime;
-	//
-	//    if (diff < 16)
-	//        return;
+	   int now = CST_GetTicks();
+	   int diff = now - this->lastFrameTime;
+	
+	   if (diff < 16)
+	       return;
 
 	CST_RenderPresent(this->renderer);
-	//    this->lastFrameTime = now;
+	   this->lastFrameTime = now;
 }
 
 void RootDisplay::switchSubscreen(Element* next)

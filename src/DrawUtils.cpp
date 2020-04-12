@@ -6,13 +6,11 @@
 
 bool CST_DrawInit(RootDisplay* root)
 {
-  printf(SDL_GetError());
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
   {
     printf("Failed to initialize SDL2 drawing library: %s\n", SDL_GetError());
     return false;
   }
-  printf(SDL_GetError());
 
 	CST_SetQualityHint("linear");
   if (TTF_Init() < 0)
@@ -20,8 +18,6 @@ bool CST_DrawInit(RootDisplay* root)
     printf("Failed to initialize TTF font library: %s\n", SDL_GetError());
     return false;
   }
-    printf(SDL_GetError());
-
 
   /*int imgFlags = IMG_INIT_PNG;
   if (!(IMG_Init(imgFlags) & imgFlags))

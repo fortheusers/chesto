@@ -17,6 +17,14 @@
 #define RAMFS "resin/"
 #endif
 
+#if defined(_3DS) || defined(_3DS_MOCK)
+#define SCREEN_WIDTH	400
+#define SCREEN_HEIGHT	480
+#else
+#define SCREEN_WIDTH	1280
+#define SCREEN_HEIGHT	720
+#endif
+
 class Element
 {
 public:

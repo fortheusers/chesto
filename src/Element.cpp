@@ -38,6 +38,16 @@ void Element::render(Element* parent)
 		this->elements[x]->render(parent);
 	}
 
+  // if this element will be offscreen, don't try to render it
+  if (this->xOff + this->x > SCREEN_WIDTH + 10 || this->yOff + this->y > SCREEN_HEIGHT + 10)
+    return;
+
+  // same but for up direction (weirder, cause width and height need to be correct)
+  // (which may not be true for container elements (sounds like a css float problem...))
+  if (this->xOff + this->x + this->width < -10 || this->yOff + this->y + this->height < -10)
+    return;
+
+
 	// if we're touchable, and we have some animation counter left, draw a rectangle+overlay
 	if (this->touchable && this->elasticCounter > THICK_HIGHLIGHT)
 	{
