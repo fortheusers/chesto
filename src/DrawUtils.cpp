@@ -111,6 +111,17 @@ void CST_MixerInit(RootDisplay* root)
 
 void CST_RenderPresent(CST_Renderer* renderer)
 {
+#ifdef _3DS_MOCK
+  // draw some borders around parts of the 3ds screen
+  CST_SetDrawColorRGBA(renderer, 0, 0, 0, 255);
+  CST_Rect rect = { 0, 240, 40, 240 };
+  CST_FillRect(renderer, &rect);
+  CST_Rect rect2 = { 360, 240, 40, 240 };
+  CST_FillRect(renderer, &rect2);
+  CST_Rect rect3 = { 0, 240, 400, 240 };
+  CST_DrawRect(renderer, &rect3);
+#endif
+
 #ifndef SDL1
   SDL_RenderPresent(renderer);
 #else
