@@ -6,11 +6,13 @@
 
 bool CST_DrawInit(RootDisplay* root)
 {
+  printf(SDL_GetError());
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
   {
     printf("Failed to initialize SDL2 drawing library: %s\n", SDL_GetError());
     return false;
   }
+  printf(SDL_GetError());
 
 	CST_SetQualityHint("linear");
   if (TTF_Init() < 0)
@@ -18,6 +20,8 @@ bool CST_DrawInit(RootDisplay* root)
     printf("Failed to initialize TTF font library: %s\n", SDL_GetError());
     return false;
   }
+    printf(SDL_GetError());
+
 
   /*int imgFlags = IMG_INIT_PNG;
   if (!(IMG_Init(imgFlags) & imgFlags))
@@ -33,7 +37,7 @@ bool CST_DrawInit(RootDisplay* root)
 #else
   SDLFlags |= SDL_DOUBLEBUF;
 #ifdef _3DS
-  SDLFlags |= SDL_HWSURFACE | SDL_FULLSCREEN | SDL_DUALSCR;
+  SDLFlags |= SDL_HWSURFACE | SDL_DUALSCR;
 #endif
 #endif 
 
@@ -125,9 +129,7 @@ void CST_RenderPresent(CST_Renderer* renderer)
 #ifndef SDL1
   SDL_RenderPresent(renderer);
 #else
-	while (SDL_GetTicks()-LAST_SDL1_FLIP<=16.67) continue; //TODO BAD HACK: framelimit to 60fps by blocking
 	SDL_Flip(renderer); //TODO: replace this hack with SDL_gfx framerate limiter
-	LAST_SDL1_FLIP = SDL_GetTicks();
 #endif
 }
 
