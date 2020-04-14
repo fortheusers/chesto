@@ -87,6 +87,9 @@ void Texture::render(Element* parent)
 	rect.w = width;
 	rect.h = height;
 
+  if (CST_isRectOffscreen(&rect))
+    return;
+
 	if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG)
 	{
 		// draw colored background

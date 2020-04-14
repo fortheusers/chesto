@@ -100,15 +100,17 @@ void RootDisplay::background(uint8_t r, uint8_t g, uint8_t b)
 void RootDisplay::update()
 {
 	// never exceed 60fps because there's no point
+  // commented out, as if render isn't called manually,
+  // the CST_Delay in the input processing loop should handle this
 
-	   int now = CST_GetTicks();
-	   int diff = now - this->lastFrameTime;
+	  //  int now = CST_GetTicks();
+	  //  int diff = now - this->lastFrameTime;
 	
-	   if (diff < 16)
-	       return;
+	  //  if (diff < 16)
+	  //      return;
 
 	CST_RenderPresent(this->renderer);
-	   this->lastFrameTime = now;
+	  //  this->lastFrameTime = now;
 }
 
 void RootDisplay::switchSubscreen(Element* next)

@@ -61,3 +61,4 @@ void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32
 void CST_Delay(int time);
 
 int CST_GetTicks();
+bool CST_isRectOffscreen(CST_Rect* rect);

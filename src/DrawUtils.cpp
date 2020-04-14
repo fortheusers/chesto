@@ -258,3 +258,17 @@ int CST_GetTicks()
 {
   return SDL_GetTicks();
 }
+
+bool CST_isRectOffscreen(CST_Rect* rect)
+{
+  // if this element will be offscreen, don't try to render it
+  if (rect->x > SCREEN_WIDTH + 10 || rect->y > SCREEN_HEIGHT + 10)
+    return true;
+
+  // same but for up direction (weirder, cause width and height need to be correct)
+  // (which may not be true for container elements (sounds like a css float problem...))
+  if (rect->x + rect->w < -10 || rect->y + rect->h < -10)
+    return true;
+
+  return false;
+}

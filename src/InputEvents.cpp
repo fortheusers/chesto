@@ -8,7 +8,7 @@ CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN
 #ifndef SDL1
 SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR };
 #else
-int pad_buttons[] = { 0, 1, 2, 3, 13, 15, 12, 14, 10, 6, 7, 8, 11 };
+int pad_buttons[] = { 1, 2, 3, 4, 0, 0, 0, 0, 8, 5, 6, 5, 7 };
 #define SDL_FINGERDOWN SDL_MOUSEBUTTONDOWN
 #define SDL_FINGERUP SDL_MOUSEBUTTONUP
 #define SDL_FINGERMOTION SDL_MOUSEMOTION

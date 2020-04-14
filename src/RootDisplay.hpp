@@ -6,6 +6,8 @@
 
 #if defined(__WIIU__)
 #define ICON_SIZE 90
+#elif defined(_3DS) || defined(_3DS_MOCK)
+#define ICON_SIZE 48
 #else
 #define ICON_SIZE 150
 #endif
