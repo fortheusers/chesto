@@ -54,7 +54,7 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 		if (elem->dragging)
 		{
 			// prevent scrolling until we exceed a treshold distance in the Y direction
-			if (this->initialTouchDown >= 0 && (abs(event->yPos - this->initialTouchDown) < 10))
+			if (this->initialTouchDown >= 0 && (abs(event->yPos - this->initialTouchDown) < 10 / SCALER))
 				return false;
 
 			this->initialTouchDown = -1;

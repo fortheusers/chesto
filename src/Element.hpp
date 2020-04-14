@@ -20,9 +20,13 @@
 #if defined(_3DS) || defined(_3DS_MOCK)
 #define SCREEN_WIDTH	400
 #define SCREEN_HEIGHT	480
+#define PANE_WIDTH 300
+#define SCALER 2
 #else
 #define SCREEN_WIDTH	1280
 #define SCREEN_HEIGHT	720
+#define PANE_WIDTH 720
+#define SCALER 1
 #endif
 
 class Element
