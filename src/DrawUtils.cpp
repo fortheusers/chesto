@@ -35,7 +35,7 @@ bool CST_DrawInit(RootDisplay* root)
 #ifdef _3DS
   SDLFlags |= SDL_HWSURFACE | SDL_DUALSCR;
 #endif
-#endif 
+#endif
 
 #ifndef SDL1
   root->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
@@ -139,11 +139,11 @@ void CST_RenderCopy(CST_Renderer* dest, CST_Texture* src, CST_Rect* src_rect, CS
 #ifndef SDL1
   SDL_RenderCopy(dest, src, src_rect, dest_rect);
 #else
-	double xFactor=(dest_rect ? dest_rect->w : dest->w)/(double)(src_rect ? src_rect->w : src->w);
-	double yFactor=(dest_rect ? dest_rect->h : dest->h)/(double)(src_rect ? src_rect->h : src->h);
-	if (xFactor != 1.0 || yFactor != 1.0) //Avoid slow software zoom if at all possible
+	if (((dest_rect ? dest_rect->w : dest->w) != (src_rect ? src_rect->w : src->w)) || ((dest_rect ? dest_rect->h : dest->h) != (src_rect ? src_rect->h : src->h))) //Avoid slow software zoom if at all possible
 	{
-		SDL_Surface* zoomed = zoomSurface(src, xFactor, yFactor, SMOOTHING_ON);
+    double xFactor=(dest_rect ? dest_rect->w : dest->w)/(double)(src_rect ? src_rect->w : src->w);
+  	double yFactor=(dest_rect ? dest_rect->h : dest->h)/(double)(src_rect ? src_rect->h : src->h);
+  	SDL_Surface* zoomed = zoomSurface(src, xFactor, yFactor, SMOOTHING_ON);
 		SDL_BlitSurface(zoomed, src_rect, dest, dest_rect);
 		SDL_FreeSurface(zoomed);
 	}
