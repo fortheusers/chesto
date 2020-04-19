@@ -1,5 +1,3 @@
-#if defined(NETWORK)
-
 #include "NetImageElement.hpp"
 
 NetImageElement::NetImageElement(const char *url, std::function<Texture *(void)> getImageFallback, bool immediateLoad)
@@ -16,7 +14,7 @@ NetImageElement::NetImageElement(const char *url, std::function<Texture *(void)>
 		imgDownload->url = std::string(url);
 		imgDownload->cb = std::bind(&NetImageElement::imgDownloadComplete, this, std::placeholders::_1);
 
-		// load immediatly
+		// load immediately
 		if (immediateLoad)
 			fetch();
 	}
@@ -82,5 +80,3 @@ void NetImageElement::render(Element* parent)
 		imgFallback->render(parent);
 	}
 }
-
-#endif

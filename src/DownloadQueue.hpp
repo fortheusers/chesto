@@ -1,9 +1,13 @@
 #pragma once
 
-#if defined(NETWORK)
+#if !defined(NETWORK) && !defined(NETWORK_MOCK)
+#define NETWORK_MOCK
+#endif
 
+#ifndef NETWORK_MOCK
 #include <curl/curl.h>
 #include <curl/easy.h>
+#endif
 
 #include <functional>
 #include <string>
@@ -24,7 +28,9 @@ struct DownloadOperation
 	std::string url;
 	std::string buffer;
 	DownloadStatus status;
+#ifndef NETWORK_MOCK
 	CURL *eh;
+#endif
 
 	std::function<void(DownloadOperation*)> cb;
 	void *cbdata;
@@ -60,10 +66,12 @@ private:
 	// start new transfers from the queue
 	void startTransfersFromQueue();
 
+#ifndef NETWORK_MOCK
 	// curl multi handle
 	CURLM *cm;
 
   void setPlatformCurlFlags(CURL* c);
+#endif
 
 	// queue of downloads
 	std::list<DownloadOperation*> queue;
@@ -71,5 +79,3 @@ private:
 	// number of active transfers
 	int transfers = 0;
 };
-
-#endif

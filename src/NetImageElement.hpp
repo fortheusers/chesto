@@ -1,7 +1,5 @@
 #pragma once
 
-#if defined(NETWORK)
-
 #include <string>
 #include <functional>
 #include "Texture.hpp"
@@ -33,5 +31,3 @@ private:
 	Texture *imgFallback = nullptr;
 	bool downloadStarted = false;
 };
-
-#endif

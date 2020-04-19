@@ -1,5 +1,3 @@
-#if defined(NETWORK)
-
 #include "DownloadQueue.hpp"
 
 #define MAX_PARALLEL_DOWNLOADS	4
@@ -25,13 +23,17 @@ static size_t WriteCallback(char *data, size_t n, size_t l, void *userp)
 
 DownloadQueue::DownloadQueue()
 {
+#ifndef NETWORK_MOCK
 	cm = curl_multi_init();
 	curl_multi_setopt(cm, CURLMOPT_MAXCONNECTS, MAX_PARALLEL_DOWNLOADS);
+#endif
 }
 
 DownloadQueue::~DownloadQueue()
 {
+#ifndef NETWORK_MOCK
 	curl_multi_cleanup(cm);
+#endif
 }
 
 // add a new download operation
@@ -50,6 +52,7 @@ void DownloadQueue::downloadCancel(DownloadOperation *download)
 		queue.remove(download);
 }
 
+#ifndef NETWORK_MOCK
 void DownloadQueue::setPlatformCurlFlags(CURL* c)
 {
 #if defined(__WIIU__)
@@ -64,10 +67,12 @@ void DownloadQueue::setPlatformCurlFlags(CURL* c)
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
 #endif
 }
+#endif
 
 // start a transfer operation
 void DownloadQueue::transferStart(DownloadOperation *download)
 {
+#ifndef NETWORK_MOCK
 	download->eh = curl_easy_init();
 
   setPlatformCurlFlags(download->eh);
@@ -78,22 +83,24 @@ void DownloadQueue::transferStart(DownloadOperation *download)
 	curl_easy_setopt(download->eh, CURLOPT_PRIVATE, download);
 
 	curl_multi_add_handle(cm, download->eh);
-
+#endif
 	transfers++;
 }
 
 // finish a transfer operation
 void DownloadQueue::transferFinish(DownloadOperation *download)
 {
+#ifndef NETWORK_MOCK
 	curl_multi_remove_handle(cm, download->eh);
 	curl_easy_cleanup(download->eh);
-
+#endif
 	transfers--;
 }
 
 // start new transfers from the queue
 void DownloadQueue::startTransfersFromQueue()
 {
+#ifndef NETWORK_MOCK
 	while ((transfers < MAX_PARALLEL_DOWNLOADS) && (queue.size() > 0))
 	{
 		// remove the first element from the download queue
@@ -104,14 +111,17 @@ void DownloadQueue::startTransfersFromQueue()
 		download->status = DownloadStatus::DOWNLOADING;
 		transferStart(download);
 	}
+#endif
 }
 
 // process finished and queued downloads
 int DownloadQueue::process()
 {
+#ifndef NETWORK_MOCK
 	DownloadOperation *download;
 	int still_alive = 1;
 	int msgs_left = -1;
+
 	CURLMsg *msg;
 
 	curl_multi_perform(cm, &still_alive);
@@ -141,6 +151,7 @@ int DownloadQueue::process()
 	startTransfersFromQueue();
 
 	return ((still_alive) || (msgs_left > 0) || (queue.size() > 0));
-}
-
+#else
+  return false;
 #endif
+}
