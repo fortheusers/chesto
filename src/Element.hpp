@@ -45,9 +45,10 @@ public:
 	bool onTouchDrag(InputEvents* event);
 	bool onTouchUp(InputEvents* event);
 
-
 	// hide the element
-	void hide();
+	void hide() { this->hidden = true; }
+	// unhide the element
+	void unhide() { this->hidden = false; }
 
 	// the action to call (from binded callback) on touch or button selection
 	// https://stackoverflow.com/questions/14189440/c-class-member-callback-simple-examples

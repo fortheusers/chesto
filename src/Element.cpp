@@ -11,6 +11,9 @@ bool Element::process(InputEvents* event)
 	// whether or not we need to update the screen
 	bool ret = false;
 
+	// if we're hidden, don't process input
+	if (hidden) return ret;
+
 	// do any touch down, drag, or up events
 	if (touchable)
 	{
@@ -32,6 +35,9 @@ bool Element::process(InputEvents* event)
 
 void Element::render(Element* parent)
 {
+	//if we're hidden, don't render
+	if (hidden) return;
+
 	for (int x = 0; x < this->elements.size(); x++)
 	{
 		// go through every subelement and run render
@@ -145,11 +151,6 @@ bool Element::onTouchUp(InputEvents* event)
 	this->elasticCounter = 0;
 
 	return ret;
-}
-
-void Element::hide()
-{
-	this->hidden = true;
 }
 
 void Element::append(Element *element)

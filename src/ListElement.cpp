@@ -4,6 +4,9 @@ bool ListElement::process(InputEvents* event)
 {
 	bool ret = false;
 
+	// if we're hidden, don't process input
+	if (hidden) return ret;
+
 	// perform inertia scrolling for this element
 	ret |= this->handleInertiaScroll(event);
 

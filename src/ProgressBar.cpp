@@ -10,6 +10,9 @@ ProgressBar::ProgressBar()
 
 void ProgressBar::render(Element* parent)
 {
+	// if we're hidden, don't render
+	if (hidden) return;
+
 	if (this->percent < 0)
 		return;
 
