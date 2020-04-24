@@ -26,39 +26,37 @@ void ProgressBar::render(Element* parent)
 		CST_FillRect(this->renderer, &dim);
 	}
 
-	CST_Rect location;
-	int x = this->x + parent->x;
-	int y = this->y + parent->y;
+	this->recalcPosition(parent);
 
 	int blue = this->color;
 	//	int gray = 0x989898ff;
 
 	// draw full grayed out bar first
 	CST_Rect gray_rect;
-	gray_rect.x = x;
-	gray_rect.y = y - 4;
-	gray_rect.w = width;
+	gray_rect.x = this->xAbs;
+	gray_rect.y = this->yAbs - 4;
+	gray_rect.w = this->width;
 	gray_rect.h = 9;
 
 	CST_SetDrawColorRGBA(this->renderer, 0x98, 0x98, 0x98, 0xff); //gray2
 	CST_FillRect(this->renderer, &gray_rect);
 
 	// draw ending "circle"
-	CST_filledCircleRGBA(this->renderer, x + this->width, y, 4, 0x98, 0x98, 0x98, 0xff);
+	CST_filledCircleRGBA(this->renderer, this->xAbs + this->width, this->yAbs, 4, 0x98, 0x98, 0x98, 0xff);
 
 	// draw left "circle" (rounded part of bar)
-	CST_filledCircleRGBA(this->renderer, x, y, 4, 0x56, 0xc1, 0xdf, 0xff);
+	CST_filledCircleRGBA(this->renderer, this->xAbs, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
 
 	// draw blue progress bar so far
 	CST_Rect blue_rect;
-	blue_rect.x = x;
-	blue_rect.y = y - 4;
-	blue_rect.w = width * this->percent;
+	blue_rect.x = this->xAbs;
+	blue_rect.y = this->yAbs - 4;
+	blue_rect.w = this->width * this->percent;
 	blue_rect.h = 9;
 
 	CST_SetDrawColorRGBA(this->renderer, 0x56, 0xc1, 0xdf, 0xff); // blue2
 	CST_FillRect(this->renderer, &blue_rect);
 
 	// draw right "circle" (rounded part of bar, and ending)
-	filledCircleRGBA(this->renderer, x + width * this->percent, y, 4, 0x56, 0xc1, 0xdf, 0xff);
+	filledCircleRGBA(this->renderer, this->xAbs + width * this->percent, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
 }

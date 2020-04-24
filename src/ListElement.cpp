@@ -41,7 +41,7 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 	if (event->isTouchDown())
 	{
 		// make sure that the mouse down's X coordinate is over the app list (not sidebar)
-		if (event->xPos < elem->x)
+		if (event->xPos < elem->xAbs)
 			return false;
 
 		// saw mouse down so set it in our element object

@@ -49,13 +49,6 @@ const char* Button::getUnicode(int button)
 	return "";
 }
 
-void Button::position(int x, int y)
-{
-	ox = x;
-	oy = y;
-	super::position(x, y);
-}
-
 bool Button::process(InputEvents* event)
 {
 	if (event->isKeyDown() && this->physical != 0 && event->held(this->physical))
@@ -70,15 +63,11 @@ bool Button::process(InputEvents* event)
 
 void Button::render(Element* parent)
 {
-	if (this->parent == NULL)
-		this->parent = parent;
-
 	// update our x and y according to our parent
-	this->x = ox + parent->x;
-	this->y = oy + parent->y;
+	this->recalcPosition(parent);
 
 	// draw bg for button
-	CST_Rect dimens = { x, y, width, height };
+	CST_Rect dimens = { xAbs, yAbs, width, height };
 
 	if (dark)
 	{

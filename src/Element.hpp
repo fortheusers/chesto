@@ -64,6 +64,9 @@ public:
 	// position the element (x and y are percents of the screen)
 	void position(int x, int y);
 
+	// recalculate xAbs and yAbs based on the given parent
+	void recalcPosition(Element* parent);
+
 	// update and propogate a new window and renderer to all children
 	void setCST(CST_Renderer *renderer, CST_Window *window);
 
@@ -89,9 +92,6 @@ public:
 	// the last Y, X coordinate of the mouse (from a drag probably)
 	int lastMouseY = 0, lastMouseX = 0;
 
-	// the parent element (can sometimes be null if it isn't set)
-	Element* parent = NULL;
-
 	// whether this element should skip rendering or not
 	bool hidden = false;
 
@@ -104,8 +104,11 @@ public:
 
 	typedef Element super;
 
-	// actual position
+	// position relative to parent (if given) or screen (NULL parent)
 	int x = 0, y = 0;
+
+	// actual onscreen position (calculated at render time)
+	int xAbs = 0, yAbs = 0;
 
 	//rotation angle in degrees
 	double angle=0;

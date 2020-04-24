@@ -80,12 +80,15 @@ void Texture::render(Element* parent)
 	if (hidden)
 		return;
 
+	// update xAbs and yAbs
+	this->recalcPosition(parent);
+
 	// rect of element's size
 	CST_Rect rect;
-	rect.x = x + parent->x;
-	rect.y = y + parent->y;
-	rect.w = width;
-	rect.h = height;
+	rect.x = this->xAbs;
+	rect.y = this->yAbs;
+	rect.w = this->width;
+	rect.h = this->height;
 
 	if (CST_isRectOffscreen(&rect))
 		return;
