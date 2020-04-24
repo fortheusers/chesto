@@ -2,6 +2,7 @@
 
 #include "InputEvents.hpp"
 #include "DrawUtils.hpp"
+#include "colorspaces.hpp"
 
 #include <functional>
 #include <vector>
@@ -50,6 +51,9 @@ public:
 	// unhide the element
 	void unhide() { this->hidden = false; }
 
+	// render the element's background
+	void renderBackground();
+
 	// the action to call (from binded callback) on touch or button selection
 	// https://stackoverflow.com/questions/14189440/c-class-member-callback-simple-examples
 	std::function<void()> action;
@@ -91,6 +95,11 @@ public:
 
 	// the last Y, X coordinate of the mouse (from a drag probably)
 	int lastMouseY = 0, lastMouseX = 0;
+
+	// whether this element has a background
+	bool hasBackground = false;
+	// the color of the background
+	rgb backgroundColor = {0, 0, 0};
 
 	// whether this element should skip rendering or not
 	bool hidden = false;

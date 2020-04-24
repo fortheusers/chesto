@@ -31,13 +31,19 @@ RootDisplay::RootDisplay()
 	// initialize internal drawing library
 	CST_DrawInit(this);
 
+	this->x = 0;
+	this->y = 0;
+	this->width = SCREEN_WIDTH;
+	this->height = SCREEN_HEIGHT;
+
+	this->hasBackground = true;
 #if defined(__WIIU__)
-	backgroundColor = { 0x54/255.0, 0x55/255.0, 0x6e/255.0 };
+	this->backgroundColor = (rgb){ 0x54/255.0, 0x55/255.0, 0x6e/255.0 };
 #elif defined(_3DS) || defined(_3DS_MOCK)
-	// backgroundColor = { 0xe4/255.0, 0x00/255.0, 0x0/255.0f };
-		backgroundColor = { 1, 1, 1 };
+	// this->backgroundColor = (rgb){ 0xe4/255.0, 0x00/255.0, 0x0/255.0f };
+	this->backgroundColor = (rgb){ 1, 1, 1 };
 #else
-	backgroundColor = { 0x42/255.0, 0x45/255.0, 0x48/255.0 };
+	this->backgroundColor = (rgb){ 0x42/255.0, 0x45/255.0, 0x48/255.0 };
 #endif
 }
 
@@ -74,9 +80,6 @@ bool RootDisplay::process(InputEvents* event)
 
 void RootDisplay::render(Element* parent)
 {
-	// set the background color
-	RootDisplay::background((uint8_t)(backgroundColor.r*255), (uint8_t)(backgroundColor.g*255), (uint8_t)(backgroundColor.b*255));
-
 	if (RootDisplay::subscreen)
 	{
 		RootDisplay::subscreen->render(this);
@@ -85,16 +88,10 @@ void RootDisplay::render(Element* parent)
 	}
 
 	// render the rest of the subelements
-	super::render(this);
+	super::render(parent);
 
 	// commit everything to the screen
 	this->update();
-}
-
-void RootDisplay::background(uint8_t r, uint8_t g, uint8_t b)
-{
-	CST_SetDrawColorRGBA(this->renderer, r, g, b, 0xFF );
-	CST_FillRect(this->renderer, NULL);
 }
 
 void RootDisplay::update()
@@ -105,7 +102,7 @@ void RootDisplay::update()
 
 	//  int now = CST_GetTicks();
 	//  int diff = now - this->lastFrameTime;
-	
+
 	//  if (diff < 16)
 	//      return;
 

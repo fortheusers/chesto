@@ -20,11 +20,8 @@ public:
 
 	bool process(InputEvents* event);
 	void render(Element* parent);
-	void background(uint8_t r, uint8_t g, uint8_t b);
 	void initAndStartMusic();
 	void update();
-
-	rgb backgroundColor;
 
 	static CST_Renderer* mainRenderer;
 	static RootDisplay* mainDisplay;

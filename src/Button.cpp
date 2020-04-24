@@ -6,8 +6,8 @@ CST_Color Button::colors[2] = {
 };
 
 Button::Button(const char* message, int button, bool dark, int size, int width)
-	: dark(dark)
-	, physical(button)
+	: physical(button)
+	, dark(dark)
 	, icon(getUnicode(button), size * 1.25, &colors[dark], ICON)
 	, text(message, size, &colors[dark])
 {
@@ -25,6 +25,16 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
 	this->height = text.height + PADDING * 2;
 
 	this->touchable = true;
+
+	if (dark)
+	{
+		backgroundColor = (rgb){ 0x67/255.0, 0x6a/255.0, 0x6d/255.0 };
+#if defined(__WIIU__)
+		backgroundColor = (rgb){ 0x3b/255.0, 0x3c/255.0, 0x4e/255.0 };
+#endif
+	}
+	else
+		backgroundColor = (rgb){ 0xee/255.0, 0xee/255.0, 0xee/255.0 };
 }
 
 const char* Button::getUnicode(int button)
@@ -59,27 +69,4 @@ bool Button::process(InputEvents* event)
 	}
 
 	return super::process(event);
-}
-
-void Button::render(Element* parent)
-{
-	// update our x and y according to our parent
-	this->recalcPosition(parent);
-
-	// draw bg for button
-	CST_Rect dimens = { xAbs, yAbs, width, height };
-
-	if (dark)
-	{
-		CST_SetDrawColor(this->renderer, (CST_Color){ 0x67, 0x6a, 0x6d, 0xFF } );
-#if defined(__WIIU__)
-		CST_SetDrawColor(this->renderer, (CST_Color){ 0x3b, 0x3c, 0x4e, 0xFF } );
-#endif
-	}
-	else
-		CST_SetDrawColor(this->renderer, (CST_Color){ 0xee, 0xee, 0xee, 0xFF } );
-
-	CST_FillRect(this->renderer, &dimens);
-
-	super::render(this);
 }

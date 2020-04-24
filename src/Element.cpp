@@ -38,8 +38,13 @@ void Element::render(Element* parent)
 	//if we're hidden, don't render
 	if (hidden) return;
 
-	// this needs to happen before subelement rendering
+	// this needs to happen before any rendering
 	this->recalcPosition(parent);
+
+	// render the element background
+	if (this->hasBackground) {
+		this->renderBackground();
+	}
 
 	// go through every subelement and run render
 	for (Element* subelement : elements)
@@ -82,6 +87,23 @@ void Element::recalcPosition(Element* parent) {
 		this->xAbs = this->x;
 		this->yAbs = this->y;
 	}
+}
+
+void Element::renderBackground() {
+	CST_Rect bounds = {
+		.x = this->xAbs,
+		.y = this->yAbs,
+		.w = this->width,
+		.h = this->height,
+	};
+	CST_SetDrawColorRGBA(this->renderer,
+		static_cast<Uint8>(backgroundColor.r * 0xFF),
+		static_cast<Uint8>(backgroundColor.g * 0xFF),
+		static_cast<Uint8>(backgroundColor.b * 0xFF),
+		0xFF
+	);
+	CST_SetDrawBlend(this->renderer, false);
+	CST_FillRect(this->renderer, &bounds);
 }
 
 void Element::position(int x, int y)

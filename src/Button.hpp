@@ -9,7 +9,6 @@ public:
 	Button(const char* text, int button, bool dark = false, int size = 20, int width = 0);
 
 	bool process(InputEvents* event);
-	void render(Element* parent);
 
 private:
 	static CST_Color colors[2];
