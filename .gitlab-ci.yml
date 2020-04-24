@@ -3,6 +3,17 @@ image: ubuntu:18.04
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
+pages:
+  stage: deploy
+  script:
+    - apt-get update && apt-get -y install doxygen
+    - doxygen
+    - mkdir -p public
+    - cp -r docs/html/* public
+  artifacts:
+    paths:
+      - public
+
 .common: &common
   script:
     - apt-get update && apt-get -y install git
@@ -44,3 +55,9 @@ Switch:
   variables:
     PLATFORM: 3ds
     EXT: 3dsx
+
+Wii:
+  <<: *common
+  variables:
+    PLATFORM: wii
+    EXT: dol
