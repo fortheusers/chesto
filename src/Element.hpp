@@ -64,6 +64,9 @@ public:
 	// position the element (x and y are percents of the screen)
 	void position(int x, int y);
 
+	// update and propogate a new window and renderer to all children
+	void setCST(CST_Renderer *renderer, CST_Window *window);
+
 	// the scale of the element (and its subelements!)
 	float scale = 1.0f;
 

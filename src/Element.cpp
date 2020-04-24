@@ -153,11 +153,21 @@ bool Element::onTouchUp(InputEvents* event)
 	return ret;
 }
 
+void Element::setCST(CST_Renderer *renderer, CST_Window *window) {
+	this->renderer = renderer;
+	this->window = window;
+	for (Element* child : this->elements) {
+		child->setCST(renderer, window);
+	}
+}
+
 void Element::append(Element *element)
 {
 	auto position = std::find(elements.begin(), elements.end(), element);
-	if (position == elements.end())
+	if (position == elements.end()) {
 		elements.push_back(element);
+		element->setCST(this->renderer, this->window);
+	}
 }
 
 void Element::remove(Element *element)
