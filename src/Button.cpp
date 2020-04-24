@@ -73,8 +73,6 @@ void Button::render(Element* parent)
 	if (this->parent == NULL)
 		this->parent = parent;
 
-	this->renderer = parent->renderer;
-
 	// update our x and y according to our parent
 	this->x = ox + parent->x;
 	this->y = oy + parent->y;
@@ -84,15 +82,15 @@ void Button::render(Element* parent)
 
 	if (dark)
 	{
-		CST_SetDrawColor(parent->renderer, (CST_Color){ 0x67, 0x6a, 0x6d, 0xFF } );
+		CST_SetDrawColor(this->renderer, (CST_Color){ 0x67, 0x6a, 0x6d, 0xFF } );
 #if defined(__WIIU__)
-		CST_SetDrawColor(parent->renderer, (CST_Color){ 0x3b, 0x3c, 0x4e, 0xFF } );
+		CST_SetDrawColor(this->renderer, (CST_Color){ 0x3b, 0x3c, 0x4e, 0xFF } );
 #endif
 	}
 	else
-		CST_SetDrawColor(parent->renderer, (CST_Color){ 0xee, 0xee, 0xee, 0xFF } );
+		CST_SetDrawColor(this->renderer, (CST_Color){ 0xee, 0xee, 0xee, 0xFF } );
 
-	CST_FillRect(parent->renderer, &dimens);
+	CST_FillRect(this->renderer, &dimens);
 
 	super::render(this);
 }

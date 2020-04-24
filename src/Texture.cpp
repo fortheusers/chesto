@@ -20,7 +20,7 @@ bool Texture::loadFromSurface(CST_Surface *surface)
 		return false;
 
 	// try to create a texture from the surface
-	CST_Texture *texture = CST_CreateTextureFromSurface(RootDisplay::mainRenderer, surface);
+	CST_Texture *texture = CST_CreateTextureFromSurface(this->renderer, surface);
 	if (!texture)
 		return false;
 
@@ -93,8 +93,8 @@ void Texture::render(Element* parent)
 	if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG)
 	{
 		// draw colored background
-		CST_SetDrawColor(RootDisplay::mainRenderer, texFirstPixel);
-		CST_FillRect(RootDisplay::mainRenderer, &rect);
+		CST_SetDrawColor(this->renderer, texFirstPixel);
+		CST_FillRect(this->renderer, &rect);
 
 		// recompute drawing rect
 		if ((width * texH) > (height * texW))
@@ -123,12 +123,12 @@ void Texture::render(Element* parent)
 		// as the colored background wouldn't get rotated
 
 		CST_SetQualityHint("best");
-		CST_RenderCopyRotate(RootDisplay::mainRenderer, mTexture, NULL, &rect, this->angle);
+		CST_RenderCopyRotate(this->renderer, mTexture, NULL, &rect, this->angle);
 	}
 	else
 	{
 		// render the texture normally
-		CST_RenderCopy(RootDisplay::mainRenderer, mTexture, NULL, &rect);
+		CST_RenderCopy(this->renderer, mTexture, NULL, &rect);
 	}
 }
 
