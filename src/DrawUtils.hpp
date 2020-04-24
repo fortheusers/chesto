@@ -5,9 +5,9 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
-  #if defined(MUSIC)
-  #include <SDL2/SDL_mixer.h>
-  #endif
+#if defined(MUSIC)
+	#include <SDL2/SDL_mixer.h>
+#endif
 
 typedef SDL_Window CST_Window;
 typedef SDL_Renderer CST_Renderer;

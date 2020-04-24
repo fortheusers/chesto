@@ -70,7 +70,7 @@ private:
 	// curl multi handle
 	CURLM *cm;
 
-  void setPlatformCurlFlags(CURL* c);
+	void setPlatformCurlFlags(CURL* c);
 #endif
 
 	// queue of downloads

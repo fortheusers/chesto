@@ -14,8 +14,8 @@ bool ListElement::process(InputEvents* event)
 
 bool ListElement::processUpDown(InputEvents* event)
 {
-  bool ret = false;
-  int SPEED = 60;
+	bool ret = false;
+	int SPEED = 60;
 
 	// handle up and down for the scroll view
 	if (event->isKeyDown())
@@ -27,7 +27,7 @@ bool ListElement::processUpDown(InputEvents* event)
 		ret |= event->held(UP_BUTTON) || event->held(DOWN_BUTTON);
 	}
 
-  return ret;
+	return ret;
 }
 
 bool ListElement::handleInertiaScroll(InputEvents* event)

@@ -54,11 +54,11 @@ bool InputEvents::processSDLEvents()
 #endif
 	else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
 	{
-  #ifndef SDL1
+	#ifndef SDL1
 		this->keyCode = event.jbutton.button;
-  #else
-    this->keyCode = event.button.button;
-  #endif
+	#else
+		this->keyCode = event.button.button;
+	#endif
 	}
 	else if (this->type == SDL_MOUSEMOTION || this->type == SDL_MOUSEBUTTONUP || this->type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -246,7 +246,7 @@ bool InputEvents::isKeyUp()
 
 void InputEvents::processJoystickHotplugging(SDL_Event *event)
 {
-  #ifndef SDL1
+	#ifndef SDL1
 	SDL_Joystick *j;
 	switch(event->type)
 	{
@@ -266,5 +266,5 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 	default:
 		break;
 	}
-  #endif
+	#endif
 }

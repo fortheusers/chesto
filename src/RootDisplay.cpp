@@ -29,21 +29,21 @@ RootDisplay::RootDisplay()
 #endif
 
 	// initialize internal drawing library
-  CST_DrawInit(this);
+	CST_DrawInit(this);
 
 #if defined(__WIIU__)
-  backgroundColor = { 0x54/255.0, 0x55/255.0, 0x6e/255.0 };
+	backgroundColor = { 0x54/255.0, 0x55/255.0, 0x6e/255.0 };
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	// backgroundColor = { 0xe4/255.0, 0x00/255.0, 0x0/255.0f };
-  	backgroundColor = { 1, 1, 1 };
+		backgroundColor = { 1, 1, 1 };
 #else
-  backgroundColor = { 0x42/255.0, 0x45/255.0, 0x48/255.0 };
+	backgroundColor = { 0x42/255.0, 0x45/255.0, 0x48/255.0 };
 #endif
 }
 
 void RootDisplay::initAndStartMusic()
 {
-  //Initialize CST_mixer
+	//Initialize CST_mixer
 	CST_MixerInit(this);
 }
 
@@ -94,23 +94,23 @@ void RootDisplay::render(Element* parent)
 void RootDisplay::background(uint8_t r, uint8_t g, uint8_t b)
 {
 	CST_SetDrawColorRGBA(this->renderer, r, g, b, 0xFF );
-  CST_FillRect(this->renderer, NULL);
+	CST_FillRect(this->renderer, NULL);
 }
 
 void RootDisplay::update()
 {
 	// never exceed 60fps because there's no point
-  // commented out, as if render isn't called manually,
-  // the CST_Delay in the input processing loop should handle this
+	// commented out, as if render isn't called manually,
+	// the CST_Delay in the input processing loop should handle this
 
-	  //  int now = CST_GetTicks();
-	  //  int diff = now - this->lastFrameTime;
+	//  int now = CST_GetTicks();
+	//  int diff = now - this->lastFrameTime;
 	
-	  //  if (diff < 16)
-	  //      return;
+	//  if (diff < 16)
+	//      return;
 
 	CST_RenderPresent(this->renderer);
-	  //  this->lastFrameTime = now;
+	//  this->lastFrameTime = now;
 }
 
 void RootDisplay::switchSubscreen(Element* next)
