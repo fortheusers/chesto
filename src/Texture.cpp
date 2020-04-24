@@ -86,6 +86,11 @@ void Texture::render(Element* parent)
 	// update xAbs and yAbs
 	this->recalcPosition(parent);
 
+	//render background, if given
+	if (this->hasBackground) {
+		this->renderBackground();
+	}
+
 	// rect of element's size
 	CST_Rect rect;
 	rect.x = this->xAbs;
