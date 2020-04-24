@@ -4,6 +4,11 @@
 #include "DrawUtils.hpp"
 #include "RootDisplay.hpp"
 
+#ifdef SDL1
+static uint32_t CUR_DRAW_COLOR = 0xFFFFFFFF;
+static uint32_t LAST_SDL1_FLIP = 0;
+#endif
+
 bool CST_DrawInit(RootDisplay* root)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)

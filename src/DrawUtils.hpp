@@ -33,11 +33,6 @@ typedef SDL_Rect CST_Rect;
 
 class RootDisplay;
 
-static uint32_t CUR_DRAW_COLOR = 0xFFFFFFFF;
-#ifdef SDL1
-static uint32_t LAST_SDL1_FLIP = 0;
-#endif
-
 bool CST_DrawInit(RootDisplay* root);
 void CST_MixerInit(RootDisplay* root);
 void CST_DrawExit();
