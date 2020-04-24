@@ -38,16 +38,24 @@ void Element::render(Element* parent)
 	//if we're hidden, don't render
 	if (hidden) return;
 
-	for (int x = 0; x < this->elements.size(); x++)
+	// calculate the bounds of this element
+	/*CST_Rect elemBounds;
+	if (parent) {
+		elemBounds = (CST_Rect) {
+			.x = parent->
+		};
+	}*/
+
+	// go through every subelement and run render
+	for (Element* subelement : elements)
 	{
-		// go through every subelement and run render
-		this->elements[x]->render(parent);
+		subelement->render(this);
 	}
 
 	// if we're touchable, and we have some animation counter left, draw a rectangle+overlay
 	if (this->touchable && this->elasticCounter > THICK_HIGHLIGHT)
 	{
-		CST_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10 };
+		CST_Rect d = { this->x - 5, this->y - 5, this->width + 10, this->height + 10 };
 		CST_SetDrawBlend(this->renderer, true);
 		CST_SetDrawColorRGBA(this->renderer, 0xad, 0xd8, 0xe6, 0x90);
 		CST_FillRect(this->renderer, &d);
@@ -55,7 +63,7 @@ void Element::render(Element* parent)
 
 	if (this->touchable && this->elasticCounter > NO_HIGHLIGHT)
 	{
-		CST_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10 };
+		CST_Rect d = { this->x - 5, this->y - 5, this->width + 10, this->height + 10 };
 		rectangleRGBA(this->renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
 
 		if (this->elasticCounter == THICK_HIGHLIGHT)
@@ -80,7 +88,7 @@ bool Element::onTouchDown(InputEvents* event)
 	if (!event->isTouchDown())
 		return false;
 
-	if (!event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
+	if (!event->touchIn(this->x, this->y, this->width, this->height))
 		return false;
 
 	// mouse pushed down, set variable
@@ -130,7 +138,7 @@ bool Element::onTouchUp(InputEvents* event)
 		// check that this click is in the right coordinates for this square
 		// and that a subscreen isn't already being shown
 		// TODO: allow buttons to activae this too?
-		if (event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
+		if (event->touchIn(this->x, this->y, this->width, this->height))
 		{
 			// elasticCounter must be nonzero to allow a click through (highlight must be shown)
 			if (this->elasticCounter > 0 && action != NULL)

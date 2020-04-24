@@ -109,7 +109,4 @@ public:
 
 	//rotation angle in degrees
 	double angle=0;
-
-	// x and y offsets (can be used for drawing relative to other elements)
-	int xOff = 0, yOff = 0;
 };
