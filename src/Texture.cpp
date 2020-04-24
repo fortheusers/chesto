@@ -20,7 +20,10 @@ bool Texture::loadFromSurface(CST_Surface *surface)
 		return false;
 
 	// try to create a texture from the surface
-	CST_Texture *texture = CST_CreateTextureFromSurface(this->renderer, surface);
+	// HACK: this->renderer isn't guaranteed to be set until render time
+	// RootDisplay::mainRenderer works for now. Element::setCST needs replacing
+	// for this to be changed.
+	CST_Texture *texture = CST_CreateTextureFromSurface(RootDisplay::mainRenderer, surface);
 	if (!texture)
 		return false;
 
