@@ -1,0 +1,19 @@
+{
+    "id": "chesto",
+    "type": "package",
+    "value": {
+        "author": "4TU Team",
+        "version": "0.9",
+        "description": "Declarative and element-based UI library",
+        "language": "c++",
+        "includes": [ "src/resinfs/include" ],
+        "sources": [ "src" ]
+    },
+    "lang.cpp": {
+        "lib": [ "z", "curl", "sdl2", "sdl2_ttf", "sdl2_image", "sdl2_gfx" ],
+        "cpp-standard": "gnu++14",
+        "cxxflags": [ "-DPC" ]
+    }
+}
+
+
