@@ -10,7 +10,7 @@
         "sources": [ "src" ]
     },
     "lang.cpp": {
-        "lib": [ "z", "curl", "sdl2", "sdl2_ttf", "sdl2_image", "sdl2_gfx" ],
+        "lib": [ "z", "curl", "SDL2", "SDL2_ttf", "SDL2_image", "SDL2_gfx" ],
         "cpp-standard": "gnu++14",
         "cxxflags": [ "-DPC" ]
     }
