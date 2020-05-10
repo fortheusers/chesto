@@ -11,6 +11,7 @@
     },
     "lang.cpp": {
         "lib": [ "z", "curl", "SDL2", "SDL2_ttf", "SDL2_image", "SDL2_gfx" ],
+        "static": true,
         "cpp-standard": "gnu++14",
         "cxxflags": [ "-DPC" ]
     }
