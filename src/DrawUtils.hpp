@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SDL1
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -22,6 +20,8 @@ typedef SDL_Texture CST_Texture;
 typedef SDL_Surface CST_Window;
 typedef SDL_Surface CST_Renderer;
 typedef SDL_Surface CST_Texture;
+
+#pragma once
 
 #define TTF_RenderText_Blended_Wrapped(a, b, c, d) TTF_RenderUTF8_Blended(a, b, c)
 #endif

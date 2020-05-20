@@ -19,11 +19,11 @@ bool Texture::loadFromSurface(CST_Surface *surface)
 	if (!surface)
 		return false;
 
+	// will default MainDisplay's renderer if we don't have one in this->renderer
+	CST_Renderer* renderer = getRenderer();
+
 	// try to create a texture from the surface
-	// HACK: this->renderer isn't guaranteed to be set until render time
-	// RootDisplay::mainRenderer works for now. Element::setCST needs replacing
-	// for this to be changed.
-	CST_Texture *texture = CST_CreateTextureFromSurface(RootDisplay::mainRenderer, surface);
+	CST_Texture *texture = CST_CreateTextureFromSurface(renderer, surface);
 	if (!texture)
 		return false;
 
@@ -101,11 +101,13 @@ void Texture::render(Element* parent)
 	if (CST_isRectOffscreen(&rect))
 		return;
 
+	CST_Renderer* renderer = getRenderer();
+
 	if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG)
 	{
 		// draw colored background
-		CST_SetDrawColor(this->renderer, texFirstPixel);
-		CST_FillRect(this->renderer, &rect);
+		CST_SetDrawColor(renderer, texFirstPixel);
+		CST_FillRect(renderer, &rect);
 
 		// recompute drawing rect
 		if ((width * texH) > (height * texW))
@@ -134,12 +136,12 @@ void Texture::render(Element* parent)
 		// as the colored background wouldn't get rotated
 
 		CST_SetQualityHint("best");
-		CST_RenderCopyRotate(this->renderer, mTexture, NULL, &rect, this->angle);
+		CST_RenderCopyRotate(renderer, mTexture, NULL, &rect, this->angle);
 	}
 	else
 	{
 		// render the texture normally
-		CST_RenderCopy(this->renderer, mTexture, NULL, &rect);
+		CST_RenderCopy(renderer, mTexture, NULL, &rect);
 	}
 }
 

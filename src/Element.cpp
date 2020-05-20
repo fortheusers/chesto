@@ -1,4 +1,4 @@
-#include "Element.hpp"
+#include "RootDisplay.hpp"
 #include <algorithm>
 
 Element::~Element()
@@ -52,26 +52,28 @@ void Element::render(Element* parent)
 		subelement->render(this);
 	}
 
+	CST_Renderer* renderer = getRenderer();
+
 	// if we're touchable, and we have some animation counter left, draw a rectangle+overlay
 	if (this->touchable && this->elasticCounter > THICK_HIGHLIGHT)
 	{
 		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
-		CST_SetDrawBlend(this->renderer, true);
-		CST_SetDrawColorRGBA(this->renderer, 0xad, 0xd8, 0xe6, 0x90);
-		CST_FillRect(this->renderer, &d);
+		CST_SetDrawBlend(renderer, true);
+		CST_SetDrawColorRGBA(renderer, 0xad, 0xd8, 0xe6, 0x90);
+		CST_FillRect(renderer, &d);
 	}
 
 	if (this->touchable && this->elasticCounter > NO_HIGHLIGHT)
 	{
 		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
-		rectangleRGBA(this->renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
+		rectangleRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
 
 		if (this->elasticCounter == THICK_HIGHLIGHT)
 		{
 			// make it a little thicker by drawing more rectangles TODO: better way to do this?
 			for (int x = 0; x < 5; x++)
 			{
-				rectangleRGBA(this->renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
+				rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
 			}
 		}
 	}
@@ -90,20 +92,21 @@ void Element::recalcPosition(Element* parent) {
 }
 
 void Element::renderBackground() {
+	CST_Renderer* renderer = getRenderer();
 	CST_Rect bounds = {
 		.x = this->xAbs,
 		.y = this->yAbs,
 		.w = this->width,
 		.h = this->height,
 	};
-	CST_SetDrawColorRGBA(this->renderer,
+	CST_SetDrawColorRGBA(renderer,
 		static_cast<Uint8>(backgroundColor.r * 0xFF),
 		static_cast<Uint8>(backgroundColor.g * 0xFF),
 		static_cast<Uint8>(backgroundColor.b * 0xFF),
 		0xFF
 	);
-	CST_SetDrawBlend(this->renderer, false);
-	CST_FillRect(this->renderer, &bounds);
+	CST_SetDrawBlend(renderer, false);
+	CST_FillRect(renderer, &bounds);
 }
 
 void Element::position(int x, int y)
@@ -190,7 +193,17 @@ bool Element::onTouchUp(InputEvents* event)
 	return ret;
 }
 
+CST_Renderer* Element::getRenderer()
+{
+	// default to main renderer if we haven't set one yet
+	if (this->renderer != NULL)
+		return this->renderer;
+	return RootDisplay::mainRenderer;
+}
+
 void Element::setCST(CST_Renderer *renderer, CST_Window *window) {
+	if (renderer == NULL)
+		return;
 	this->renderer = renderer;
 	this->window = window;
 	for (Element* child : this->elements) {

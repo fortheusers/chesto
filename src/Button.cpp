@@ -25,6 +25,7 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
 	this->height = text.height + PADDING * 2;
 
 	this->touchable = true;
+	this->hasBackground = true;
 
 	if (dark)
 	{
@@ -53,23 +54,14 @@ const char* Button::getUnicode(int button)
 			return "\ue0a4";
 		case SELECT_BUTTON:
 			return "\ue0a5";
+		case L_BUTTON:
+			return "\ue0a6";
+		case R_BUTTON:
+			return "\ue0a7";
 		default:
 			break;
 	}
 	return "";
-}
-
-void Button::position(int x, int y)
-{
-	ox = x;
-	oy = y;
-	super::position(x, y);
-}
-
-Element* Button::setPosition(int x, int y)
-{
-	this->position(x, y);
-	return super::setPosition(x, y);
 }
 
 bool Button::process(InputEvents* event)

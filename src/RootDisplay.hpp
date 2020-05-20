@@ -1,6 +1,6 @@
+#include "Element.hpp"
 #pragma once
 
-#include "Element.hpp"
 #include "colorspaces.hpp"
 #include <unordered_map>
 

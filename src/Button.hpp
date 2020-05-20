@@ -10,8 +10,6 @@ public:
 
 	bool process(InputEvents* event);
 
-	Element* setPosition(int x, int y);
-
 private:
 	static CST_Color colors[2];
 	const char* getUnicode(int button);

@@ -1,7 +1,8 @@
+#include "DrawUtils.hpp"
+
 #pragma once
 
 #include "InputEvents.hpp"
-#include "DrawUtils.hpp"
 #include "colorspaces.hpp"
 
 #include <functional>
@@ -93,6 +94,12 @@ public:
 	/// the last Y, X coordinate of the mouse (from a drag probably)
 	int lastMouseY = 0, lastMouseX = 0;
 
+	// whether this element has a background
+	bool hasBackground = false;
+
+	// the color of the background
+	rgb backgroundColor = {0, 0, 0};
+
 	/// the parent element (can sometimes be null if it isn't set)
 	Element* parent = NULL;
 
@@ -118,6 +125,9 @@ public:
 
 	// x and y offsets (can be used for drawing relative to other elements)
 	int xOff = 0, yOff = 0;
+
+	// internal get current renderer or default one
+	CST_Renderer* getRenderer();
 
 	// fun chain-able wrappers to some fields, returns back the same element
 	Element* child(Element* child);
