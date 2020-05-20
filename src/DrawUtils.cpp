@@ -36,7 +36,7 @@ bool CST_DrawInit(RootDisplay* root)
 #ifndef SDL1
 	SDLFlags |= SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 #else
-	SDLFlags |= SDL_DOUBLEBUF;
+	SDLFlags |= SDL_DOUBLEBUF | SDL_HWSURFACE;
 #ifdef _3DS
 	SDLFlags |= SDL_HWSURFACE | SDL_DUALSCR;
 #endif

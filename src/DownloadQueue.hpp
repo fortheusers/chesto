@@ -42,13 +42,13 @@ public:
 	DownloadQueue();
 	~DownloadQueue();
 
-	// add a new download operation
+	/// add a new download operation
 	void downloadAdd(DownloadOperation *download);
 
-	// cancel a download operation
+	/// cancel a download operation
 	void downloadCancel(DownloadOperation *download);
 
-	// process finished and queued downloads
+	/// process finished and queued downloads
 	int process();
 
 	// static instance
@@ -57,13 +57,13 @@ public:
 	static DownloadQueue* downloadQueue;
 
 private:
-	// start a transfer operation
+	/// start a transfer operation
 	void transferStart(DownloadOperation *download);
 
-	// finish a transfer operation
+	/// finish a transfer operation
 	void transferFinish(DownloadOperation *download);
 
-	// start new transfers from the queue
+	/// start new transfers from the queue
 	void startTransfersFromQueue();
 
 #ifndef NETWORK_MOCK
@@ -73,9 +73,9 @@ private:
 	void setPlatformCurlFlags(CURL* c);
 #endif
 
-	// queue of downloads
+	/// queue of downloads
 	std::list<DownloadOperation*> queue;
 
-	// number of active transfers
+	/// number of active transfers
 	int transfers = 0;
 };

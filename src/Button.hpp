@@ -16,7 +16,7 @@ private:
 	static CST_Color colors[2];
 	const char* getUnicode(int button);
 
-	// the physical button to activate this button
+	/// the physical button to activate this button
 	int physical = -1;
 
 	// whether the button is dark or light themed

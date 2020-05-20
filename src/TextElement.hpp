@@ -21,7 +21,7 @@ public:
 	void setFont(int font_type);
 	void setWrappedWidth(int wrapped_width);
 
-	// update TextElement with changes
+	/// update TextElement with changes
 	void update(void);
 
 private:

@@ -53,15 +53,15 @@ typedef uint32_t CST_Keycode;
 class InputEvents
 {
 public:
-	// whether or not a button is pressed during this cycle
+	/// whether or not a button is pressed during this cycle
 	bool held(int buttons);
 	bool pressed(int buttons);
 	bool released(int buttons);
 
-	// whether or not a touch is detected within the specified rect in this cycle
+	/// whether or not a touch is detected within the specified rect in this cycle
 	bool touchIn(int x, int width, int y, int height);
 
-	// update which buttons are pressed
+	/// update which buttons are pressed
 	bool processSDLEvents();
 	bool update();
 
@@ -80,7 +80,7 @@ public:
 	int directionForKeycode();
 	void toggleHeldButtons();
 
-	// joystick device events processing
+	/// joystick device events processing
 	void processJoystickHotplugging(SDL_Event *event);
 
 	CST_Keycode keyCode = -1;

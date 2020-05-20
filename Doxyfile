@@ -1,0 +1,31 @@
+# Doxyfile 1.8.18
+
+# This file describes the settings to be used by the documentation system
+# doxygen (www.doxygen.org) for a project.
+
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = Chesto
+
+PROJECT_NUMBER         = 0.9
+PROJECT_BRIEF          = "A declarative and element-based library for creating GUIs on homebrew'd consoles"
+PROJECT_LOGO           = logo.png
+
+OUTPUT_DIRECTORY       = docs
+
+MULTILINE_CPP_IS_BRIEF = YES
+BUILTIN_STL_SUPPORT    = YES
+
+INPUT                  = src README.md
+RECURSIVE              = YES
+EXCLUDE                =
+USE_MDFILE_AS_MAINPAGE = README.md
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+HTML_HEADER            =
+HTML_FOOTER            =
+HTML_STYLESHEET        =
