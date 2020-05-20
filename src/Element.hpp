@@ -119,6 +119,11 @@ public:
 	// actual onscreen position (calculated at render time)
 	int xAbs = 0, yAbs = 0;
 
-	//rotation angle in degrees
-	double angle=0;
+	// x and y offsets (can be used for drawing relative to other elements)
+	int xOff = 0, yOff = 0;
+
+	// fun chain-able wrappers to some fields, returns back the same element
+	Element* child(Element* child);
+	Element* setPosition(int x, int y);
+	Element* setAction(std::function<void()> func);
 };

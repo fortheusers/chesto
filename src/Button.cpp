@@ -59,6 +59,19 @@ const char* Button::getUnicode(int button)
 	return "";
 }
 
+void Button::position(int x, int y)
+{
+	ox = x;
+	oy = y;
+	super::position(x, y);
+}
+
+Element* Button::setPosition(int x, int y)
+{
+	this->position(x, y);
+	return super::setPosition(x, y);
+}
+
 bool Button::process(InputEvents* event)
 {
 	if (event->isKeyDown() && this->physical != 0 && event->held(this->physical))

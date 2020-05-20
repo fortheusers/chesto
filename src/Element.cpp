@@ -218,3 +218,21 @@ void Element::removeAll(void)
 {
 	elements.clear();
 }
+
+Element* Element::child(Element* child)
+{
+	this->elements.push_back(child);
+	return this;
+}
+
+Element* Element::setPosition(int x, int y)
+{
+	this->position(x, y);
+	return this;
+}
+
+Element* Element::setAction(std::function<void()> func)
+{
+	this->action = func;
+	return this;
+}
