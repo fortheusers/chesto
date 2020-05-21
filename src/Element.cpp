@@ -233,11 +233,11 @@ void Element::remove(Element *element)
 		elements.erase(position);
 }
 
-void Element::free(bool delSelf)
+void Element::wipeAll(bool delSelf)
 {
-	// free's this element's children, then itself
+	// delete's this element's children, then itself
 	for (auto child : elements) {
-		child->free(true);
+		child->wipeAll(true);
 	}
 	elements.clear();
 

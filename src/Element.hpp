@@ -133,7 +133,7 @@ public:
 	// if you've been using `new` everywhere, calling this can make sense in your
 	// top level component's destructor to free all the memory from that branch
 	// (not automatically invoked in case implementor wants to manage it)
-	void free(bool delSelf = false);
+	void wipeAll(bool delSelf = false);
 
 	// fun chain-able wrappers to some fields, returns back the same element
 	Element* child(Element* child);
