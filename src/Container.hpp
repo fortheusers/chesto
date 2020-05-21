@@ -9,7 +9,7 @@ class Container : public Element
 {
 public:
 	Container(int layout, int padding);
-	void add(Element* elem);
+	Element* add(Element* elem);
 
 	int layout = 0;
 	int padding = 10;

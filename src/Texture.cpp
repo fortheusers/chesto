@@ -84,12 +84,7 @@ void Texture::render(Element* parent)
 		return;
 
 	// update xAbs and yAbs
-	this->recalcPosition(parent);
-
-	//render background, if given
-	if (this->hasBackground) {
-		this->renderBackground();
-	}
+	super::render(parent);
 
 	// rect of element's size
 	CST_Rect rect;
@@ -149,6 +144,12 @@ void Texture::resize(int w, int h)
 {
 	width = w;
 	height = h;
+}
+
+Texture* Texture::setSize(int w, int h)
+{
+	this->resize(w, h);
+	return this;
 }
 
 void Texture::setScaleMode(TextureScaleMode mode)

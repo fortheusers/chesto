@@ -53,7 +53,7 @@ public:
 	void unhide() { this->hidden = false; }
 
 	// render the element's background
-	void renderBackground();
+	void renderBackground(bool fill = true);
 
 	/// the action to call (from binded callback) on touch or button selection
 	/// https://stackoverflow.com/questions/14189440/c-class-member-callback-simple-examples
@@ -129,8 +129,19 @@ public:
 	// internal get current renderer or default one
 	CST_Renderer* getRenderer();
 
+	// delete this element's children, and their children, and so on
+	// if you've been using `new` everywhere, calling this can make sense in your
+	// top level component's destructor to free all the memory from that branch
+	// (not automatically invoked in case implementor wants to manage it)
+	void free(bool delSelf = false);
+
 	// fun chain-able wrappers to some fields, returns back the same element
 	Element* child(Element* child);
 	Element* setPosition(int x, int y);
 	Element* setAction(std::function<void()> func);
+
+	// alignment chainers
+	Element* centerHorizontallyIn(Element* parent);
+	Element* centerVerticallyIn(Element* parent);
+	Element* centerIn(Element* parent);
 };

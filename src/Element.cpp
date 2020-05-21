@@ -41,9 +41,14 @@ void Element::render(Element* parent)
 	// this needs to happen before any rendering
 	this->recalcPosition(parent);
 
-	// render the element background
+	// if we're in debug mode, draw an outline
 	if (this->hasBackground) {
-		this->renderBackground();
+		// render the element background
+		this->renderBackground(true);
+	}
+	else if (RootDisplay::isDebug) {
+		backgroundColor = randomColor();
+		this->renderBackground(false);
 	}
 
 	// go through every subelement and run render
@@ -91,7 +96,7 @@ void Element::recalcPosition(Element* parent) {
 	}
 }
 
-void Element::renderBackground() {
+void Element::renderBackground(bool fill) {
 	CST_Renderer* renderer = getRenderer();
 	CST_Rect bounds = {
 		.x = this->xAbs,
@@ -106,7 +111,8 @@ void Element::renderBackground() {
 		0xFF
 	);
 	CST_SetDrawBlend(renderer, false);
-	CST_FillRect(renderer, &bounds);
+	const auto RenderRect = fill ? CST_FillRect : CST_DrawRect;
+	RenderRect(renderer, &bounds);
 }
 
 void Element::position(int x, int y)
@@ -227,6 +233,19 @@ void Element::remove(Element *element)
 		elements.erase(position);
 }
 
+void Element::free(bool delSelf)
+{
+	// free's this element's children, then itself
+	for (auto child : elements) {
+		child->free(true);
+	}
+	elements.clear();
+
+	if (delSelf) {
+		delete this;
+	}
+}
+
 void Element::removeAll(void)
 {
 	elements.clear();
@@ -235,6 +254,8 @@ void Element::removeAll(void)
 Element* Element::child(Element* child)
 {
 	this->elements.push_back(child);
+	child->parent = this;
+	child->recalcPosition(this);
 	return this;
 }
 
@@ -248,4 +269,23 @@ Element* Element::setAction(std::function<void()> func)
 {
 	this->action = func;
 	return this;
+}
+
+Element* Element::centerHorizontallyIn(Element* parent)
+{
+	this->x = parent->width / 2 - this->width / 2;
+	printf("Placing at x: %d\n", this->x);
+	return this;
+}
+
+Element* Element::centerVerticallyIn(Element* parent)
+{
+	this->y = parent->height / 2 - this->height / 2;
+	printf("Placing at y: %d\n", this->y);
+	return this;
+}
+
+Element* Element::centerIn(Element* parent)
+{
+	return centerHorizontallyIn(parent)->centerVerticallyIn(parent);
 }

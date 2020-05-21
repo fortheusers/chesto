@@ -30,6 +30,8 @@ public:
 	static Element* subscreen;
 	static Element* nextsubscreen;
 
+	static bool isDebug;
+
 	int lastFrameTime = 99;
 	SDL_Event needsRender;
 
