@@ -86,7 +86,7 @@ void Element::render(Element* parent)
 
 void Element::recalcPosition(Element* parent) {
 	// calculate absolute x/y positions
-	if (parent)
+	if (parent && !isAbsolute)
 	{
 		this->xAbs = parent->xAbs + this->x;
 		this->yAbs = parent->yAbs + this->y;
@@ -274,18 +274,22 @@ Element* Element::setAction(std::function<void()> func)
 Element* Element::centerHorizontallyIn(Element* parent)
 {
 	this->x = parent->width / 2 - this->width / 2;
-	printf("Placing at x: %d\n", this->x);
 	return this;
 }
 
 Element* Element::centerVerticallyIn(Element* parent)
 {
 	this->y = parent->height / 2 - this->height / 2;
-	printf("Placing at y: %d\n", this->y);
 	return this;
 }
 
 Element* Element::centerIn(Element* parent)
 {
 	return centerHorizontallyIn(parent)->centerVerticallyIn(parent);
+}
+
+Element* Element::setAbsolute(bool isAbs)
+{
+	isAbsolute = isAbs;
+	return this;
 }

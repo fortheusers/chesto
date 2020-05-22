@@ -107,6 +107,11 @@ rgb hsv2rgb(hsv in)
 	return out;
 }
 
+rgb fromRGB(int r, int g, int b)
+{
+	return { r/255.0, g/255.0, b/255.0 };
+}
+
 double randd() {
   return (double)std::rand() / ((double)RAND_MAX + 1);
 }

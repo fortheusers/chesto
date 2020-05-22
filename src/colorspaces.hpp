@@ -13,4 +13,5 @@ typedef struct {
 
 hsv rgb2hsv(rgb in);
 rgb hsv2rgb(hsv in);
+rgb fromRGB(int r, int g, int b);
 rgb randomColor();

@@ -100,6 +100,9 @@ public:
 	// the color of the background
 	rgb backgroundColor = {0, 0, 0};
 
+	// if this element should ignore parent position and just position itself
+	bool isAbsolute = false;
+
 	/// the parent element (can sometimes be null if it isn't set)
 	Element* parent = NULL;
 
@@ -144,4 +147,5 @@ public:
 	Element* centerHorizontallyIn(Element* parent);
 	Element* centerVerticallyIn(Element* parent);
 	Element* centerIn(Element* parent);
+	Element* setAbsolute(bool isAbs);
 };
