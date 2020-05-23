@@ -8,7 +8,7 @@
 class Container : public Element
 {
 public:
-	Container(int layout, int padding);
+	Container(int layout = 0, int padding = 10);
 	Element* add(Element* elem);
 
 	int layout = 0;

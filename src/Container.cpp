@@ -22,4 +22,6 @@ Element* Container::add(Element* elem)
 
 	this->width = (layout == ROW_LAYOUT) ? this->width + elem->width + padding : std::max(this->width, elem->width);
 	this->height = (layout == COL_LAYOUT) ? this->height + elem->height + padding :  std::max(this->height, elem->height);
+
+	return elem;
 }

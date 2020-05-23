@@ -57,16 +57,12 @@ super::append(icon);
 The [TextElement](src/TextElement.hpp) class is used to display sentences or paragraphs of text, with or without wrappinig. Text can be instantiated at (40, 20) relative to the current Element:
 
 ```C++
-SDL_Color gray = { 80, 80, 80, 0xff };
+CST_Color gray = { 80, 80, 80, 0xff };
 int fontSize = 12;
 TextElement* status = new TextElement("All good here!", fontSize, &gray);
 status->position(this->x + 40, this->y + 20);
 super::append(status);
 ```
-
-**TODO:** Use our own colors instead of exposing SDL_Color
-
-**TODO:** Show how to query sizes of text elements (accessible via SDL's `textSurface`)
 
 ### Scrollable Views
 The [ListElement](src/ListElement.hpp) class should be subclassed and used to contain other groups that automatically need to be presented in a format so that they can trail off the page and be scrolled through either via touch events or gamepad buttons.

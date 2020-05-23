@@ -20,7 +20,7 @@ CST_Renderer* RootDisplay::mainRenderer = NULL;
 Element* RootDisplay::subscreen = NULL;
 Element* RootDisplay::nextsubscreen = NULL;
 RootDisplay* RootDisplay::mainDisplay = NULL;
-bool RootDisplay::isDebug = true;
+bool RootDisplay::isDebug = false;
 
 RootDisplay::RootDisplay()
 {

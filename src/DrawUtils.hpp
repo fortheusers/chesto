@@ -31,6 +31,8 @@ typedef SDL_Surface CST_Surface;
 typedef SDL_Color CST_Color;
 typedef SDL_Rect CST_Rect;
 
+#define CST_DrawLine SDL_RenderDrawLine
+
 class RootDisplay;
 
 bool CST_DrawInit(RootDisplay* root);

@@ -62,8 +62,8 @@ public:
 	/// visible GUI child elements of this element
 	std::vector<Element*> elements;
 
-	void append(Element *element);
-	void remove(Element *element);
+	void append(Element* element);
+	void remove(Element* element);
 	void removeAll(void);
 
 	/// position the element
