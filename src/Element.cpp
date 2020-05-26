@@ -96,14 +96,19 @@ void Element::recalcPosition(Element* parent) {
 	}
 }
 
-void Element::renderBackground(bool fill) {
-	CST_Renderer* renderer = getRenderer();
-	CST_Rect bounds = {
+CST_Rect Element::getBounds()
+{
+	return {
 		.x = this->xAbs,
 		.y = this->yAbs,
 		.w = this->width,
 		.h = this->height,
 	};
+}
+
+void Element::renderBackground(bool fill) {
+	CST_Renderer* renderer = getRenderer();
+	CST_Rect bounds = getBounds();
 	CST_SetDrawColorRGBA(renderer,
 		static_cast<Uint8>(backgroundColor.r * 0xFF),
 		static_cast<Uint8>(backgroundColor.g * 0xFF),
@@ -179,11 +184,17 @@ bool Element::onTouchUp(InputEvents* event)
 		if (event->touchIn(this->xAbs, this->yAbs, this->width, this->height))
 		{
 			// elasticCounter must be nonzero to allow a click through (highlight must be shown)
-			if (this->elasticCounter > 0 && action != NULL)
+			if (this->elasticCounter > 0)
 			{
 				// invoke this element's action
-				this->action();
-				ret |= true;
+				if (action != NULL) {
+					this->action();
+					ret |= true;
+				}
+				if (actionWithEvents != NULL) {
+					this->actionWithEvents(event);
+					ret |= true;
+				}
 			}
 		}
 	}
@@ -241,13 +252,19 @@ void Element::wipeAll(bool delSelf)
 	}
 	elements.clear();
 
-	if (delSelf) {
+	if (delSelf && !isProtected) {
 		delete this;
 	}
 }
 
-void Element::removeAll(void)
+void Element::removeAll(bool moveToTrash)
 {
+	if (moveToTrash) {
+		// store in a list for free-ing up memory later
+		for (auto e : elements) {
+			RootDisplay::mainDisplay->trash.push_back(e);
+		}
+	}
 	elements.clear();
 }
 

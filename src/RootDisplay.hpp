@@ -35,6 +35,9 @@ public:
 	int lastFrameTime = 99;
 	SDL_Event needsRender;
 
+	std::vector<Element*> trash;
+	void recycle();
+
 #if defined(MUSIC)
 	Mix_Music* music;
 #endif

@@ -27,6 +27,9 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
 	this->touchable = true;
 	this->hasBackground = true;
 
+	// protect "stack" children
+	text.isProtected = icon.isProtected = true;
+
 	if (dark)
 	{
 		backgroundColor = (rgb){ 0x67/255.0, 0x6a/255.0, 0x6d/255.0 };

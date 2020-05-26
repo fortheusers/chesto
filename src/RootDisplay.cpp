@@ -39,12 +39,11 @@ RootDisplay::RootDisplay()
 
 	this->hasBackground = true;
 #if defined(__WIIU__)
-	this->backgroundColor = (rgb){ 0x54/255.0, 0x55/255.0, 0x6e/255.0 };
+	this->backgroundColor = fromRGB(0x54, 0x55, 0x6e);
 #elif defined(_3DS) || defined(_3DS_MOCK)
-	// this->backgroundColor = (rgb){ 0xe4/255.0, 0x00/255.0, 0x0/255.0f };
-	this->backgroundColor = (rgb){ 1, 1, 1 };
+	this->backgroundColor = fromRGB(0xe4, 0x00, 0x00);
 #else
-	this->backgroundColor = (rgb){ 0x42/255.0, 0x45/255.0, 0x48/255.0 };
+	this->backgroundColor = fromRGB(0x42, 0x45, 0x48);
 #endif
 }
 
@@ -116,4 +115,11 @@ void RootDisplay::switchSubscreen(Element* next)
 	if (nextsubscreen != subscreen)
 		delete nextsubscreen;
 	nextsubscreen = next;
+}
+
+void RootDisplay::recycle()
+{
+	for (auto e : trash)
+		e->wipeAll(true);
+	trash.clear();
 }

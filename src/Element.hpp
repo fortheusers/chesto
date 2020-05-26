@@ -58,13 +58,14 @@ public:
 	/// the action to call (from binded callback) on touch or button selection
 	/// https://stackoverflow.com/questions/14189440/c-class-member-callback-simple-examples
 	std::function<void()> action;
+	std::function<void(InputEvents* event)> actionWithEvents;
 
 	/// visible GUI child elements of this element
 	std::vector<Element*> elements;
 
 	void append(Element* element);
 	void remove(Element* element);
-	void removeAll(void);
+	void removeAll(bool moveToTrash = false);
 
 	/// position the element
 	void position(int x, int y);
@@ -108,6 +109,12 @@ public:
 
 	/// whether this element should skip rendering or not
 	bool hidden = false;
+
+	// bounds on screen of this element
+	CST_Rect getBounds();
+
+	// whether or not this should be automatically free'd by wipeAll
+	bool isProtected = false;
 
 	/// how much time is left in an elastic-type flick/scroll
 	/// set by the last distance traveled in a scroll, and counts down every frame
