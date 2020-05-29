@@ -32,11 +32,15 @@ bool InputEvents::processSDLEvents()
 	// proces joystick hotplugging events
 	processJoystickHotplugging(&event);
 
+	this->isScrolling = false;
+
 #ifdef PC
 	this->allowTouch = false;
 #ifndef SDL1
-	if (event.type == SDL_MOUSEWHEEL)
+	if (event.type == SDL_MOUSEWHEEL) {
 		this->wheelScroll = event.wheel.y;
+		this->isScrolling = true;
+	}
 #endif
 #endif
 
@@ -232,6 +236,11 @@ bool InputEvents::isTouchUp()
 bool InputEvents::isTouch()
 {
 	return isTouchDown() || isTouchDrag() || isTouchUp();
+}
+
+bool InputEvents::isScroll()
+{
+	return this->isScrolling;
 }
 
 bool InputEvents::isKeyDown()
