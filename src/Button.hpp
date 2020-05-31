@@ -10,12 +10,18 @@ public:
 
 	bool process(InputEvents* event);
 
+	void updateBounds();
+	void updateText(const char* inc_text);
+
 private:
 	static CST_Color colors[2];
 	const char* getUnicode(int button);
 
 	/// the physical button to activate this button
 	int physical = -1;
+
+	// a width we set the button to regardless of inner text
+	int fixedWidth = 0;
 
 	// whether the button is dark or light themed
 	bool dark = false;

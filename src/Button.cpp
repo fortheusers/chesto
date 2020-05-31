@@ -11,18 +11,13 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
 	, icon(getUnicode(button), size * 1.25, &colors[dark], ICON)
 	, text(message, size, &colors[dark])
 {
-	int PADDING = 10;
 
-	int bWidth = PADDING * 0.5 * (icon.width != 0); // gap space between button
-
-	text.position(PADDING * 2 + bWidth + icon.width, PADDING);
 	super::append(&text);
-
-	icon.position(PADDING * 1.7, PADDING + (text.height - icon.height) / 2);
 	super::append(&icon);
 
-	this->width = (width > 0) ? width : text.width + PADDING * 4 + bWidth + icon.width;
-	this->height = text.height + PADDING * 2;
+	fixedWidth = width;
+
+	updateBounds();
 
 	this->touchable = true;
 	this->hasBackground = true;
@@ -39,6 +34,26 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
 	}
 	else
 		backgroundColor = (rgb){ 0xee/255.0, 0xee/255.0, 0xee/255.0 };
+}
+
+void Button::updateBounds()
+{
+	int PADDING = 10;
+
+	int bWidth = PADDING * 0.5 * (icon.width != 0); // gap space between button
+
+	text.position(PADDING * 2 + bWidth + icon.width, PADDING);
+	icon.position(PADDING * 1.7, PADDING + (text.height - icon.height) / 2);
+
+	this->width = (fixedWidth > 0) ? fixedWidth : text.width + PADDING * 4 + bWidth + icon.width;
+	this->height = text.height + PADDING * 2;
+}
+
+void Button::updateText(const char* inc_text)
+{
+	this->text.setText(inc_text);
+	this->text.update();
+	updateBounds();
 }
 
 const char* Button::getUnicode(int button)
