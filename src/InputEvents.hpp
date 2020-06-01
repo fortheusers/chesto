@@ -3,9 +3,11 @@
 #ifndef SDL1
 #include <SDL2/SDL.h>
 typedef SDL_Keycode CST_Keycode;
+typedef uint16_t CST_Keymod;
 #else
 #include <SDL/SDL.h>
 typedef uint32_t CST_Keycode;
+typedef uint16_t CST_Keymod;
 #endif
 #include <functional>
 
@@ -87,11 +89,13 @@ public:
 	void processJoystickHotplugging(SDL_Event *event);
 
 	CST_Keycode keyCode = -1;
+	CST_Keymod mod = -1;
 
 	bool held_directions[4] = { false, false, false, false };
 	int rapidFireRate = 12; // fire duplicate events if curframe mod rapidFireRate is 0 (higher = slower)
 	int curFrame = 0;
 
+	static bool passThroughKeyEvents;
 	std::function<void()> quitaction; //Called for an SDL_Quit event, usually caused by a SIGINT
 
 #ifdef PC
@@ -102,6 +106,5 @@ public:
 	int xPos = 0;
 	bool noop = false;
 
-private:
 	Uint32 type;
 };

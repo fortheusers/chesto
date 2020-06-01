@@ -173,7 +173,7 @@ bool Element::onTouchUp(InputEvents* event)
 	if (!event->isTouchUp())
 		return false;
 
-	bool ret;
+	bool ret = false;
 
 	// ensure we were dragging first (originally checked the treshold above here, but now that actively invalidates it)
 	if (this->dragging)
