@@ -18,7 +18,7 @@ int pad_buttons[] = { 1, 2, 3, 4, 0, 0, 0, 0, 8, 5, 6, 5, 7 };
 unsigned int ie_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
 
 // if true, don't count key inputs (PC/usb keyboard) as button events for us
-bool InputEvents::passThroughKeyEvents = false;
+bool InputEvents::bypassKeyEvents = false;
 
 bool InputEvents::processSDLEvents()
 {
@@ -188,7 +188,7 @@ int InputEvents::directionForKeycode()
 bool InputEvents::held(int buttons)
 {
 	// if it's a key event
-	if ((this->type == SDL_KEYDOWN || this->type == SDL_KEYUP) && !InputEvents::passThroughKeyEvents)
+	if ((this->type == SDL_KEYDOWN || this->type == SDL_KEYUP) && !InputEvents::bypassKeyEvents)
 	{
 		for (int x = 0; x < TOTAL_BUTTONS; x++)
 			if (key_buttons[x] == keyCode && (buttons & ie_buttons[x]))

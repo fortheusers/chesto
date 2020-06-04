@@ -105,6 +105,8 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 		ret |= true;
 	}
 
+	if (ret) event->isScrolling = true;
+
 #ifdef PC
 	if (event->wheelScroll != 0)
 	{

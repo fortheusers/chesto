@@ -95,7 +95,7 @@ public:
 	int rapidFireRate = 12; // fire duplicate events if curframe mod rapidFireRate is 0 (higher = slower)
 	int curFrame = 0;
 
-	static bool passThroughKeyEvents;
+	static bool bypassKeyEvents;
 	std::function<void()> quitaction; //Called for an SDL_Quit event, usually caused by a SIGINT
 
 #ifdef PC
