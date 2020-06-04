@@ -77,9 +77,9 @@ const char* Button::getUnicode(int button)
 		case R_BUTTON:
 			return "\ue0a7";
 		case ZL_BUTTON:
-			return "\ue0a6";
+			return "\ue0a8";
 		case ZR_BUTTON:
-			return "\ue0a7";
+			return "\ue0a9";
 		default:
 			break;
 	}
