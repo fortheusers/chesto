@@ -110,6 +110,8 @@ void InputEvents::toggleHeldButtons()
 			{
 				// on key down, set the corresponding held boolean to true
 				held_directions[directionCode] = true;
+				held_type = this->type;
+
 				// reset the frame counter so we don't fire on this frame
 				// (initial reset is lower to add a slight delay when they first start holding)
 				curFrame = -25;
@@ -140,7 +142,7 @@ bool InputEvents::processDirectionalButtons()
 				continue;
 
 			// send a corresponding directional event
-			this->type = SDL_KEYDOWN;
+			this->type = this->held_type;
 			this->keyCode = key_buttons[4 + x]; // send up through right directions
 			this->noop = false;
 

@@ -92,6 +92,8 @@ public:
 	CST_Keymod mod = -1;
 
 	bool held_directions[4] = { false, false, false, false };
+	Uint32 held_type;
+
 	int rapidFireRate = 12; // fire duplicate events if curframe mod rapidFireRate is 0 (higher = slower)
 	int curFrame = 0;
 
