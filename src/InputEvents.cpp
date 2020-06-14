@@ -142,8 +142,9 @@ bool InputEvents::processDirectionalButtons()
 				continue;
 
 			// send a corresponding directional event
-			this->type = this->held_type;
-			this->keyCode = key_buttons[4 + x]; // send up through right directions
+			this->type = held_type;
+			bool isGamepad = (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP);
+			this->keyCode = isGamepad ? pad_buttons[4 + x] : key_buttons[4 + x]; // send up through right directions
 			this->noop = false;
 
 			return true;
