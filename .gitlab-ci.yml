@@ -1,4 +1,4 @@
-image: ubuntu:18.04
+image: archlinux
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -6,7 +6,7 @@ variables:
 pages:
   stage: deploy
   script:
-    - apt-get update && apt-get -y install doxygen
+    - pacman -Sy && pacman --noconfirm -S doxygen
     - doxygen
     - mkdir -p public
     - cp -r docs/html/* public
@@ -16,7 +16,7 @@ pages:
 
 .common: &common
   script:
-    - apt-get update && apt-get -y install git
+    - pacman -Sy && pacman --noconfirm -S git
     - git clone https://gitlab.com/4TU/chestotesto.git /chestotesto
     - /chestotesto/dependency_helper.sh
     - cp -rf . /chestotesto/libs/chesto
