@@ -123,13 +123,9 @@ void Texture::render(Element* parent)
 		rect.y += (height - rect.h) / 2;
 	}
 
-	if ((texScaleMode == SCALE_STRETCH) && angle!=0)
+	if (angle!=0)
 	{
 		// render the texture with a rotation
-
-		// only supported for SCALE_STRETCH textures,
-		// as the colored background wouldn't get rotated
-
 		CST_SetQualityHint("best");
 		CST_RenderCopyRotate(renderer, mTexture, NULL, &rect, this->angle);
 	}

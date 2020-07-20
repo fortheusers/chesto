@@ -1,4 +1,4 @@
-image: archlinux
+image: registry.gitlab.com/4tu/spheal
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -16,7 +16,6 @@ pages:
 
 .common: &common
   script:
-    - pacman -Sy && pacman --noconfirm -S git
     - git clone https://gitlab.com/4TU/chestotesto.git /chestotesto
     - /chestotesto/dependency_helper.sh
     - cp -rf . /chestotesto/libs/chesto
