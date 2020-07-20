@@ -17,7 +17,6 @@ pages:
 .common: &common
   script:
     - git clone https://gitlab.com/4TU/chestotesto.git /chestotesto
-    - /chestotesto/dependency_helper.sh
     - cp -rf . /chestotesto/libs/chesto
     - (cd /chestotesto && make -f Makefile.$PLATFORM)
     - cp /chestotesto/chestotesto.$EXT chestotesto.$EXT
