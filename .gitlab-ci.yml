@@ -6,7 +6,7 @@ variables:
 pages:
   stage: deploy
   script:
-    - pacman -Sy && pacman --noconfirm -S doxygen
+    - pacman --noconfirm -S doxygen
     - doxygen
     - mkdir -p public
     - cp -r docs/html/* public
