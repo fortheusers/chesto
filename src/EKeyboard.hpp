@@ -8,6 +8,7 @@
 class EKeyboard : public Element
 {
 public:
+	EKeyboard();
 	EKeyboard(std::function<void(char)> typeAction);
 	~EKeyboard();
 	void render(Element* parent);
@@ -17,6 +18,11 @@ public:
 	void updateSize();
 	void just_type(const char input);
 	bool listenForPhysicalKeys(InputEvents* e);
+
+	// get text input on the keyboard so far
+	// (only stored when storeOwnText is true (default true for empty constructor, false for callback constructor))
+	const std::string& getTextInput();
+	std::string textInput;
 
 	// a function to be invoked when we receive a key press, which takes in the char
 	// that's been pressed
@@ -86,7 +92,9 @@ public:
 								// if using a USB keyboard, they can hide the on-screen one
 
 	bool preventEnterAndTab = false; // hide and don't allow enter/tab inputs
+	bool storeOwnText = false; // whether or not this keyboard will store the text input on its own
 
 	void type(int y, int x);
 	void generateEKeyboard();
+	void backspace();
 };

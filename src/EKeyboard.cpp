@@ -2,10 +2,17 @@
 
 using namespace std;
 
+EKeyboard::EKeyboard() : EKeyboard::EKeyboard(NULL)
+{
+	storeOwnText = true;
+}
+
 EKeyboard::EKeyboard(std::function<void(char)> typeAction)
 {
 	this->x = 30;
 	this->y = 300;
+
+	this->width = 900;
 
 	this->typeAction = typeAction;
 
@@ -350,10 +357,7 @@ bool EKeyboard::listenForPhysicalKeys(InputEvents* e)
 
 	if (keyCode == SDLK_BACKSPACE) {
 		// programatically invoke the B button event
-		SDL_Event sdlevent;
-		sdlevent.type = SDL_JOYBUTTONDOWN;
-		sdlevent.jbutton.button = SDL_B;
-		SDL_PushEvent(&sdlevent);
+		backspace();
 		return true;
 	}
 
@@ -384,7 +388,6 @@ void EKeyboard::updateSize()
 	this->elements.clear();
 	rows.clear();
 
-	this->width = 900;
 	this->height = (304 / 900.0) * width;
 
 	// set up lots of scaling variables based on the width/height
@@ -394,7 +397,7 @@ void EKeyboard::updateSize()
 
 	// these field variables are for displaying the QWERTY keys (touching and displaying)
 	kXPad = (int)((23 / 400.0) * width);
-	kXOff = (int)((36.5 / 400.0) * width);
+	kXOff = (int)((36.5 / 400.0) * width) + (900.0 / width) * ( 900.0 != width); // when scaling, adjust our key x offset TODO: probably a guesstimate
 	yYOff = (int)((22 / 400.0) * width);
 	kYPad = (int)((17 / 135.0) * height);
 	ySpacing = (int)((33 / 400.0) * width);
@@ -467,9 +470,15 @@ void EKeyboard::type(int y, int x)
 // call type action w/ some checks
 void EKeyboard::just_type(const char input)
 {
+	if (preventEnterAndTab && (input == '\n' || input == '\t'))
+		return;
+
+	// store our own string if we need to
+	if (storeOwnText)
+		textInput.push_back(input);
+
+	// call the underlying type action, if present
 	if (typeAction != NULL) {
-		if (preventEnterAndTab && (input == '\n' || input == '\t'))
-			return;
 		typeAction(input);
 		return;
 	}
@@ -510,6 +519,30 @@ void EKeyboard::generateEKeyboard()
 		rows.push_back(row);
 		count += end;
 	}
+}
+
+void EKeyboard::backspace()
+{
+	if (storeOwnText) {
+		// manage our own internal string
+		if (!textInput.empty())
+			textInput.pop_back();
+		// call out to the typing callback TODO: use a separate callback (see below)
+		typeAction('\b'); // not great
+		return;
+	}
+
+	// TODO: use a backspace callback instead of hardcoding a B button event
+	// (B is used by vgedit to manage external backspaces)
+	SDL_Event sdlevent;
+	sdlevent.type = SDL_JOYBUTTONDOWN;
+	sdlevent.jbutton.button = SDL_B;
+	SDL_PushEvent(&sdlevent);
+}
+
+const std::string& EKeyboard::getTextInput()
+{
+	return textInput;
 }
 
 EKeyboard::~EKeyboard()
