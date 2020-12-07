@@ -91,6 +91,9 @@ public:
 	/// whether or not this element needs the screen redrawn next time it's processed
 	bool needsRedraw = false;
 
+	/// whether this element needs a redraw for the next X redraws (decreases each time) (0 is no redraws)
+	int futureRedrawCounter = 0;
+
 	/// the last Y, X coordinate of the mouse (from a drag probably)
 	int lastMouseY = 0, lastMouseX = 0;
 

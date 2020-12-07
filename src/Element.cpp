@@ -30,6 +30,12 @@ bool Element::process(InputEvents* event)
 	ret |= this->needsRedraw;
 	this->needsRedraw = false;
 
+	// if this variable is positive, decrease it, and force a redraw (acts like needsRedraw but over X redraws)
+	if (futureRedrawCounter > 0) {
+		futureRedrawCounter --;
+		ret |= true;
+	}
+
 	return ret;
 }
 
