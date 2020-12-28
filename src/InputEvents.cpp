@@ -20,6 +20,14 @@ unsigned int ie_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON,
 // if true, don't count key inputs (PC/usb keyboard) as button events for us
 bool InputEvents::bypassKeyEvents = false;
 
+InputEvents::InputEvents()
+{
+#if defined(__WIIU__)
+	// hook up keyboard events for wiiu and SDL (TODO: have these fired by SDL2 port itself)
+	KBWrapper* kbdwrapper = new KBWrapper(true, true);
+#endif
+}
+
 bool InputEvents::processSDLEvents()
 {
 	// get an event from SDL

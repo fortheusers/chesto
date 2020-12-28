@@ -22,6 +22,7 @@ public:
 	void render(Element* parent);
 	void initAndStartMusic();
 	void update();
+	void mainLoop();
 
 	static CST_Renderer* mainRenderer;
 	static RootDisplay* mainDisplay;
@@ -31,10 +32,16 @@ public:
 	static Element* nextsubscreen;
 
 	static bool isDebug;
+	bool isRunning = true;
 	bool exitRequested = false;
+	bool forceProcessEvents = false;
+	bool canUseSelectToExit = false;
 
 	int lastFrameTime = 99;
 	SDL_Event needsRender;
+
+	// our main input events
+	InputEvents* events;
 
 	std::vector<Element*> trash;
 	void recycle();

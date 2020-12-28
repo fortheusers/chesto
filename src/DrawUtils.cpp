@@ -214,6 +214,15 @@ void CST_DrawRect(CST_Renderer* renderer, CST_Rect* dimens)
 #endif
 }
 
+void CST_DrawLine(CST_Renderer* renderer, int x, int y, int w, int h)
+{
+	#ifndef SDL1
+	SDL_RenderDrawLine(renderer, x, y, w, h);
+	#else
+	// TODO: draw line for SDL1
+	#endif
+}
+
 void CST_SetDrawBlend(CST_Renderer* renderer, bool enabled)
 {
 #ifndef SDL1
@@ -277,3 +286,13 @@ bool CST_isRectOffscreen(CST_Rect* rect)
 
 	return false;
 }
+
+#ifndef SDL1
+// CST_Font* CST_CreateFont();
+// void CST_LoadFont(CST_Font* font, const char* filename_ttf,  Uint32 pointSize, CST_Color color, int style);
+// CST_Color CST_MakeColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+// Uint16 CST_GetFontLineHeight(CST_Font* font);
+// Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...);
+// Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...);
+// CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...);
+#endif
