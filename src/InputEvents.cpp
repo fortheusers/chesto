@@ -14,7 +14,7 @@ int pad_buttons[] = { 1, 2, 3, 4, 0, 0, 0, 0, 8, 5, 6, 5, 7 };
 #define SDL_FINGERMOTION SDL_MOUSEMOTION
 #endif
 
-#if defined(__WIIU__)
+#if defined(__WIIU__) && defined(USE_KEYBOARD)
 #include "../libs/wiiu_kbd/keybdwrapper.h"
 #endif
 
@@ -26,7 +26,7 @@ bool InputEvents::bypassKeyEvents = false;
 
 InputEvents::InputEvents()
 {
-#if defined(__WIIU__)
+#if defined(__WIIU__) && defined(USE_KEYBOARD)
 	// hook up keyboard events for wiiu and SDL (TODO: have these fired by SDL2 port itself)
 	KBWrapper* kbdwrapper = new KBWrapper(true, true);
 #endif
