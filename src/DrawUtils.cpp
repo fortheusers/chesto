@@ -287,12 +287,12 @@ bool CST_isRectOffscreen(CST_Rect* rect)
 	return false;
 }
 
-#ifndef SDL1
-// CST_Font* CST_CreateFont();
-// void CST_LoadFont(CST_Font* font, const char* filename_ttf,  Uint32 pointSize, CST_Color color, int style);
-// CST_Color CST_MakeColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-// Uint16 CST_GetFontLineHeight(CST_Font* font);
-// Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...);
-// Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...);
-// CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...);
+#ifdef SDL1
+CST_Font* CST_CreateFont() { return NULL; }
+void CST_LoadFont(CST_Font* font,  CST_Renderer* renderer, const char* filename_ttf,  Uint32 pointSize, CST_Color color, int style) { }
+CST_Color CST_MakeColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) { return { 0xFF, 0xFF, 0xFF, 0xFF }; }
+Uint16 CST_GetFontLineHeight(CST_Font* font) { return 0; }
+Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...) { return 0; }
+Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...) { return 0; }
+CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...) { return { x: 0, y:0, w: 0, h:0 }; }
 #endif

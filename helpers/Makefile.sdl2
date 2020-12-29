@@ -1,2 +1,4 @@
-LIBS   += -lSDL2_ttf -lSDL2_gfx -lSDL2_image -lSDL2 -lSDL2main -lfreetype -lpng -lbz2 -ljpeg -lz
-CFLAGS += -DSDL2
+LIBS    += -lSDL2_ttf -lSDL2_gfx -lSDL2_image -lSDL2 -lSDL2main -lfreetype -lpng -lbz2 -ljpeg -lz
+CFLAGS  += -DSDL2
+SOURCES += $(CHESTO_DIR)/libs/SDL_FontCache
+VPATH   += $(CHESTO_DIR)/libs/SDL_FontCache

@@ -78,12 +78,13 @@ bool CST_isRectOffscreen(CST_Rect* rect);
 #define CST_DrawFont FC_Draw
 #else
 // SDL1 font ops are backed by our own cache (could also be used with other backends)
-// CST_Font* CST_CreateFont();
-// void CST_LoadFont(CST_Font* font, const char* filename_ttf,  Uint32 pointSize, CST_Color color, int style);
-// CST_Color CST_MakeColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-// Uint16 CST_GetFontLineHeight(CST_Font* font);
-// Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...);
-// Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...);
-// CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...);
-// CST_Font (??)
+// TODO: all these are stubs for now, for SDL1
+typedef TTF_Font CST_Font; // for now, these are the same, we may need our own representation later
+CST_Font* CST_CreateFont();
+void CST_LoadFont(CST_Font* font,  CST_Renderer* renderer, const char* filename_ttf,  Uint32 pointSize, CST_Color color, int style);
+CST_Color CST_MakeColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+Uint16 CST_GetFontLineHeight(CST_Font* font);
+Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...);
+Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...);
+CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...);
 #endif

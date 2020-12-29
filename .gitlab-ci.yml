@@ -18,7 +18,7 @@ pages:
   script:
     - git clone https://gitlab.com/4TU/chestotesto.git /chestotesto
     - cp -rf . /chestotesto/libs/chesto
-    - (cd /chestotesto && make -f Makefile.$PLATFORM)
+    - (cd /chestotesto && make $PLATFORM)
     - cp /chestotesto/chestotesto.$EXT chestotesto.$EXT
   artifacts:
     paths:
@@ -34,7 +34,7 @@ PC-sdl1:
   <<: *common
   variables:
     PLATFORM: pc-sdl1
-    EXT: bin
+    EXT: bin-sdl1
 
 WiiU:
   <<: *common

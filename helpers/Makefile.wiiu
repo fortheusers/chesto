@@ -11,11 +11,13 @@ CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOY
 ASFLAGS		+=	-g $(MACHDEP)
 LDFLAGS		+=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 
-LIBS		+= -lSDL2_mixer -lmpg123 -lwut
+LIBS		+= -lSDL2_mixer -lmpg123 -lSDL2 -lwut
 
 BUILD		:= build_wiiu
 LIBDIRS		:= $(PORTLIBS) $(WUT_ROOT)
 
+SOURCES     += $(CHESTO_DIR)/libs/wiiu_kbd
+VPATH       += $(CHESTO_DIR)/libs/wiiu_kbd
 
 #-------------------------------------------------------------------------------
 # no need to edit anything past this point unless you need to add additional
