@@ -1,0 +1,17 @@
+CXX = g++
+
+CFLAGS   += -g -DPC -Wno-narrowing
+INCLUDES += -I /usr/local/include -I /opt/homebrew/include -I /usr/include/SDL -I /usr/include/SDL2
+LDFLAGS  += -lz -L /opt/homebrew/lib -L /usr/local/lib $(LIBS)
+
+OFILES   := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+SRCFILES := $(CFILES) $(CPPFILES) $(SFILES)
+
+pc: $(OFILES)
+	$(CXX) $(OFILES) $(LDFLAGS) -o $(BINARY).bin -fstack-protector-all
+
+pc-sdl1: $(OFILES)
+	$(CXX) $(OFILES) $(LDFLAGS) -o $(BINARY)_sdl1.bin -fstack-protector-all
+
+%.o: %.cpp
+	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDES) $< -c -o $@ -fstack-protector-all
