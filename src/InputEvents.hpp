@@ -55,6 +55,8 @@ typedef uint16_t CST_Keymod;
 class InputEvents
 {
 public:
+	InputEvents();
+
 	/// whether or not a button is pressed during this cycle
 	bool held(int buttons);
 	bool pressed(int buttons);
