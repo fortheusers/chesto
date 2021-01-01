@@ -2,10 +2,12 @@ include $(HELPERS)/Makefile.sdl1
 include $(HELPERS)/Makefile.resin
 include $(DEVKITPPC)/wii_rules
 
-CFLAGS      +=	-g -O2 -Wall $(MACHDEP) -DUSE_RAMFS -DWII
+CFLAGS      +=	-g -O2 -Wall $(MACHDEP) -DUSE_RAMFS -DWII -DNETWORK_MOCK
 LDFLAGS     +=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 LIBS        +=  -lfat -lwiiuse -lbte -laesnd -logc -lwiikeyboard
+
+LDFLAGS     += $(OFILES) # unsure why we need this
 
 BUILD   := build_wii
 LIBDIRS	:= $(DEVKITPRO)/portlibs/wii $(DEVKITPRO)/portlibs/ppc

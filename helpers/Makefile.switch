@@ -14,7 +14,7 @@ CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DUSE_FILE32API -DNOSTYLUS -D_XOPEN_SO
 
 LDFLAGS	+=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	+= -lEGL -lGLESv2 -lglapi -ldrm_nouveau -lwebp -lnx
+LIBS	+= -lcurl -lEGL -lGLESv2 -lglapi -ldrm_nouveau -lwebp -lnx
 
 BUILD   := build_switch
 LIBDIRS	:= $(PORTLIBS) $(LIBNX)

@@ -8,11 +8,11 @@ CFLAGS    +=  -g -Wall -O0 -mword-relocations \
 			  -fomit-frame-pointer -ffunction-sections \
 			  $(ARCH)
 
-CFLAGS    += -DARM11 -D_3DS -DUSE_RAMFS
+CFLAGS    += -DARM11 -D_3DS -DUSE_RAMFS -DNOCRYPT
 LDFLAGS	  += -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 ASFLAGS   += -g $(ARCH)
 
-LIBS      += -lcitro3d -lctru
+LIBS      += -lcurl -lmbedtls -lmbedx509 -lmbedcrypto -lcitro3d -lctru
 
 LIBDIRS	  := $(CTRULIB) $(PORTLIBS)
 BUILD     := build_3ds
