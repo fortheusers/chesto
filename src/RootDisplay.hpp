@@ -22,7 +22,7 @@ public:
 	void render(Element* parent);
 	void initAndStartMusic();
 	void update();
-	void mainLoop();
+	int mainLoop();
 
 	static CST_Renderer* mainRenderer;
 	static RootDisplay* mainDisplay;
@@ -34,7 +34,6 @@ public:
 	static bool isDebug;
 	bool isRunning = true;
 	bool exitRequested = false;
-	bool forceProcessEvents = false;
 	bool canUseSelectToExit = false;
 
 	int lastFrameTime = 99;

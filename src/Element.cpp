@@ -6,6 +6,11 @@ Element::~Element()
 	removeAll();
 }
 
+Element::Element()
+{
+	needsRedraw = true;
+}
+
 bool Element::process(InputEvents* event)
 {
 	// whether or not we need to update the screen

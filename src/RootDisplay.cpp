@@ -136,7 +136,7 @@ void processWiiUHomeOverlay() {
 }
 #endif
 
-void RootDisplay::mainLoop()
+int RootDisplay::mainLoop()
 {
 	// consoleDebugInit(debugDevice_SVC);
 	// stdout = stderr; // for yuzu
@@ -183,44 +183,46 @@ void RootDisplay::mainLoop()
 			atLeastOneNewEvent = true;
 
 			// if we see a minus, exit immediately!
-			// TODO: allow this to be specified
 			if (events->pressed(SELECT_BUTTON) && this->canUseSelectToExit) {
 				if (events->quitaction) events->quitaction();
 				isRunning = false;
 			}
-
-			// one more event update if nothing changed or there were no previous events seen
-			// needed to non-input related processing that might update the screen to take place
-			if ((!atLeastOneNewEvent && !viewChanged) || forceProcessEvents)
-			{
-				events->update();
-				viewChanged |= this->process(events);
-			}
-
-			// draw the display if we processed an event or the view
-			if (viewChanged || forceProcessEvents)
-				this->render(NULL);
-			else
-			{
-				// delay for the remainder of the frame to keep up to 60fps
-				// (we only do this if we didn't draw to not waste energy
-				// if we did draw, then proceed immediately without waiting for smoother progress bars / scrolling)
-				int delayTime = (CST_GetTicks() - frameStart);
-				if (delayTime < 0)
-					delayTime = 0;
-				if (delayTime < 16)
-					CST_Delay(16 - delayTime);
-			}
-
-			// free up any elements that are in the trash
-			this->recycle();
 		}
+
+		// one more event update if nothing changed or there were no previous events seen
+		// needed to non-input related processing that might update the screen to take place
+		if ((!atLeastOneNewEvent && !viewChanged))
+		{
+			events->update();
+			viewChanged |= this->process(events);
+		}
+
+		// draw the display if we processed an event or the view
+		if (viewChanged)
+			this->render(NULL);
+		else
+		{
+			// delay for the remainder of the frame to keep up to 60fps
+			// (we only do this if we didn't draw to not waste energy
+			// if we did draw, then proceed immediately without waiting for smoother progress bars / scrolling)
+			int delayTime = (CST_GetTicks() - frameStart);
+			if (delayTime < 0)
+				delayTime = 0;
+			if (delayTime < 16)
+				CST_Delay(16 - delayTime);
+		}
+
+		// free up any elements that are in the trash
+		this->recycle();
 	}
 
 	DownloadQueue::quit();
 
 	delete events;
-	delete this;
+
+	if (!isProtected) delete this;
+
+	return 0;
 }
 
 void RootDisplay::recycle()

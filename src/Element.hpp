@@ -34,6 +34,7 @@
 class Element
 {
 public:
+	Element();
 	virtual ~Element();
 
 	/// process any input that is received for this element
