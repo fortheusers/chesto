@@ -7,8 +7,6 @@ LDFLAGS     +=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 LIBS        +=  -lfat -lwiiuse -lbte -laesnd -logc -lwiikeyboard
 
-LDFLAGS     += $(OFILES) # unsure why we need this
-
 BUILD   := build_wii
 LIBDIRS	:= $(DEVKITPRO)/portlibs/wii $(DEVKITPRO)/portlibs/ppc
 
@@ -86,6 +84,8 @@ else
 #---------------------------------------------------------------------------------
 $(PWD)/$(BINARY).dol: $(OUTPUT).elf
 $(OUTPUT).elf: $(OFILES)
+$(PWD)/$(BINARY).elf: $(OFILES)
+
 
 #---------------------------------------------------------------------------------
 # This rule links in binary data with the .bin extension
