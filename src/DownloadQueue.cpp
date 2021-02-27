@@ -61,7 +61,7 @@ void DownloadQueue::setPlatformCurlFlags(CURL* c)
 	curl_easy_setopt(c, (CURLoption)212, 0x8000);
 #endif
 
-#if defined(SWITCH)
+#if defined(SWITCH) || defined(WII)
 	// ignore cert verification (TODO: not have to do this in the future)
 	curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
 	curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
