@@ -19,6 +19,11 @@ bool Element::process(InputEvents* event)
 	// if we're hidden, don't process input
 	if (hidden) return ret;
 
+	// if 3ds mock, ignore top screen inputs
+#ifdef _3DS_MOCK
+	if (event->touchIn(0, 0, 400, 240)) return ret;
+#endif
+
 	// do any touch down, drag, or up events
 	if (touchable)
 	{
