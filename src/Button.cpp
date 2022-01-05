@@ -8,8 +8,8 @@ CST_Color Button::colors[2] = {
 Button::Button(const char* message, int button, bool dark, int size, int width)
 	: physical(button)
 	, dark(dark)
-	, icon(getUnicode(button), size * 1.25, &colors[dark], ICON)
-	, text(message, size, &colors[dark])
+	, icon(getUnicode(button), (size / SCALER) * 1.25, &colors[dark], ICON)
+	, text(message, (size / SCALER), &colors[dark])
 {
 
 	super::append(&text);
@@ -38,7 +38,7 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
 
 void Button::updateBounds()
 {
-	int PADDING = 10;
+	int PADDING = 10 / SCALER;
 
 	int bWidth = PADDING * 0.5 * (icon.width != 0); // gap space between button
 

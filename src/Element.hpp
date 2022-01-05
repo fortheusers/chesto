@@ -24,6 +24,11 @@
 #define SCREEN_HEIGHT	480
 #define PANE_WIDTH 300
 #define SCALER 2
+#elif defined(SDL1)
+#define SCREEN_WIDTH	848
+#define SCREEN_HEIGHT	640
+#define PANE_WIDTH 640
+#define SCALER 1
 #else
 #define SCREEN_WIDTH	1280
 #define SCREEN_HEIGHT	720

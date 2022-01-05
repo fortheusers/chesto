@@ -24,13 +24,6 @@ bool CST_DrawInit(RootDisplay* root)
 		return false;
 	}
 
-	/*int imgFlags = IMG_INIT_PNG;
-	if (!(IMG_Init(imgFlags) & imgFlags))
-	{
-		printf("Failed to initialize SDL IMG library: %s\n", SDL_GetError());
-		return;
-	}*/
-
 	int SDLFlags = 0;
 
 #ifndef SDL1
@@ -52,7 +45,7 @@ bool CST_DrawInit(RootDisplay* root)
 	#ifdef _3DS
 	root->renderer = SDL_SetVideoMode(400, 480, 8, SDLFlags);
 	#else
-	root->renderer = SDL_SetVideoMode(640, 480, 8, SDLFlags);
+	root->renderer = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 8, SDLFlags);
 	#endif
 	root->window = root->renderer;
 #endif
@@ -289,7 +282,7 @@ bool CST_isRectOffscreen(CST_Rect* rect)
 
 #ifdef SDL1
 CST_Font* CST_CreateFont() { return NULL; }
-void CST_LoadFont(CST_Font* font,  CST_Renderer* renderer, const char* filename_ttf,  Uint32 pointSize, CST_Color color, int style) { }
+void CST_LoadFont(CST_Font* font,  CST_Renderer* renderer, const char* filename_ttf, Uint32 pointSize, CST_Color color, int style) { }
 CST_Color CST_MakeColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) { return { 0xFF, 0xFF, 0xFF, 0xFF }; }
 Uint16 CST_GetFontLineHeight(CST_Font* font) { return 0; }
 Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...) { return 0; }
