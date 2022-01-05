@@ -1,16 +1,13 @@
 CXX = g++
 
 CFLAGS   += -g -DPC -Wno-narrowing
-INCLUDES += -I /usr/local/include -I /opt/homebrew/include
-LDFLAGS  += -lz -L /opt/homebrew/lib -L /usr/local/lib $(LIBS)
-
-OFILES   := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
-SRCFILES := $(CFILES) $(CPPFILES) $(SFILES)
+INCLUDES += /usr/local/include /opt/homebrew/include
+LDFLAGS  += -L /opt/homebrew/lib -L /usr/local/lib $(LIBS)
 
 ifeq (pc,$(MAKECMDGOALS))
-	INCLUDES += -I /usr/include/SDL2 -I /usr/local/include/SDL2
+	INCLUDES += /usr/include/SDL2 /usr/local/include/SDL2
 else
-	INCLUDES += -I /usr/include/SDL -I /usr/local/include/SDL
+	INCLUDES += /usr/include/SDL /usr/local/include/SDL
 endif
 
 pc: $(OFILES)
@@ -19,5 +16,5 @@ pc: $(OFILES)
 pc-sdl1: $(OFILES)
 	$(CXX) $(OFILES) $(LDFLAGS) -o $(BINARY).bin-sdl1 -fstack-protector-all # -framework Cocoa
 
-%.o: %.cpp
-	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDES) $< -c -o $@ -fstack-protector-all
+%.o: %.cpp %.c
+	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) $< -c -o $@ -fstack-protector-all

@@ -53,6 +53,21 @@ export CHESTO_DIR DEVKITPRO DEVKITARM DEVKITPPC DEVKITA64 OFILES
 export VPATH	+=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
 export DEPSDIR	+=	$(CURDIR)/$(BUILD)
 
+# some more files and paths that we can gather up
+export LIBPATHS     +=  $(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+export OFILES       +=  $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export INCLUDE      +=  $(foreach dir,$(INCLUDES),-I$(dir)) \
+						$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+						-I$(CURDIR)/$(BUILD)
+export SRCFILES     +=  $(CFILES) $(CPPFILES) $(SFILES)
+
+# use C linker for all C files
+ifeq ($(strip $(CPPFILES)),)
+	export LD	:=	$(CC)
+else
+	export LD	:=	$(CXX)
+endif
+
 # rules for each of the targets, which includes the respective makefile fragment
 
 ifeq (pc,$(MAKECMDGOALS))
