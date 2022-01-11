@@ -17,7 +17,7 @@ HELPERS     := $(CHESTO_DIR)/helpers
 # warn those who came in here uninitiated
 ifeq (,$(MAKECMDGOALS))
 all:
-	@echo "This is a Chesto app! For more information see: https://gitlab.io/4tu/chesto"
+	@echo "This is a Chesto app! For more information see: https://gitlab.com/4tu/chesto"
 	@echo -e "No targets were specified, try:\n\tmake <target>"
 	@echo "Where <target> is one of: pc, pc-sdl1, wiiu, switch, 3ds, wii"
 endif
@@ -38,7 +38,7 @@ export CFILES   +=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 export CPPFILES +=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 export SFILES   +=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 
-# our common dkP locations, not used by the PC targets
+# our common dkP toolchain locations, not used by the PC targets
 DEVKITPRO ?= /opt/devkitpro
 DEVKITARM ?= $(DEVKITPRO)/devkitARM
 DEVKITPPC ?= $(DEVKITPRO)/devkitPPC
@@ -96,8 +96,7 @@ ifeq (wii,$(MAKECMDGOALS))
 include $(HELPERS)/Makefile.wii
 endif
 
-# .PHONY: clean
-
-# clean:
+#.PHONY: clean
+#clean:
 # 	$(shell rm -rf build_3ds build_wii build_wiiu build_switch)
-# 	$(shell find . -name "*.o" -exec rm {} \;)
+#	$(shell find . -name "*.o" -exec rm {} \;)
