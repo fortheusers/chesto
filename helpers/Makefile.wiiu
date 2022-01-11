@@ -19,9 +19,8 @@ LIBDIRS		:= $(PORTLIBS) $(WUT_ROOT)
 SOURCES     += $(CHESTO_DIR)/libs/wiiu_kbd
 VPATH       += $(CHESTO_DIR)/libs/wiiu_kbd
 
-#-------------------------------------------------------------------------------
-# no need to edit anything past this point unless you need to add additional
-# rules for different file extensions
+export LD	:=	$(CXX)
+
 #-------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #-------------------------------------------------------------------------------

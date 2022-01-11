@@ -4,7 +4,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 
 EXEFS_SRC	:=	exefs_src
 
-ARCH	+=	-march=armv8-a -mtp=soft -fPIE
+ARCH	+=	-march=armv8-a -fPIE
 
 CFLAGS	+=	-g -Wall -O2 \
 			-ffast-math \
@@ -21,9 +21,8 @@ LIBDIRS	:= $(PORTLIBS) $(LIBNX)
 
 NO_NACP := 1 # idk
 
-#---------------------------------------------------------------------------------
-# no need to edit anything past this point unless you need to add additional
-# rules for different file extensions
+export LD	:=	$(CXX)
+
 #---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------

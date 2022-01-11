@@ -11,9 +11,6 @@ BUILD   := build_wii
 LIBDIRS	:= $(DEVKITPRO)/portlibs/wii $(DEVKITPRO)/portlibs/ppc
 
 #---------------------------------------------------------------------------------
-# no need to edit anything past this point unless you need to add additional
-# rules for different file extensions
-#---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
@@ -33,6 +30,8 @@ TPLFILES	:=	$(SCFFILES:.scf=.tpl)
 export OFILES	+=	$(addsuffix .o,$(BINFILES)) \
 					$(addsuffix .o,$(TPLFILES)) \
 					$(sFILES:.s=.o)
+
+export LD	:=	$(CXX)
 
 #---------------------------------------------------------------------------------
 # build a list of include paths

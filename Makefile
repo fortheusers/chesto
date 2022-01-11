@@ -61,13 +61,6 @@ export INCLUDE      +=  $(foreach dir,$(INCLUDES),-I$(dir)) \
 						-I$(CURDIR)/$(BUILD)
 export SRCFILES     +=  $(CFILES) $(CPPFILES) $(SFILES)
 
-# use C linker for all C files
-ifeq ($(strip $(CPPFILES)),)
-	export LD	:=	$(CC)
-else
-	export LD	:=	$(CXX)
-endif
-
 # rules for each of the targets, which includes the respective makefile fragment
 
 ifeq (pc,$(MAKECMDGOALS))

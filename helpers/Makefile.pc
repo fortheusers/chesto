@@ -11,7 +11,6 @@ else
 endif
 
 pc: $(OFILES)
-	echo $(SOURCES)
 	$(CXX) $(OFILES) $(LDFLAGS) -o $(BINARY).bin -fstack-protector-all # -framework Cocoa
 
 pc-sdl1: $(OFILES)
