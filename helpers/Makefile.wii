@@ -2,7 +2,7 @@ include $(HELPERS)/Makefile.sdl1
 include $(HELPERS)/Makefile.resin
 include $(DEVKITPPC)/wii_rules
 
-CFLAGS      +=	-g -O2 -Wall $(MACHDEP) -DUSE_RAMFS -DWII -DNETWORK_MOCK
+CFLAGS      +=	-g -O2 -Wall $(MACHDEP) -DUSE_RAMFS -DUSE_FILE32API -DWII -DNETWORK_MOCK
 LDFLAGS     +=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 LIBS        +=  -lfat -lwiiuse -lbte -laesnd -logc -lwiikeyboard

@@ -9,4 +9,4 @@ include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
 CFLAGS		+=	$(ROMFS_CFLAGS)
 CXXFLAGS	+=	$(ROMFS_CFLAGS)
 LIBS		+=	$(ROMFS_LIBS)
-OFILES		+=	$(ROMFS_TARGET)
+OFILES		+=	$(ROMFS_TARGET) romfs.o
