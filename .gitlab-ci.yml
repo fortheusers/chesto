@@ -7,7 +7,7 @@ pages:
   stage: deploy
   script:
     - pacman -Syu || true
-    - pacman --noconfirm -S doxygen
+    - pacman --noconfirm -S doxygen gcc gcc-libs
     - doxygen
     - mkdir -p public
     - cp -r docs/html/* public
