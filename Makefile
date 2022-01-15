@@ -27,6 +27,12 @@ endif
 SOURCES   += libs/chesto/src
 INCLUDES  += libs/chesto/src
 
+# for resin platform (non-PC), include some needed vars
+ifeq (,$(findstring pc,$(MAKECMDGOALS)))
+SOURCES   += libs/chesto/libs/resinfs/source
+INCLUDES  += libs/chesto/libs/resinfs/include
+endif
+
 CFLAGS	  += $(INCLUDE)
 CXXFLAGS  += $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++14
 ASFLAGS   += -g $(ARCH)

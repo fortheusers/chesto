@@ -1,5 +1,4 @@
 include $(HELPERS)/Makefile.sdl2
-include $(HELPERS)/Makefile.resin
 include $(DEVKITPRO)/wut/share/wut_rules
 
 CFLAGS		+=	-g -Wall -O2 -ffunction-sections \
@@ -11,7 +10,7 @@ CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOY
 ASFLAGS		+=	-g $(MACHDEP)
 LDFLAGS		+=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 
-LIBS		+= -lSDL2_mixer -lmpg123 -lSDL2 -lwut
+LIBS		+= -lSDL2_mixer -lmodplug -lmpg123 -lvorbisidec -logg -lSDL2 -lwut
 
 BUILD		:= build_wiiu
 LIBDIRS		:= $(PORTLIBS) $(WUT_ROOT)
@@ -44,6 +43,7 @@ clean:
 #-------------------------------------------------------------------------------
 else
 .PHONY:	all
+include $(HELPERS)/Makefile.resin
 
 DEPENDS	:=	$(OFILES:.o=.d)
 

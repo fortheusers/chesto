@@ -1,5 +1,4 @@
 include $(HELPERS)/Makefile.sdl1
-include $(HELPERS)/Makefile.resin
 include $(DEVKITARM)/3ds_rules
 
 ARCH      := -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
@@ -125,6 +124,8 @@ $(GFXBUILD)/%.t3x	$(BUILD)/%.h	:	%.t3s
 #---------------------------------------------------------------------------------
 else
 .PHONY: all
+
+include $(HELPERS)/Makefile.resin
 
 DEPENDS	:=	$(OFILES:.o=.d)
 

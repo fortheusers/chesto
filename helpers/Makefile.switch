@@ -1,5 +1,4 @@
 include $(HELPERS)/Makefile.sdl2
-include $(HELPERS)/Makefile.resin
 include $(DEVKITPRO)/libnx/switch_rules
 
 EXEFS_SRC	:=	exefs_src
@@ -83,6 +82,8 @@ clean:
 #---------------------------------------------------------------------------------
 else
 .PHONY:	all switch
+
+include $(HELPERS)/Makefile.resin
 
 DEPENDS	:=	$(OFILES:.o=.d)
 

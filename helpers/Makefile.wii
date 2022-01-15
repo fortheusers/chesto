@@ -1,5 +1,4 @@
 include $(HELPERS)/Makefile.sdl1
-include $(HELPERS)/Makefile.resin
 include $(DEVKITPPC)/wii_rules
 
 CFLAGS      +=	-g -O2 -Wall $(MACHDEP) -DUSE_RAMFS -DUSE_FILE32API -DWII -DNETWORK_MOCK
@@ -44,7 +43,7 @@ export INCLUDE	+= -I$(LIBOGC_INC)
 export LIBPATHS	+=	-L$(LIBOGC_LIB)
 
 export OUTPUT	:=	$(CURDIR)/$(BINARY)_wii
-.PHONY: $(BUILD) clean wii
+.PHONY: $(BUILD) clean wii all
 
 #---------------------------------------------------------------------------------
 wii: $(BUILD)
@@ -63,6 +62,8 @@ run:
 
 #---------------------------------------------------------------------------------
 else
+
+include $(HELPERS)/Makefile.resin
 
 #---------------------------------------------------------------------------------
 # main targets
