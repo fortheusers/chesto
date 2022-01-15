@@ -9,8 +9,9 @@ public:
 	Button(const char* text, int button, bool dark = false, int size = 20, int width = 0);
 
 	bool process(InputEvents* event);
-	void render(Element* parent);
-	void position(int x, int y);
+
+	void updateBounds();
+	void updateText(const char* inc_text);
 
 private:
 	static CST_Color colors[2];
@@ -19,10 +20,10 @@ private:
 	/// the physical button to activate this button
 	int physical = -1;
 
-	/// original x and y coordinates of this button before add in the parent
-	int ox = 0, oy = 0;
+	// a width we set the button to regardless of inner text
+	int fixedWidth = 0;
 
-	/// whether the button is dark or light themed
+	// whether the button is dark or light themed
 	bool dark = false;
 
 	TextElement icon;

@@ -62,9 +62,9 @@ void DownloadQueue::setPlatformCurlFlags(CURL* c)
 #endif
 
 #if defined(SWITCH)
-  // ignore cert verification (TODO: not have to do this in the future)
-  curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
-  curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
+	// ignore cert verification (TODO: not have to do this in the future)
+	curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
+	curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
 #endif
 }
 #endif
@@ -75,12 +75,14 @@ void DownloadQueue::transferStart(DownloadOperation *download)
 #ifndef NETWORK_MOCK
 	download->eh = curl_easy_init();
 
-  setPlatformCurlFlags(download->eh);
+	setPlatformCurlFlags(download->eh);
 
 	curl_easy_setopt(download->eh, CURLOPT_URL, download->url.c_str());
 	curl_easy_setopt(download->eh, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(download->eh, CURLOPT_WRITEDATA, download);
 	curl_easy_setopt(download->eh, CURLOPT_PRIVATE, download);
+    
+    curl_easy_setopt(download->eh, CURLOPT_FOLLOWLOCATION, 1L);
 
 	curl_multi_add_handle(cm, download->eh);
 #endif
@@ -152,6 +154,6 @@ int DownloadQueue::process()
 
 	return ((still_alive) || (msgs_left > 0) || (queue.size() > 0));
 #else
-  return false;
+	return false;
 #endif
 }

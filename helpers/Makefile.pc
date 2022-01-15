@@ -1,0 +1,20 @@
+CXX = g++
+
+CFLAGS   += -g -DPC -Wno-narrowing
+INCLUDES += /usr/local/include /opt/homebrew/include
+LDFLAGS  += -L /opt/homebrew/lib -L /usr/local/lib $(LIBS)
+
+ifeq (pc,$(MAKECMDGOALS))
+	INCLUDES += /usr/include/SDL2 /usr/local/include/SDL2
+else
+	INCLUDES += /usr/include/SDL /usr/local/include/SDL
+endif
+
+pc: $(OFILES)
+	$(CXX) $(OFILES) $(LDFLAGS) -o $(BINARY).bin -fstack-protector-all # -framework Cocoa
+
+pc-sdl1: $(OFILES)
+	$(CXX) $(OFILES) $(LDFLAGS) -o $(BINARY).bin-sdl1 -fstack-protector-all # -framework Cocoa
+
+%.o: %.cpp %.c
+	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) $< -c -o $@ -fstack-protector-all

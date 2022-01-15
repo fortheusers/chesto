@@ -67,6 +67,9 @@ void NetImageElement::imgDownloadComplete(DownloadOperation *download)
 
 void NetImageElement::render(Element* parent)
 {
+	// if we're hidden, don't render
+	if (hidden) return;
+
 	if (mTexture)
 	{
 		Texture::render(parent);

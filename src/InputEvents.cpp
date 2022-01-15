@@ -14,9 +14,23 @@ int pad_buttons[] = { 1, 2, 3, 4, 0, 0, 0, 0, 8, 5, 6, 5, 7 };
 #define SDL_FINGERMOTION SDL_MOUSEMOTION
 #endif
 
+#if defined(__WIIU__) && defined(USE_KEYBOARD)
+#include "../libs/wiiu_kbd/keybdwrapper.h"
+#endif
+
 // our own "buttons" that correspond to the above SDL ones
 unsigned int ie_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
 
+// if true, don't count key inputs (PC/usb keyboard) as button events for us
+bool InputEvents::bypassKeyEvents = false;
+
+InputEvents::InputEvents()
+{
+#if defined(__WIIU__) && defined(USE_KEYBOARD)
+	// hook up keyboard events for wiiu and SDL (TODO: have these fired by SDL2 port itself)
+	KBWrapper* kbdwrapper = new KBWrapper(true, true);
+#endif
+}
 
 bool InputEvents::processSDLEvents()
 {
@@ -32,11 +46,15 @@ bool InputEvents::processSDLEvents()
 	// proces joystick hotplugging events
 	processJoystickHotplugging(&event);
 
+	this->isScrolling = false;
+
 #ifdef PC
 	this->allowTouch = false;
 #ifndef SDL1
-	if (event.type == SDL_MOUSEWHEEL)
+	if (event.type == SDL_MOUSEWHEEL) {
 		this->wheelScroll = event.wheel.y;
+		this->isScrolling = true;
+	}
 #endif
 #endif
 
@@ -50,15 +68,16 @@ bool InputEvents::processSDLEvents()
 	else if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))
 	{
 		this->keyCode = event.key.keysym.sym;
+		this->mod = event.key.keysym.mod;
 	}
 #endif
 	else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
 	{
-  #ifndef SDL1
+	#ifndef SDL1
 		this->keyCode = event.jbutton.button;
-  #else
-    this->keyCode = event.button.button;
-  #endif
+	#else
+		this->keyCode = event.button.button;
+	#endif
 	}
 	else if (this->type == SDL_MOUSEMOTION || this->type == SDL_MOUSEBUTTONUP || this->type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -103,6 +122,8 @@ void InputEvents::toggleHeldButtons()
 			{
 				// on key down, set the corresponding held boolean to true
 				held_directions[directionCode] = true;
+				held_type = this->type;
+
 				// reset the frame counter so we don't fire on this frame
 				// (initial reset is lower to add a slight delay when they first start holding)
 				curFrame = -25;
@@ -133,8 +154,9 @@ bool InputEvents::processDirectionalButtons()
 				continue;
 
 			// send a corresponding directional event
-			this->type = SDL_KEYDOWN;
-			this->keyCode = key_buttons[4 + x]; // send up through right directions
+			this->type = held_type;
+			bool isGamepad = (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP);
+			this->keyCode = isGamepad ? pad_buttons[4 + x] : key_buttons[4 + x]; // send up through right directions
 			this->noop = false;
 
 			return true;
@@ -181,7 +203,7 @@ int InputEvents::directionForKeycode()
 bool InputEvents::held(int buttons)
 {
 	// if it's a key event
-	if (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP)
+	if ((this->type == SDL_KEYDOWN || this->type == SDL_KEYUP) && !InputEvents::bypassKeyEvents)
 	{
 		for (int x = 0; x < TOTAL_BUTTONS; x++)
 			if (key_buttons[x] == keyCode && (buttons & ie_buttons[x]))
@@ -234,6 +256,11 @@ bool InputEvents::isTouch()
 	return isTouchDown() || isTouchDrag() || isTouchUp();
 }
 
+bool InputEvents::isScroll()
+{
+	return this->isScrolling;
+}
+
 bool InputEvents::isKeyDown()
 {
 	return this->type == SDL_KEYDOWN || this->type == SDL_JOYBUTTONDOWN;
@@ -246,7 +273,7 @@ bool InputEvents::isKeyUp()
 
 void InputEvents::processJoystickHotplugging(SDL_Event *event)
 {
-  #ifndef SDL1
+	#ifndef SDL1
 	SDL_Joystick *j;
 	switch(event->type)
 	{
@@ -266,5 +293,5 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 	default:
 		break;
 	}
-  #endif
+	#endif
 }

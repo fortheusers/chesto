@@ -1,6 +1,6 @@
+#include "Element.hpp"
 #pragma once
 
-#include "Element.hpp"
 #include "colorspaces.hpp"
 #include <unordered_map>
 
@@ -20,11 +20,9 @@ public:
 
 	bool process(InputEvents* event);
 	void render(Element* parent);
-	void background(uint8_t r, uint8_t g, uint8_t b);
-  void initAndStartMusic();
+	void initAndStartMusic();
 	void update();
-
-	rgb backgroundColor;
+	int mainLoop();
 
 	static CST_Renderer* mainRenderer;
 	static RootDisplay* mainDisplay;
@@ -33,8 +31,19 @@ public:
 	static Element* subscreen;
 	static Element* nextsubscreen;
 
+	static bool isDebug;
+	bool isRunning = true;
+	bool exitRequested = false;
+	bool canUseSelectToExit = false;
+
 	int lastFrameTime = 99;
 	SDL_Event needsRender;
+
+	// our main input events
+	InputEvents* events;
+
+	std::vector<Element*> trash;
+	void recycle();
 
 #if defined(MUSIC)
 	Mix_Music* music;

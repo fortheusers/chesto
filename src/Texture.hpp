@@ -53,6 +53,9 @@ public:
 	/// Return texture's original size
 	void getTextureSize(int *w, int *h);
 
+	// chainables
+	Texture* setSize(int w, int h);
+
 protected:
 	/// Cache previously displayed textures
 	static std::unordered_map<std::string, TextureData> texCache;

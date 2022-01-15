@@ -1,4 +1,4 @@
-#include "Element.hpp"
+#include "RootDisplay.hpp"
 #include <algorithm>
 
 Element::~Element()
@@ -6,10 +6,23 @@ Element::~Element()
 	removeAll();
 }
 
+Element::Element()
+{
+	needsRedraw = true;
+}
+
 bool Element::process(InputEvents* event)
 {
 	// whether or not we need to update the screen
 	bool ret = false;
+
+	// if we're hidden, don't process input
+	if (hidden) return ret;
+
+	// if 3ds mock, ignore top screen inputs
+#ifdef _3DS_MOCK
+	if (event->touchIn(0, 0, 400, 240)) return ret;
+#endif
 
 	// do any touch down, drag, or up events
 	if (touchable)
@@ -27,40 +40,100 @@ bool Element::process(InputEvents* event)
 	ret |= this->needsRedraw;
 	this->needsRedraw = false;
 
+	// if this variable is positive, decrease it, and force a redraw (acts like needsRedraw but over X redraws)
+	if (futureRedrawCounter > 0) {
+		futureRedrawCounter --;
+		ret |= true;
+	}
+
 	return ret;
 }
 
 void Element::render(Element* parent)
 {
-	for (int x = 0; x < this->elements.size(); x++)
-	{
-		// go through every subelement and run render
-		this->elements[x]->render(parent);
+	//if we're hidden, don't render
+	if (hidden) return;
+
+	// this needs to happen before any rendering
+	this->recalcPosition(parent);
+
+	// if we're in debug mode, draw an outline
+	if (this->hasBackground) {
+		// render the element background
+		this->renderBackground(true);
 	}
+	else if (RootDisplay::isDebug) {
+		backgroundColor = randomColor();
+		this->renderBackground(false);
+	}
+
+	// go through every subelement and run render
+	for (Element* subelement : elements)
+	{
+		subelement->render(this);
+	}
+
+	CST_Renderer* renderer = getRenderer();
 
 	// if we're touchable, and we have some animation counter left, draw a rectangle+overlay
 	if (this->touchable && this->elasticCounter > THICK_HIGHLIGHT)
 	{
-		CST_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10 };
-		CST_SetDrawBlend(parent->renderer, true);
-		CST_SetDrawColorRGBA(parent->renderer, 0xad, 0xd8, 0xe6, 0x90);
-		CST_FillRect(parent->renderer, &d);
+		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
+		CST_SetDrawBlend(renderer, true);
+		CST_SetDrawColorRGBA(renderer, 0xad, 0xd8, 0xe6, 0x90);
+		CST_FillRect(renderer, &d);
 	}
 
 	if (this->touchable && this->elasticCounter > NO_HIGHLIGHT)
 	{
-		CST_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10 };
-		rectangleRGBA(parent->renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
+		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
+		rectangleRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
 
 		if (this->elasticCounter == THICK_HIGHLIGHT)
 		{
 			// make it a little thicker by drawing more rectangles TODO: better way to do this?
 			for (int x = 0; x < 5; x++)
 			{
-				rectangleRGBA(parent->renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
+				rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
 			}
 		}
 	}
+}
+
+void Element::recalcPosition(Element* parent) {
+	// calculate absolute x/y positions
+	if (parent && !isAbsolute)
+	{
+		this->xAbs = parent->xAbs + this->x;
+		this->yAbs = parent->yAbs + this->y;
+	} else {
+		this->xAbs = this->x;
+		this->yAbs = this->y;
+	}
+}
+
+CST_Rect Element::getBounds()
+{
+	return {
+		.x = this->xAbs,
+		.y = this->yAbs,
+		.w = this->width,
+		.h = this->height,
+	};
+}
+
+void Element::renderBackground(bool fill) {
+	CST_Renderer* renderer = getRenderer();
+	CST_Rect bounds = getBounds();
+	CST_SetDrawColorRGBA(renderer,
+		static_cast<Uint8>(backgroundColor.r * 0xFF),
+		static_cast<Uint8>(backgroundColor.g * 0xFF),
+		static_cast<Uint8>(backgroundColor.b * 0xFF),
+		0xFF
+	);
+	CST_SetDrawBlend(renderer, false);
+	const auto RenderRect = fill ? CST_FillRect : CST_DrawRect;
+	RenderRect(renderer, &bounds);
 }
 
 void Element::position(int x, int y)
@@ -74,7 +147,7 @@ bool Element::onTouchDown(InputEvents* event)
 	if (!event->isTouchDown())
 		return false;
 
-	if (!event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
+	if (!event->touchIn(this->xAbs, this->yAbs, this->width, this->height))
 		return false;
 
 	// mouse pushed down, set variable
@@ -116,7 +189,7 @@ bool Element::onTouchUp(InputEvents* event)
 	if (!event->isTouchUp())
 		return false;
 
-	bool ret;
+	bool ret = false;
 
 	// ensure we were dragging first (originally checked the treshold above here, but now that actively invalidates it)
 	if (this->dragging)
@@ -124,14 +197,20 @@ bool Element::onTouchUp(InputEvents* event)
 		// check that this click is in the right coordinates for this square
 		// and that a subscreen isn't already being shown
 		// TODO: allow buttons to activae this too?
-		if (event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
+		if (event->touchIn(this->xAbs, this->yAbs, this->width, this->height))
 		{
 			// elasticCounter must be nonzero to allow a click through (highlight must be shown)
-			if (this->elasticCounter > 0 && action != NULL)
+			if (this->elasticCounter > 0)
 			{
 				// invoke this element's action
-				this->action();
-				ret |= true;
+				if (action != NULL) {
+					this->action();
+					ret |= true;
+				}
+				if (actionWithEvents != NULL) {
+					this->actionWithEvents(event);
+					ret |= true;
+				}
 			}
 		}
 	}
@@ -147,16 +226,31 @@ bool Element::onTouchUp(InputEvents* event)
 	return ret;
 }
 
-void Element::hide()
+CST_Renderer* Element::getRenderer()
 {
-	this->hidden = true;
+	// default to main renderer if we haven't set one yet
+	if (this->renderer != NULL)
+		return this->renderer;
+	return RootDisplay::mainRenderer;
+}
+
+void Element::setCST(CST_Renderer *renderer, CST_Window *window) {
+	if (renderer == NULL)
+		return;
+	this->renderer = renderer;
+	this->window = window;
+	for (Element* child : this->elements) {
+		child->setCST(renderer, window);
+	}
 }
 
 void Element::append(Element *element)
 {
 	auto position = std::find(elements.begin(), elements.end(), element);
-	if (position == elements.end())
+	if (position == elements.end()) {
 		elements.push_back(element);
+		element->setCST(this->renderer, this->window);
+	}
 }
 
 void Element::remove(Element *element)
@@ -166,7 +260,69 @@ void Element::remove(Element *element)
 		elements.erase(position);
 }
 
-void Element::removeAll(void)
+void Element::wipeAll(bool delSelf)
 {
+	// delete's this element's children, then itself
+	for (auto child : elements) {
+		child->wipeAll(true);
+	}
 	elements.clear();
+
+	if (delSelf && !isProtected) {
+		delete this;
+	}
+}
+
+void Element::removeAll(bool moveToTrash)
+{
+	if (moveToTrash) {
+		// store in a list for free-ing up memory later
+		for (auto e : elements) {
+			RootDisplay::mainDisplay->trash.push_back(e);
+		}
+	}
+	elements.clear();
+}
+
+Element* Element::child(Element* child)
+{
+	this->elements.push_back(child);
+	child->parent = this;
+	child->recalcPosition(this);
+	return this;
+}
+
+Element* Element::setPosition(int x, int y)
+{
+	this->position(x, y);
+	return this;
+}
+
+Element* Element::setAction(std::function<void()> func)
+{
+	this->action = func;
+	return this;
+}
+
+Element* Element::centerHorizontallyIn(Element* parent)
+{
+	this->x = parent->width / 2 - this->width / 2;
+	return this;
+}
+
+Element* Element::centerVerticallyIn(Element* parent)
+{
+	this->y = parent->height / 2 - this->height / 2;
+	return this;
+}
+
+Element* Element::centerIn(Element* parent)
+{
+	return centerHorizontallyIn(parent)->centerVerticallyIn(parent);
+}
+
+Element* Element::setAbsolute(bool isAbs)
+{
+	isAbsolute = isAbs;
+	return this;
 }

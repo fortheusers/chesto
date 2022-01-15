@@ -6,25 +6,54 @@ CST_Color Button::colors[2] = {
 };
 
 Button::Button(const char* message, int button, bool dark, int size, int width)
-	: dark(dark)
-	, physical(button)
-	, icon(getUnicode(button), size * 1.25, &colors[dark], ICON)
-	, text(message, size, &colors[dark])
+	: physical(button)
+	, dark(dark)
+	, icon(getUnicode(button), (size / SCALER) * 1.25, &colors[dark], ICON)
+	, text(message, (size / SCALER), &colors[dark])
 {
-	int PADDING = 10;
+
+	super::append(&text);
+	super::append(&icon);
+
+	fixedWidth = width;
+
+	updateBounds();
+
+	this->touchable = true;
+	this->hasBackground = true;
+
+	// protect "stack" children
+	text.isProtected = icon.isProtected = true;
+
+	if (dark)
+	{
+		backgroundColor = (rgb){ 0x67/255.0, 0x6a/255.0, 0x6d/255.0 };
+#if defined(__WIIU__)
+		backgroundColor = (rgb){ 0x3b/255.0, 0x3c/255.0, 0x4e/255.0 };
+#endif
+	}
+	else
+		backgroundColor = (rgb){ 0xee/255.0, 0xee/255.0, 0xee/255.0 };
+}
+
+void Button::updateBounds()
+{
+	int PADDING = 10 / SCALER;
 
 	int bWidth = PADDING * 0.5 * (icon.width != 0); // gap space between button
 
 	text.position(PADDING * 2 + bWidth + icon.width, PADDING);
-	super::append(&text);
-
 	icon.position(PADDING * 1.7, PADDING + (text.height - icon.height) / 2);
-	super::append(&icon);
 
-	this->width = (width > 0) ? width : text.width + PADDING * 4 + bWidth + icon.width;
+	this->width = (fixedWidth > 0) ? fixedWidth : text.width + PADDING * 4 + bWidth + icon.width;
 	this->height = text.height + PADDING * 2;
+}
 
-	this->touchable = true;
+void Button::updateText(const char* inc_text)
+{
+	this->text.setText(inc_text);
+	this->text.update();
+	updateBounds();
 }
 
 const char* Button::getUnicode(int button)
@@ -43,17 +72,18 @@ const char* Button::getUnicode(int button)
 			return "\ue0a4";
 		case SELECT_BUTTON:
 			return "\ue0a5";
+		case L_BUTTON:
+			return "\ue0a6";
+		case R_BUTTON:
+			return "\ue0a7";
+		case ZL_BUTTON:
+			return "\ue0a8";
+		case ZR_BUTTON:
+			return "\ue0a9";
 		default:
 			break;
 	}
 	return "";
-}
-
-void Button::position(int x, int y)
-{
-	ox = x;
-	oy = y;
-	super::position(x, y);
 }
 
 bool Button::process(InputEvents* event)
@@ -66,33 +96,4 @@ bool Button::process(InputEvents* event)
 	}
 
 	return super::process(event);
-}
-
-void Button::render(Element* parent)
-{
-	if (this->parent == NULL)
-		this->parent = parent;
-
-	this->renderer = parent->renderer;
-
-	// update our x and y according to our parent
-	this->x = ox + parent->x;
-	this->y = oy + parent->y;
-
-	// draw bg for button
-	CST_Rect dimens = { x, y, width, height };
-
-	if (dark)
-	{
-		CST_SetDrawColor(parent->renderer, (CST_Color){ 0x67, 0x6a, 0x6d, 0xFF } );
-#if defined(__WIIU__)
-		CST_SetDrawColor(parent->renderer, (CST_Color){ 0x3b, 0x3c, 0x4e, 0xFF } );
-#endif
-	}
-	else
-		CST_SetDrawColor(parent->renderer, (CST_Color){ 0xee, 0xee, 0xee, 0xFF } );
-
-	CST_FillRect(parent->renderer, &dimens);
-
-	super::render(this);
 }

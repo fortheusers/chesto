@@ -3,9 +3,11 @@
 #ifndef SDL1
 #include <SDL2/SDL.h>
 typedef SDL_Keycode CST_Keycode;
+typedef uint16_t CST_Keymod;
 #else
 #include <SDL/SDL.h>
 typedef uint32_t CST_Keycode;
+typedef uint16_t CST_Keymod;
 #endif
 #include <functional>
 
@@ -53,6 +55,8 @@ typedef uint32_t CST_Keycode;
 class InputEvents
 {
 public:
+	InputEvents();
+
 	/// whether or not a button is pressed during this cycle
 	bool held(int buttons);
 	bool pressed(int buttons);
@@ -66,12 +70,15 @@ public:
 	bool update();
 
 	bool allowTouch = true;
+	bool isScrolling = false;
 
 	// whether or not the current event is one of a few known ones
 	bool isTouchDown();
 	bool isTouchUp();
 	bool isTouchDrag();
 	bool isTouch();
+
+	bool isScroll();
 	bool isKeyDown();
 	bool isKeyUp();
 
@@ -84,11 +91,15 @@ public:
 	void processJoystickHotplugging(SDL_Event *event);
 
 	CST_Keycode keyCode = -1;
+	CST_Keymod mod = -1;
 
 	bool held_directions[4] = { false, false, false, false };
+	Uint32 held_type;
+
 	int rapidFireRate = 12; // fire duplicate events if curframe mod rapidFireRate is 0 (higher = slower)
 	int curFrame = 0;
 
+	static bool bypassKeyEvents;
 	std::function<void()> quitaction; //Called for an SDL_Quit event, usually caused by a SIGINT
 
 #ifdef PC
@@ -99,6 +110,5 @@ public:
 	int xPos = 0;
 	bool noop = false;
 
-private:
 	Uint32 type;
 };

@@ -1,0 +1,12 @@
+# some values Chesto would expect when using resinfs
+CFLAGS       += -DUSE_RAMFS
+RAMFS_DIR    := resin
+ROMFS_TARGET :=	app.romfs.o
+
+include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
+
+# variables that the resinfs makefile expects
+CFLAGS		+=	$(ROMFS_CFLAGS)
+CXXFLAGS	+=	$(ROMFS_CFLAGS)
+LIBS		+=	$(ROMFS_LIBS)
+OFILES      +=  $(ROMFS_TARGET)

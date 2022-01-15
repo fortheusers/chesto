@@ -19,8 +19,11 @@ bool Texture::loadFromSurface(CST_Surface *surface)
 	if (!surface)
 		return false;
 
+	// will default MainDisplay's renderer if we don't have one in this->renderer
+	CST_Renderer* renderer = getRenderer();
+
 	// try to create a texture from the surface
-	CST_Texture *texture = CST_CreateTextureFromSurface(RootDisplay::mainRenderer, surface);
+	CST_Texture *texture = CST_CreateTextureFromSurface(renderer, surface);
 	if (!texture)
 		return false;
 
@@ -80,21 +83,26 @@ void Texture::render(Element* parent)
 	if (hidden)
 		return;
 
+	// update xAbs and yAbs
+	super::render(parent);
+
 	// rect of element's size
 	CST_Rect rect;
-	rect.x = x + parent->x;
-	rect.y = y + parent->y;
-	rect.w = width;
-	rect.h = height;
+	rect.x = this->xAbs;
+	rect.y = this->yAbs;
+	rect.w = this->width;
+	rect.h = this->height;
 
-  if (CST_isRectOffscreen(&rect))
-    return;
+	if (CST_isRectOffscreen(&rect))
+		return;
+
+	CST_Renderer* renderer = getRenderer();
 
 	if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG)
 	{
 		// draw colored background
-		CST_SetDrawColor(RootDisplay::mainRenderer, texFirstPixel);
-		CST_FillRect(RootDisplay::mainRenderer, &rect);
+		CST_SetDrawColor(renderer, texFirstPixel);
+		CST_FillRect(renderer, &rect);
 
 		// recompute drawing rect
 		if ((width * texH) > (height * texW))
@@ -115,20 +123,16 @@ void Texture::render(Element* parent)
 		rect.y += (height - rect.h) / 2;
 	}
 
-	if ((texScaleMode == SCALE_STRETCH) && angle!=0)
+	if (angle!=0)
 	{
 		// render the texture with a rotation
-
-		// only supported for SCALE_STRETCH textures,
-		// as the colored background wouldn't get rotated
-
 		CST_SetQualityHint("best");
-		CST_RenderCopyRotate(RootDisplay::mainRenderer, mTexture, NULL, &rect, this->angle);
+		CST_RenderCopyRotate(renderer, mTexture, NULL, &rect, this->angle);
 	}
 	else
 	{
 		// render the texture normally
-		CST_RenderCopy(RootDisplay::mainRenderer, mTexture, NULL, &rect);
+		CST_RenderCopy(renderer, mTexture, NULL, &rect);
 	}
 }
 
@@ -136,6 +140,12 @@ void Texture::resize(int w, int h)
 {
 	width = w;
 	height = h;
+}
+
+Texture* Texture::setSize(int w, int h)
+{
+	this->resize(w, h);
+	return this;
 }
 
 void Texture::setScaleMode(TextureScaleMode mode)

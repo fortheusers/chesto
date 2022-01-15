@@ -4,6 +4,9 @@ bool ListElement::process(InputEvents* event)
 {
 	bool ret = false;
 
+	// if we're hidden, don't process input
+	if (hidden) return ret;
+
 	// perform inertia scrolling for this element
 	ret |= this->handleInertiaScroll(event);
 
@@ -14,8 +17,8 @@ bool ListElement::process(InputEvents* event)
 
 bool ListElement::processUpDown(InputEvents* event)
 {
-  bool ret = false;
-  int SPEED = 60;
+	bool ret = false;
+	int SPEED = 60;
 
 	// handle up and down for the scroll view
 	if (event->isKeyDown())
@@ -27,7 +30,7 @@ bool ListElement::processUpDown(InputEvents* event)
 		ret |= event->held(UP_BUTTON) || event->held(DOWN_BUTTON);
 	}
 
-  return ret;
+	return ret;
 }
 
 bool ListElement::handleInertiaScroll(InputEvents* event)
@@ -38,7 +41,7 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 	if (event->isTouchDown())
 	{
 		// make sure that the mouse down's X coordinate is over the app list (not sidebar)
-		if (event->xPos < elem->x)
+		if (event->xPos < elem->xAbs)
 			return false;
 
 		// saw mouse down so set it in our element object
@@ -101,6 +104,8 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 
 		ret |= true;
 	}
+
+	if (ret) event->isScrolling = true;
 
 #ifdef PC
 	if (event->wheelScroll != 0)
