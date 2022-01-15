@@ -6,6 +6,7 @@ variables:
 pages:
   stage: deploy
   script:
+    - pacman -Syu || true
     - pacman --noconfirm -S doxygen
     - doxygen
     - mkdir -p public
