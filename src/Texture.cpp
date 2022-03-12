@@ -77,14 +77,14 @@ bool Texture::loadFromSurfaceSaveToCache(std::string &key, CST_Surface *surface)
 
 void Texture::render(Element* parent)
 {
+	// update xAbs and yAbs
+	super::render(parent);
+
 	if (!mTexture)
 		return;
 
 	if (hidden)
 		return;
-
-	// update xAbs and yAbs
-	super::render(parent);
 
 	// rect of element's size
 	CST_Rect rect;
