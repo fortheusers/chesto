@@ -82,6 +82,8 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 		// TODO: account for max number of apps too (prevent scrolling down forever)
 		if (elem->y > 0)
 			elem->y = 0;
+		if (elem->minYScroll < 0 && elem->y < elem->minYScroll)
+			elem->y = elem->minYScroll;
 
 		ret |= true;
 	}
