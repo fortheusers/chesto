@@ -1,9 +1,8 @@
-#include "DrawUtils.hpp"
-
 #pragma once
 
 #include "InputEvents.hpp"
 #include "colorspaces.hpp"
+#include "DrawUtils.hpp"
 
 #include <functional>
 #include <vector>
@@ -79,15 +78,8 @@ public:
 	// recalculate xAbs and yAbs based on the given parent
 	void recalcPosition(Element* parent);
 
-	// update and propogate a new window and renderer to all children
-	void setCST(CST_Renderer *renderer, CST_Window *window);
-
 	// the scale of the element (and its subelements!)
 	float scale = 1.0f;
-
-	// Chesto main graphics variables
-	CST_Window* window = NULL;
-	CST_Renderer* renderer = NULL;
 
 	/// whether or not this element can be touched (highlights bounds)
 	bool touchable = false;

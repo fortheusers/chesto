@@ -62,7 +62,6 @@ bool CST_DrawInit(RootDisplay* root)
 		return false;
 	}
 
-	RootDisplay::mainRenderer = root->renderer;
 	RootDisplay::mainDisplay = root;
 
 	for (int i = 0; i < SDL_NumJoysticks(); i++)

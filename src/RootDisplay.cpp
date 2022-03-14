@@ -21,7 +21,8 @@
 #include "DownloadQueue.hpp"
 #include "Button.hpp"
 
-CST_Renderer* RootDisplay::mainRenderer = NULL;
+CST_Renderer* RootDisplay::renderer = NULL;
+CST_Window* RootDisplay::window = NULL;
 Element* RootDisplay::subscreen = NULL;
 Element* RootDisplay::nextsubscreen = NULL;
 RootDisplay* RootDisplay::mainDisplay = NULL;
@@ -150,7 +151,7 @@ int RootDisplay::mainLoop()
 	this->initAndStartMusic();
 
 	DownloadQueue::init();
-	
+
 #ifdef __WIIU__
 	// setup procui callback for resuming application to force a chesto render
 	// https://stackoverflow.com/a/56145528 and http://bannalia.blogspot.com/2016/07/passing-capturing-c-lambda-functions-as.html

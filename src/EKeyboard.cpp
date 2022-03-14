@@ -30,7 +30,6 @@ void EKeyboard::render(Element* parent)
 
 	CST_Rect dimens = { this->x, this->y, this->width + 305, this->height + 140 };
 
-	this->window = parent->window;
 	auto renderer = getRenderer();
 
 	CST_SetDrawColor(renderer, { 0xf9, 0xf9, 0xf9, 0xFF });
@@ -115,7 +114,7 @@ bool EKeyboard::process(InputEvents* event)
 	// don't do anything if we're hidden, or there's a sidebar and it's active
 	if (hidden)
 		return false;
-	
+
 	// our keyboard will be processing its own key events (not button events)
 	InputEvents::bypassKeyEvents = true;
 
@@ -370,7 +369,7 @@ bool EKeyboard::listenForPhysicalKeys(InputEvents* e)
 		SDL_PushEvent(&sdlevent);
 		return true;
 	}
-	
+
 	if (keyCode == SDLK_ESCAPE) {
 		// dismiss keyboard, also programmatically
 		SDL_Event sdlevent;

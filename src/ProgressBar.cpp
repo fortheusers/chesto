@@ -16,14 +16,16 @@ void ProgressBar::render(Element* parent)
 	if (this->percent < 0)
 		return;
 
+	auto renderer = getRenderer();
+
 	if (dimBg)
 	{
 		// draw a big dim layer around the entire window before drawing this progress bar
 		CST_Rect dim = { 0, 0, 1280, 720 };
 
-		CST_SetDrawBlend(this->renderer, true);
-		CST_SetDrawColorRGBA(this->renderer, 0x00, 0x00, 0x00, 0xbb);
-		CST_FillRect(this->renderer, &dim);
+		CST_SetDrawBlend(renderer, true);
+		CST_SetDrawColorRGBA(renderer, 0x00, 0x00, 0x00, 0xbb);
+		CST_FillRect(renderer, &dim);
 	}
 
 	this->recalcPosition(parent);
@@ -38,14 +40,14 @@ void ProgressBar::render(Element* parent)
 	gray_rect.w = this->width;
 	gray_rect.h = 9;
 
-	CST_SetDrawColorRGBA(this->renderer, 0x98, 0x98, 0x98, 0xff); //gray2
-	CST_FillRect(this->renderer, &gray_rect);
+	CST_SetDrawColorRGBA(renderer, 0x98, 0x98, 0x98, 0xff); //gray2
+	CST_FillRect(renderer, &gray_rect);
 
 	// draw ending "circle"
-	CST_filledCircleRGBA(this->renderer, this->xAbs + this->width, this->yAbs, 4, 0x98, 0x98, 0x98, 0xff);
+	CST_filledCircleRGBA(renderer, this->xAbs + this->width, this->yAbs, 4, 0x98, 0x98, 0x98, 0xff);
 
 	// draw left "circle" (rounded part of bar)
-	CST_filledCircleRGBA(this->renderer, this->xAbs, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
+	CST_filledCircleRGBA(renderer, this->xAbs, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
 
 	// draw blue progress bar so far
 	CST_Rect blue_rect;
@@ -54,9 +56,9 @@ void ProgressBar::render(Element* parent)
 	blue_rect.w = this->width * this->percent;
 	blue_rect.h = 9;
 
-	CST_SetDrawColorRGBA(this->renderer, 0x56, 0xc1, 0xdf, 0xff); // blue2
-	CST_FillRect(this->renderer, &blue_rect);
+	CST_SetDrawColorRGBA(renderer, 0x56, 0xc1, 0xdf, 0xff); // blue2
+	CST_FillRect(renderer, &blue_rect);
 
 	// draw right "circle" (rounded part of bar, and ending)
-	filledCircleRGBA(this->renderer, this->xAbs + width * this->percent, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
+	filledCircleRGBA(renderer, this->xAbs + width * this->percent, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
 }

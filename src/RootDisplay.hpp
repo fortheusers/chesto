@@ -1,5 +1,5 @@
-#include "Element.hpp"
 #pragma once
+#include "Element.hpp"
 
 #include "colorspaces.hpp"
 #include <unordered_map>
@@ -24,7 +24,8 @@ public:
 	void update();
 	int mainLoop();
 
-	static CST_Renderer* mainRenderer;
+	static CST_Renderer* renderer;
+	static CST_Window* window;
 	static RootDisplay* mainDisplay;
 
 	static void switchSubscreen(Element* next);

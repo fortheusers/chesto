@@ -226,30 +226,11 @@ bool Element::onTouchUp(InputEvents* event)
 	return ret;
 }
 
-CST_Renderer* Element::getRenderer()
-{
-	// default to main renderer if we haven't set one yet
-	if (this->renderer != NULL)
-		return this->renderer;
-	return RootDisplay::mainRenderer;
-}
-
-void Element::setCST(CST_Renderer *renderer, CST_Window *window) {
-	if (renderer == NULL)
-		return;
-	this->renderer = renderer;
-	this->window = window;
-	for (Element* child : this->elements) {
-		child->setCST(renderer, window);
-	}
-}
-
 void Element::append(Element *element)
 {
 	auto position = std::find(elements.begin(), elements.end(), element);
 	if (position == elements.end()) {
 		elements.push_back(element);
-		element->setCST(this->renderer, this->window);
 	}
 }
 
@@ -325,4 +306,8 @@ Element* Element::setAbsolute(bool isAbs)
 {
 	isAbsolute = isAbs;
 	return this;
+}
+
+CST_Renderer* Element::getRenderer() {
+	return RootDisplay::renderer;
 }
