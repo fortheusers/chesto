@@ -184,7 +184,7 @@ void CST_SetDrawColorRGBA(CST_Renderer* renderer, uint8_t r, uint8_t g, uint8_t 
 #ifndef SDL1
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 #else
-	CUR_DRAW_COLOR = SDL_MapRGBA(RootDisplay::mainRenderer->format, r, g, b, a);
+	CUR_DRAW_COLOR = SDL_MapRGBA(RootDisplay::renderer->format, r, g, b, a);
 #endif
 }
 

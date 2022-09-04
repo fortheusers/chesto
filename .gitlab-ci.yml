@@ -1,4 +1,4 @@
-image: registry.gitlab.com/4tu/spheal
+image: ghcr.io/fortheusers/sealeo
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -6,8 +6,8 @@ variables:
 pages:
   stage: deploy
   script:
-    - pacman -Syu || true
-    - pacman --noconfirm -S doxygen gcc gcc-libs
+    - apt-get update
+    - apt-get -y install doxygen
     - doxygen
     - mkdir -p public
     - cp -r docs/html/* public
