@@ -20,9 +20,12 @@ public:
 
 	bool process(InputEvents* event);
 	void render(Element* parent);
-	void initAndStartMusic();
+
 	void update();
 	int mainLoop();
+
+	void initMusic();
+	void startMusic();
 
 	static CST_Renderer* renderer;
 	static CST_Window* window;

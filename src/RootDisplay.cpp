@@ -56,10 +56,15 @@ RootDisplay::RootDisplay()
 	this->events = new InputEvents();
 }
 
-void RootDisplay::initAndStartMusic()
+void RootDisplay::initMusic()
 {
 	//Initialize CST_mixer
 	CST_MixerInit(this);
+}
+
+void RootDisplay::startMusic()
+{
+	CST_FadeInMusic(this);
 }
 
 RootDisplay::~RootDisplay()
@@ -147,8 +152,8 @@ int RootDisplay::mainLoop()
 	// WHBLogCafeInit();
 #endif
 
-	// start music (only if MUSIC defined)
-	this->initAndStartMusic();
+	// initialize music (only if MUSIC defined)
+	this->initMusic();
 
 	DownloadQueue::init();
 

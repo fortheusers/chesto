@@ -40,6 +40,7 @@ class RootDisplay;
 // init / rendering analogues
 bool CST_DrawInit(RootDisplay* root);
 void CST_MixerInit(RootDisplay* root);
+void CST_FadeInMusic(RootDisplay* root);
 void CST_DrawExit();
 void CST_RenderPresent(CST_Renderer* render);
 void CST_FreeSurface(CST_Surface* surface);

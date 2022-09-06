@@ -10,7 +10,7 @@ CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOY
 ASFLAGS		+=	-g $(MACHDEP)
 LDFLAGS		+=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 
-LIBS		+= -lSDL2_mixer -lmodplug -lmpg123 -lvorbisidec -logg -lSDL2 -lwut
+LIBS		+= -lSDL2_mixer -lmodplug -lmpg123 -lvorbisidec -logg -lSDL2 -lwut -lcurl
 
 BUILD		:= build_wiiu
 LIBDIRS		:= $(PORTLIBS) $(WUT_ROOT)
@@ -38,7 +38,7 @@ $(BUILD): $(SRCFILES)
 #-------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(BINARY).rpx $(BINARY).elf
+	@rm -fr $(BUILD) $(BINARY).rpx $(BINARY).elf $(BINARY).wuhb
 
 #-------------------------------------------------------------------------------
 else
@@ -50,10 +50,10 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #-------------------------------------------------------------------------------
 # main targets
 #-------------------------------------------------------------------------------
-all		:	$(PWD)/$(BINARY).rpx
+all		:	$(PWD)/$(BINARY).wuhb
 
+$(PWD)/$(BINARY).wuhb	:	$(PWD)/$(BINARY).rpx
 $(PWD)/$(BINARY).rpx	:	$(OUTPUT).elf
-
 $(OUTPUT).elf	:	$(OFILES)
 
 -include $(DEPENDS)

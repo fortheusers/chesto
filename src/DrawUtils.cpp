@@ -97,11 +97,22 @@ void CST_MixerInit(RootDisplay* root)
 {
 #if defined(MUSIC)
 	Mix_Init(MIX_INIT_MP3);
-	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
-	root->music = Mix_LoadMUS(RAMFS "./res/music.mp3");
+	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
+		printf("Failed to initialize SDL2 mixer: %s\n", Mix_GetError());
+		return;
+	}
+	// root->music will be null if file does not exist or some issue
+	root->music = Mix_LoadMUS("./background.mp3");
+#endif
+}
+
+void CST_FadeInMusic(RootDisplay* root)
+{
+#if defined(MUSIC)
 	if (root->music)
 	{
 		Mix_FadeInMusic(root->music, -1, 300);
+		Mix_VolumeMusic(0.7 *  MIX_MAX_VOLUME);
 	}
 #endif
 }
