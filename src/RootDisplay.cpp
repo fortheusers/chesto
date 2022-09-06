@@ -45,11 +45,15 @@ RootDisplay::RootDisplay()
 
 	this->hasBackground = true;
 #if defined(__WIIU__)
-	this->backgroundColor = fromRGB(0x54, 0x55, 0x6e);
+	this->backgroundColor = fromRGB(0x20, 154, 199);
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	this->backgroundColor = fromRGB(0xe4, 0x00, 0x00);
+#elif defined(SWITCH)
+	this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
 #else
 	this->backgroundColor = fromRGB(0x42, 0x45, 0x48);
+	this->backgroundColor = fromRGB(0x20, 154, 199);
+	// this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
 #endif
 
 	// the main input handler

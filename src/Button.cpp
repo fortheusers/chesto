@@ -1,4 +1,5 @@
 #include "Button.hpp"
+#include <iostream>
 
 CST_Color Button::colors[2] = {
 	{ 0x00, 0x00, 0x00, 0xff }, // light
@@ -27,10 +28,11 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
 
 	if (dark)
 	{
-		backgroundColor = (rgb){ 0x67/255.0, 0x6a/255.0, 0x6d/255.0 };
-#if defined(__WIIU__)
-		backgroundColor = (rgb){ 0x3b/255.0, 0x3c/255.0, 0x4e/255.0 };
-#endif
+		backgroundColor = RootDisplay::mainDisplay->backgroundColor;
+		backgroundColor.r += 0x25/255.0;
+		backgroundColor.g += 0x25/255.0;
+		backgroundColor.b += 0x25/255.0;
+		// backgroundColor.r = fmin(backgroundColor.r, 1.0);
 	}
 	else
 		backgroundColor = (rgb){ 0xee/255.0, 0xee/255.0, 0xee/255.0 };
