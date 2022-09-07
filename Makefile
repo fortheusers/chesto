@@ -8,8 +8,11 @@ BINARY	    ?= $(shell basename $(PWD))
 APP_TITLE   ?= $(shell basename $(PWD))
 APP_AUTHOR  ?= $(shell git log -1 --pretty=format:'%an')
 APP_VERSION ?= $(shell git rev-parse --short HEAD)
+
+APP_NAME    ?= $(APP_TITLE)
+
 ICON_JPG    ?= $(PWD)/resin/res/icon.jpg
-ICON_PNG    ?= $(PWD)/resin/res/icon.png
+ICON_PNG    ?= $(PWD)/assets/icon.png
 
 CHESTO_DIR  := $(PWD)/libs/chesto
 HELPERS     := $(CHESTO_DIR)/helpers
@@ -33,7 +36,7 @@ SOURCES   += libs/chesto/libs/resinfs/source
 INCLUDES  += libs/chesto/libs/resinfs/include
 endif
 
-CFLAGS	  += $(INCLUDE)
+CFLAGS	  += $(INCLUDE) -DAPP_VERSION=\"$(APP_VERSION)\"
 CXXFLAGS  += $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++20
 ASFLAGS   += -g $(ARCH)
 
@@ -51,7 +54,7 @@ DEVKITPPC ?= $(DEVKITPRO)/devkitPPC
 DEVKITA64 ?= $(DEVKITPRO)/devkitA64
 
 # export our variables out to our other scripts
-export APP_AUTHOR APP_TITLE ICON_JPG ICON_PNG APP_VERSION BINARY
+export APP_AUTHOR APP_TITLE ICON_JPG ICON_PNG APP_VERSION BINARY APP_NAME
 export CFLAGS CXXFLAGS ASFLAGS RAMFS_DIR INCLUDES SOURCES HELPERS
 export CHESTO_DIR DEVKITPRO DEVKITARM DEVKITPPC DEVKITA64 OFILES
 

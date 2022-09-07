@@ -1,6 +1,10 @@
 include $(HELPERS)/Makefile.sdl2
 include $(DEVKITPRO)/wut/share/wut_rules
 
+export APP_TV_SPLASH  := $(PWD)/assets/tv_splash.png
+export APP_DRC_SPLASH := $(PWD)/assets/drc_splash.png
+export APP_ICON       := $(PWD)/assets/icon.png
+
 CFLAGS		+=	-g -Wall -O2 -ffunction-sections \
 				-ffast-math \
 				$(MACHDEP)
