@@ -100,6 +100,8 @@ void Texture::render(Element* parent)
 
 	if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG)
 	{
+		CST_SetDrawBlend(RootDisplay::renderer, false);
+	
 		// draw colored background
 		CST_SetDrawColor(renderer, texFirstPixel);
 		CST_FillRect(renderer, &rect);

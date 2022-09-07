@@ -111,8 +111,9 @@ void CST_FadeInMusic(RootDisplay* root)
 #if defined(MUSIC)
 	if (root->music)
 	{
-		Mix_FadeInMusic(root->music, -1, 300);
-		Mix_VolumeMusic(0.7 *  MIX_MAX_VOLUME);
+		Mix_VolumeMusic(0.6 *  MIX_MAX_VOLUME);
+		Mix_PlayMusic(root->music, -1);
+		Mix_VolumeMusic(0.6 *  MIX_MAX_VOLUME);
 	}
 #endif
 }

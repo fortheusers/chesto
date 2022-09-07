@@ -34,7 +34,7 @@ INCLUDES  += libs/chesto/libs/resinfs/include
 endif
 
 CFLAGS	  += $(INCLUDE)
-CXXFLAGS  += $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++14
+CXXFLAGS  += $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++20
 ASFLAGS   += -g $(ARCH)
 
 export TOPDIR := $(CURDIR)

@@ -58,11 +58,23 @@ RootDisplay::RootDisplay()
 
 	// the main input handler
 	this->events = new InputEvents();
+
+	// initialize music (only if MUSIC defined)
+	this->initMusic();
 }
 
 void RootDisplay::initMusic()
 {
-	//Initialize CST_mixer
+#ifdef SWITCH
+	// no music if we're in applet mode
+	// they use up too much memory, and a lot of people only use applet mode
+	AppletType at = appletGetAppletType();
+	if (at != AppletType_Application && at != AppletType_SystemApplication) {
+		return;
+	}
+#endif
+
+	// Initialize CST_mixer
 	CST_MixerInit(this);
 }
 
@@ -155,9 +167,6 @@ int RootDisplay::mainLoop()
 	// WHBLogUdpInit();
 	// WHBLogCafeInit();
 #endif
-
-	// initialize music (only if MUSIC defined)
-	this->initMusic();
 
 	DownloadQueue::init();
 
