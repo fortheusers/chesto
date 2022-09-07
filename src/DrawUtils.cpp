@@ -331,7 +331,7 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
 			return info;
 		}
 		if (v1 != NULL) {
-			// fmt.Println("ID3V2 tag found")
+			// fmt.Println("ID3V1 tag found")
 			info.push_back(v1->title[0]  ? v1->title  : "");
 			info.push_back(v1->artist[0] ? v1->artist : "");
 			info.push_back(v1->album[0]  ? v1->album  : "");
