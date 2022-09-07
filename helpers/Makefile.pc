@@ -1,8 +1,8 @@
 CXX = g++
 
-CFLAGS   += -g -DPC -Wno-narrowing
+CFLAGS   += -g -DPC -Wno-narrowing -DMUSIC
 INCLUDES += /usr/local/include /opt/homebrew/include
-LDFLAGS  += -L /opt/homebrew/lib -L /usr/local/lib $(LIBS)
+LDFLAGS  += -L /opt/homebrew/lib -L /usr/local/lib $(LIBS) -lSDL2_mixer
 
 ifeq (pc,$(MAKECMDGOALS))
 	INCLUDES += /usr/include/SDL2 /usr/local/include/SDL2
