@@ -51,9 +51,8 @@ RootDisplay::RootDisplay()
 #elif defined(SWITCH)
 	this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
 #else
-	this->backgroundColor = fromRGB(0x42, 0x45, 0x48);
-	this->backgroundColor = fromRGB(0x20, 154, 199);
-	// this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
+	// this->backgroundColor = fromRGB(0x42, 0x45, 0x48);
+	this->backgroundColor = fromRGB(30, 30, 30);
 #endif
 
 	// the main input handler

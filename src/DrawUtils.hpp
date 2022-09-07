@@ -9,6 +9,9 @@
 
 #if defined(MUSIC)
 	#include <SDL2/SDL_mixer.h>
+	#include <string>
+	#include <mpg123.h>
+	typedef Mix_Music CST_Music;
 #endif
 
 typedef SDL_Window CST_Window;
@@ -65,6 +68,10 @@ void CST_Delay(int time);
 
 int CST_GetTicks();
 bool CST_isRectOffscreen(CST_Rect* rect);
+
+#ifdef MUSIC
+std::vector<std::string> CST_GetMusicInfo(CST_Music* music);
+#endif
 
 // font cache analogues
 #ifndef SDL1

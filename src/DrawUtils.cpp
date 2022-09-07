@@ -300,3 +300,49 @@ Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...) { retur
 Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...) { return 0; }
 CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...) { return { x: 0, y:0, w: 0, h:0 }; }
 #endif
+
+#ifdef MUSIC
+
+// this method can use recent (late 2019) SDL_Mixer versions to read info about the song
+// (Currently commented out)
+// returns a size-3 vector of: (title, artist, album)
+std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
+	std::vector<std::string> info;
+	// info.push_back(Mix_GetMusicTitle(music));
+	// info.push_back(Mix_GetMusicArtistTag(music));
+	// info.push_back(Mix_GetMusicAlbumTag(music));
+
+	// have to use the mpg123 library manually to get this info
+	// adapted from https://gist.github.com/deepakjois/988032/640b7a41b0e62a394515697c142777ad3a1b8905
+	auto m = mpg123_new(NULL, NULL);
+	mpg123_open(m, "./background.mp3");
+	mpg123_scan(m);
+	auto meta = mpg123_meta_check(m);
+
+	mpg123_id3v1* v1;
+  	mpg123_id3v2* v2;
+
+	if (meta == MPG123_ID3 && mpg123_id3(m, &v1, &v2) == MPG123_OK) {
+		if (v2 != NULL) {
+			// fmt.Println("ID3V2 tag found")
+			info.push_back(v2->title && v2->title->p  ? v2->title->p  : "");
+			info.push_back(v2->artist && v2->artist->p ? v2->artist->p : "");
+			info.push_back(v2->album && v2->album->p  ? v2->album->p  : "");
+			return info;
+		}
+		if (v1 != NULL) {
+			// fmt.Println("ID3V2 tag found")
+			info.push_back(v1->title[0]  ? v1->title  : "");
+			info.push_back(v1->artist[0] ? v1->artist : "");
+			info.push_back(v1->album[0]  ? v1->album  : "");
+			return info;			
+		}
+	}
+
+	info.push_back("background.mp3");
+	info.push_back("");
+	info.push_back("");
+	return info;
+
+}
+#endif
