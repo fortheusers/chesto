@@ -3,6 +3,7 @@
 NetImageElement::NetImageElement(const char *url, std::function<Texture *(void)> getImageFallback, bool immediateLoad)
 {
 	std::string key = std::string(url);
+	// printf("Key: %s\n", key.c_str());
 	if (!loadFromCache(key))
 	{
 		// setup a temporary image fallback
@@ -34,8 +35,7 @@ NetImageElement::~NetImageElement()
 
 void NetImageElement::fetch()
 {
-	if (!downloadStarted && imgDownload)
-	{
+	if (!downloadStarted && imgDownload) {
 		DownloadQueue::downloadQueue->downloadAdd(imgDownload);
 		downloadStarted = true;
 	}

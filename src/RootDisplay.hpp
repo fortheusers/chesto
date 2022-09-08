@@ -44,6 +44,10 @@ public:
 	// our main input events
 	InputEvents* events;
 
+#if defined(__WIIU__)
+	void processWiiUHomeOverlay();
+#endif
+
 	std::vector<Element*> trash;
 	void recycle();
 

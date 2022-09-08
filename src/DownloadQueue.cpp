@@ -1,5 +1,11 @@
 #include "DownloadQueue.hpp"
 
+#if defined(USE_RAMFS)
+#define RAMFS "resin:/"
+#else
+#define RAMFS "resin/"
+#endif
+
 #define MAX_PARALLEL_DOWNLOADS	4
 
 DownloadQueue* DownloadQueue::downloadQueue = NULL;
@@ -48,24 +54,15 @@ void DownloadQueue::downloadCancel(DownloadOperation *download)
 {
 	if (download->status == DownloadStatus::DOWNLOADING)
 		transferFinish(download);
-	else if (download->status == DownloadStatus::QUEUED)
+	else if (download->status == DownloadStatus::QUEUED && queue.size() > 0)
 		queue.remove(download);
 }
 
 #ifndef NETWORK_MOCK
 void DownloadQueue::setPlatformCurlFlags(CURL* c)
 {
-#if defined(__WIIU__)
-	// network optimizations
-	curl_easy_setopt(c, (CURLoption)213, 1);
-	curl_easy_setopt(c, (CURLoption)212, 0x8000);
-#endif
-
-#if defined(SWITCH) || defined(WII)
-	// ignore cert verification (TODO: not have to do this in the future)
-	curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
-	curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
-#endif
+	// from https://github.com/GaryOderNichts/wiiu-examples/blob/main/curl-https/romfs/cacert.pem
+	curl_easy_setopt(c, CURLOPT_CAINFO, RAMFS "res/cacert.pem");
 }
 #endif
 

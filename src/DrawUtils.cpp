@@ -111,9 +111,9 @@ void CST_FadeInMusic(RootDisplay* root)
 #if defined(MUSIC)
 	if (root->music)
 	{
-		Mix_VolumeMusic(0.6 *  MIX_MAX_VOLUME);
+		Mix_VolumeMusic(0.85 *  MIX_MAX_VOLUME);
 		Mix_PlayMusic(root->music, -1);
-		Mix_VolumeMusic(0.6 *  MIX_MAX_VOLUME);
+		Mix_VolumeMusic(0.85 *  MIX_MAX_VOLUME);
 	}
 #endif
 }
@@ -316,7 +316,7 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
 	// adapted from https://gist.github.com/deepakjois/988032/640b7a41b0e62a394515697c142777ad3a1b8905
 	auto m = mpg123_new(NULL, NULL);
 	mpg123_open(m, "./background.mp3");
-	mpg123_scan(m);
+	mpg123_seek(m, 0, SEEK_SET);
 	auto meta = mpg123_meta_check(m);
 
 	mpg123_id3v1* v1;
@@ -328,6 +328,7 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
 			info.push_back(v2->title && v2->title->p  ? v2->title->p  : "");
 			info.push_back(v2->artist && v2->artist->p ? v2->artist->p : "");
 			info.push_back(v2->album && v2->album->p  ? v2->album->p  : "");
+			mpg123_close(m);
 			return info;
 		}
 		if (v1 != NULL) {
@@ -335,13 +336,16 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
 			info.push_back(v1->title[0]  ? v1->title  : "");
 			info.push_back(v1->artist[0] ? v1->artist : "");
 			info.push_back(v1->album[0]  ? v1->album  : "");
+			mpg123_close(m);
 			return info;			
 		}
 	}
 
-	info.push_back("background.mp3");
+	// we couldn't find the tags, so just return empty strings
 	info.push_back("");
 	info.push_back("");
+	info.push_back("");
+	mpg123_close(m);
 	return info;
 
 }

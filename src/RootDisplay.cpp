@@ -45,7 +45,7 @@ RootDisplay::RootDisplay()
 
 	this->hasBackground = true;
 #if defined(__WIIU__)
-	this->backgroundColor = fromRGB(0x20, 154, 199);
+	this->backgroundColor = fromRGB(0x20 + 0x10, 154 + 0x10, 199 + 0x10);
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	this->backgroundColor = fromRGB(0xe4, 0x00, 0x00);
 #elif defined(SWITCH)
@@ -53,13 +53,14 @@ RootDisplay::RootDisplay()
 #else
 	// this->backgroundColor = fromRGB(0x42, 0x45, 0x48);
 	this->backgroundColor = fromRGB(30, 30, 30);
+	// this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
+			// this->backgroundColor = fromRGB(0x20 + 0x10, 154 + 0x10, 199 + 0x10);
+
+
 #endif
 
 	// the main input handler
 	this->events = new InputEvents();
-
-	// initialize music (only if MUSIC defined)
-	this->initMusic();
 }
 
 void RootDisplay::initMusic()
@@ -148,7 +149,7 @@ void RootDisplay::switchSubscreen(Element* next)
 
 #ifdef __WIIU__
 // proc ui will block if it keeps control
-void processWiiUHomeOverlay() {
+void RootDisplay::processWiiUHomeOverlay() {
 		auto status = ProcUIProcessMessages(true);
     if (status == PROCUI_STATUS_EXITING)
 			exit(0);
@@ -203,7 +204,7 @@ int RootDisplay::mainLoop()
 			// if we see a minus, exit immediately!
 			if (events->pressed(SELECT_BUTTON) && this->canUseSelectToExit) {
 				if (events->quitaction) events->quitaction();
-				isRunning = false;
+				else isRunning = false;
 			}
 		}
 
