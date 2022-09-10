@@ -14,6 +14,39 @@ void Texture::clear(void)
 	texFirstPixel = (CST_Color){0,0,0,0};
 }
 
+// https://stackoverflow.com/a/53067795
+Uint32 getpixel(CST_Surface *surface, int x, int y)
+{
+    int bpp = surface->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to retrieve */
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+switch (bpp)
+{
+    case 1:
+        return *p;
+        break;
+
+    case 2:
+        return *(Uint16 *)p;
+        break;
+
+    case 3:
+        if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+            return p[0] << 16 | p[1] << 8 | p[2];
+        else
+            return p[0] | p[1] << 8 | p[2] << 16;
+		break;
+
+	case 4:
+		return *(Uint32 *)p;
+		break;
+
+	default:
+		return 0;       /* shouldn't happen, but avoids warnings */
+	}
+}
+
 bool Texture::loadFromSurface(CST_Surface *surface)
 {
 	if (!surface)
@@ -28,10 +61,7 @@ bool Texture::loadFromSurface(CST_Surface *surface)
 		return false;
 
 	// load first pixel color
-	Uint32 pixelcolor = *(Uint32*)surface->pixels;
-	Uint32 emptybits = 8 * (4 - surface->format->BytesPerPixel);
-	pixelcolor >>= emptybits * (SDL_BYTEORDER == SDL_BIG_ENDIAN);
-	pixelcolor &= 0xffffffff >> emptybits;
+	auto pixelcolor = getpixel(surface, 0, 0);
 	SDL_GetRGB(pixelcolor, surface->format, &texFirstPixel.r, &texFirstPixel.g, &texFirstPixel.b);
 
 	// load texture size
@@ -104,6 +134,8 @@ void Texture::render(Element* parent)
 	
 		// draw colored background
 		CST_SetDrawColor(renderer, texFirstPixel);
+		auto color = (CST_Color){texFirstPixel.r,texFirstPixel.g,texFirstPixel.b,0xFF};
+		CST_SetDrawColor(renderer, color);
 		CST_FillRect(renderer, &rect);
 
 		// recompute drawing rect

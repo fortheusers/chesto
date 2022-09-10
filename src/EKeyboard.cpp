@@ -406,7 +406,11 @@ void EKeyboard::updateSize()
 	// can change quickly
 	int kXPad = (int)((30 / 400.0) * width);
 	int kXOff = (int)((22 / 400.0) * width);
-	// int kYPad = (int)((14 / 400.0) * width);
+#ifdef __WIIU__
+	// cheeky positioning hack because wiiu screen dimensions are different
+	// to properly fix, the above comments would need to be addressed
+	int kYPad = (int)((14 / 400.0) * width);
+#endif
 	int kYOff = (int)((33 / 400.0) * width);
 
 	this->textSize = 0.9375 * keyWidth;
