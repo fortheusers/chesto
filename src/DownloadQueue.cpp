@@ -8,6 +8,35 @@
 
 #define MAX_PARALLEL_DOWNLOADS	4
 
+
+#define SOCU_ALIGN 0x1000
+#define SOCU_BUFFERSIZE 0x100000
+
+#ifndef SO_TCPSACK
+#define SO_TCPSACK 0x00200 /* Allow TCP SACK (Selective acknowledgment) */
+#endif
+
+#ifndef SO_WINSCALE
+#define SO_WINSCALE 0x00400 /* Set scaling window option */ 
+#endif
+
+#ifndef SO_RCVBUF
+#define SO_RCVBUF 0x01002 /* Receive buffer size */
+#endif
+
+#ifndef NETWORK_MOCK
+// networking optimizations adapted from:
+//  - https://github.com/samdejong86/Arria-V-ADC-Ethernet-software/blob/master/ADC_Socket_bsp/iniche/src/h/socket.h
+int sockopt_callback_chesto(void *clientp, curl_socket_t curlfd, curlsocktype purpose)
+{
+    int winscale = 1, rcvbuf = 0x20000, tcpsack = 1;
+    setsockopt(curlfd, SOL_SOCKET, SO_WINSCALE, &winscale, sizeof(int));
+    setsockopt(curlfd, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(int));
+    setsockopt(curlfd, SOL_SOCKET, SO_TCPSACK, &tcpsack, sizeof(int));
+	return 0;
+}
+#endif
+
 DownloadQueue* DownloadQueue::downloadQueue = NULL;
 
 void DownloadQueue::init()
@@ -39,6 +68,7 @@ DownloadQueue::~DownloadQueue()
 {
 #ifndef NETWORK_MOCK
 	curl_multi_cleanup(cm);
+	cm = NULL;
 #endif
 }
 
@@ -63,6 +93,8 @@ void DownloadQueue::setPlatformCurlFlags(CURL* c)
 {
 	// from https://github.com/GaryOderNichts/wiiu-examples/blob/main/curl-https/romfs/cacert.pem
 	curl_easy_setopt(c, CURLOPT_CAINFO, RAMFS "res/cacert.pem");
+
+	curl_easy_setopt(c, CURLOPT_SOCKOPTFUNCTION, sockopt_callback_chesto);
 }
 #endif
 
@@ -90,7 +122,9 @@ void DownloadQueue::transferStart(DownloadOperation *download)
 void DownloadQueue::transferFinish(DownloadOperation *download)
 {
 #ifndef NETWORK_MOCK
-	curl_multi_remove_handle(cm, download->eh);
+	if (cm != NULL) {
+		curl_multi_remove_handle(cm, download->eh);
+	}
 	curl_easy_cleanup(download->eh);
 #endif
 	transfers--;

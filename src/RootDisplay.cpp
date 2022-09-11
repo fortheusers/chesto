@@ -54,8 +54,8 @@ RootDisplay::RootDisplay()
 	// this->backgroundColor = fromRGB(0x42, 0x45, 0x48);
 	this->backgroundColor = fromRGB(30, 30, 30);
 	// this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
-			// this->backgroundColor = fromRGB(0x20 + 0x10, 154 + 0x10, 199 + 0x10);
-	this->backgroundColor = fromRGB(0x20 - 0x10, 154 - 0x10, 199 - 0x10);
+	// this->backgroundColor = fromRGB(0x20 + 0x10, 154 + 0x10, 199 + 0x10);
+	// this->backgroundColor = fromRGB(0x20 - 0x10, 154 - 0x10, 199 - 0x10);
 
 
 #endif
@@ -236,11 +236,10 @@ int RootDisplay::mainLoop()
 		this->recycle();
 	}
 
-	DownloadQueue::quit();
-
 	delete events;
 
 	if (!isProtected) delete this;
+	DownloadQueue::quit();
 
 	return 0;
 }
