@@ -1,13 +1,19 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 // This file should contain all external drawing SDL2/SDL1 calls
 // programs outside of chesto should not be
 // responsible for directly interacting with SDL!
 #include "DrawUtils.hpp"
 #include "RootDisplay.hpp"
 
+
 #ifdef SDL1
 static uint32_t CUR_DRAW_COLOR = 0xFFFFFFFF;
 static uint32_t LAST_SDL1_FLIP = 0;
 #endif
+
+char* musicData = NULL;
 
 bool CST_DrawInit(RootDisplay* root)
 {
@@ -90,6 +96,20 @@ void CST_DrawExit()
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 #endif
 
+#ifdef MUSIC
+	auto root = RootDisplay::mainDisplay;
+	if (root->music != NULL)
+	{
+		Mix_FreeMusic(root->music);
+		root->music = NULL;
+	}
+	if (musicData != NULL)
+	{
+		free(musicData);
+		musicData = NULL;
+	}
+#endif
+
 	SDL_Quit();
 }
 
@@ -102,7 +122,28 @@ void CST_MixerInit(RootDisplay* root)
 		return;
 	}
 	// root->music will be null if file does not exist or some issue
-	root->music = Mix_LoadMUS("./background.mp3");
+	// if it does exist, we'll read it all into memory to avoid streaming from disk
+	const char* filename = "background.mp3";
+	FILE* f = fopen(filename, "rb");
+	if (f == NULL) {
+		return;
+	}
+	fseek(f, 0, SEEK_END);
+	long fsize = ftell(f);
+	if (fsize <= 0) {
+		fclose(f);
+		return;
+	}
+
+	fseek(f, 0, SEEK_SET);
+
+	musicData = (char*)(malloc(fsize + 1));
+	fread(musicData, fsize, 1, f);
+	fclose(f);
+
+	musicData[fsize] = 0;
+
+	root->music = Mix_LoadMUS_RW(SDL_RWFromMem(musicData, fsize), 1);
 #endif
 }
 
