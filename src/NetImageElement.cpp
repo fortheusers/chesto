@@ -4,8 +4,10 @@ NetImageElement::NetImageElement(const char *url, std::function<Texture *(void)>
 {
 	std::string key = std::string(url);
 	// printf("Key: %s\n", key.c_str());
-	if (!loadFromCache(key))
-	{
+	if (loadFromCache(key)) {
+		loaded = true;
+	}
+	else {
 		// setup a temporary image fallback
 		if (getImageFallback)
 			imgFallback = getImageFallback();
@@ -55,6 +57,7 @@ void NetImageElement::imgDownloadComplete(DownloadOperation *download)
 	if (success)
 	{
 		this->needsRedraw = true;
+		loaded = true;
 
 		delete imgFallback;
 		imgFallback = nullptr;

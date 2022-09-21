@@ -344,11 +344,11 @@ CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, cons
 
 #ifdef MUSIC
 
-// this method can use recent (late 2019) SDL_Mixer versions to read info about the song
-// (Currently commented out)
 // returns a size-3 vector of: (title, artist, album)
 std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
 	std::vector<std::string> info;
+	// these methods can use recent (late 2019) SDL_Mixer versions to read info about the song
+	// (Currently commented out)
 	// info.push_back(Mix_GetMusicTitle(music));
 	// info.push_back(Mix_GetMusicArtistTag(music));
 	// info.push_back(Mix_GetMusicAlbumTag(music));

@@ -23,6 +23,7 @@ public:
 
 	/// Render the image
 	void render(Element* parent);
+	bool loaded = false;
 
 private:
 	void imgDownloadComplete(DownloadOperation *download);
