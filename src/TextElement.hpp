@@ -23,10 +23,10 @@ public:
 
 	/// update TextElement with changes
 	void update(void);
+	std::string text = "";
 
 private:
 	// default values
-	std::string text = "";
 	int textSize = 16;
 	CST_Color textColor = (CST_Color){ 0xff, 0xff, 0xff };
 	int textFont = NORMAL;

@@ -12,6 +12,9 @@ public:
 
 	void updateBounds();
 	void updateText(const char* inc_text);
+	const std::string getText();
+
+	TextElement text;
 
 private:
 	static CST_Color colors[2];
@@ -27,5 +30,4 @@ private:
 	bool dark = false;
 
 	TextElement icon;
-	TextElement text;
 };

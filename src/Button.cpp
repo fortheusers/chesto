@@ -99,3 +99,8 @@ bool Button::process(InputEvents* event)
 
 	return super::process(event);
 }
+
+const std::string Button::getText()
+{
+	return this->text.text;
+}
