@@ -18,8 +18,6 @@ LIBS	+= -lcurl -lEGL -lGLESv2 -lglapi -ldrm_nouveau -lwebp -lnx -lSDL2_mixer -lm
 BUILD   := build_switch
 LIBDIRS	:= $(PORTLIBS) $(LIBNX)
 
-NO_NACP := 1 # idk
-
 export LD	:=	$(CXX)
 
 #---------------------------------------------------------------------------------
@@ -54,9 +52,7 @@ ifeq ($(strip $(NO_ICON)),)
 	export NROFLAGS += --icon=$(APP_ICON)
 endif
 
-ifeq ($(strip $(NO_NACP)),)
-	export NROFLAGS += --nacp=$(CURDIR)/$(BINARY).nacp
-endif
+export NROFLAGS += --nacp=$(OUTPUT).nacp
 
 ifneq ($(APP_TITLEID),)
 	export NACPFLAGS += --titleid=$(APP_TITLEID)
@@ -96,11 +92,7 @@ $(OUTPUT).pfs0	:	$(OUTPUT).nso
 
 $(BINARY).nso	:	$(OUTPUT).elf
 
-ifeq ($(strip $(NO_NACP)),)
 $(PWD)/$(BINARY).nro	:	$(OUTPUT).elf $(OUTPUT).nacp
-else
-$(PWD)/$(BINARY).nro	:	$(OUTPUT).elf
-endif
 
 $(OUTPUT).elf	:	$(OFILES)
 

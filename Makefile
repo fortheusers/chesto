@@ -20,7 +20,7 @@ HELPERS     := $(CHESTO_DIR)/helpers
 # warn those who came in here uninitiated
 ifeq (,$(MAKECMDGOALS))
 all:
-	@echo "This is a Chesto app! For more information see: https://gitlab.com/4tu/chesto"
+	@echo "This is a Chesto app! For more information see: https://github.com/fortheusers/chesto"
 	@echo -e "No targets were specified, try:\n\tmake <target>"
 	@echo "Where <target> is one of: pc, pc-sdl1, wiiu, switch, 3ds, wii"
 endif
