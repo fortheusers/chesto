@@ -21,7 +21,7 @@ HELPERS     := $(CHESTO_DIR)/helpers
 ifeq (,$(MAKECMDGOALS))
 all:
 	@echo "This is a Chesto app! For more information see: https://github.com/fortheusers/chesto"
-	@echo -e "No targets were specified, try:\n\tmake <target>"
+	@echo "No targets were specified, try:\n\tmake <target>"
 	@echo "Where <target> is one of: pc, pc-sdl1, wiiu, switch, 3ds, wii"
 endif
 
@@ -36,7 +36,7 @@ SOURCES   += libs/chesto/libs/resinfs/source
 INCLUDES  += libs/chesto/libs/resinfs/include
 endif
 
-CFLAGS	  += $(INCLUDE) -DAPP_VERSION=\"$(APP_VERSION)\"
+CFLAGS	  += $(INCLUDE) -DAPP_VERSION=\"$(APP_VERSION)\" -frandom-seed=84248
 CXXFLAGS  += $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++20
 ASFLAGS   += -g $(ARCH)
 

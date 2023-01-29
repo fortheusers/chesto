@@ -52,6 +52,6 @@ public:
 	void recycle();
 
 #if defined(MUSIC)
-	Mix_Music* music;
+	Mix_Music* music = NULL;
 #endif
 };
