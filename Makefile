@@ -7,8 +7,9 @@
 BINARY	    ?= $(shell basename $(PWD))
 APP_TITLE   ?= $(shell basename $(PWD))
 APP_AUTHOR  ?= $(shell git log -1 --pretty=format:'%an')
-APP_VERSION ?= $(shell git rev-parse --short HEAD)
+GIT_HASH    ?= $(shell git rev-parse --short HEAD)
 
+APP_VERSION ?= 0.0.0
 APP_NAME    ?= $(APP_TITLE)
 
 ICON_JPG    ?= $(PWD)/resin/res/icon.jpg
@@ -16,6 +17,12 @@ ICON_PNG    ?= $(PWD)/assets/icon.png
 
 CHESTO_DIR  := $(PWD)/libs/chesto
 HELPERS     := $(CHESTO_DIR)/helpers
+
+# if debug has been specified, tack on the git hash to the version
+ifeq ($(DEBUG_BUILD),1)
+APP_VERSION := $(APP_VERSION)-$(GIT_HASH)
+CFLAGS    += -DDEBUG_BUILD
+endif
 
 # warn those who came in here uninitiated
 ifeq (,$(MAKECMDGOALS))

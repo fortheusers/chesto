@@ -10,6 +10,9 @@
 #define ICON_SIZE 150
 #endif
 
+#define SCREEN_WIDTH RootDisplay::screenWidth
+#define SCREEN_HEIGHT RootDisplay::screenHeight
+
 class RootDisplay : public Element
 {
 public:
@@ -25,6 +28,8 @@ public:
 	void initMusic();
 	void startMusic();
 
+	void setScreenResolution(int width, int height);
+
 	static CST_Renderer* renderer;
 	static CST_Window* window;
 	static RootDisplay* mainDisplay;
@@ -32,6 +37,11 @@ public:
 	static void switchSubscreen(Element* next);
 	static Element* subscreen;
 	static Element* nextsubscreen;
+
+	// dimensions of the screen, which can be modified
+	static int screenWidth;
+	static int screenHeight;
+	static float dpiScale;
 
 	static bool isDebug;
 	bool isRunning = true;

@@ -1,4 +1,5 @@
 #include "InputEvents.hpp"
+#include "RootDisplay.hpp"
 
 int TOTAL_BUTTONS = 18;
 
@@ -89,10 +90,14 @@ bool InputEvents::processSDLEvents()
 #ifndef SDL1
 	else if (allowTouch && (this->type == SDL_FINGERMOTION || this->type == SDL_FINGERUP || this->type == SDL_FINGERDOWN))
 	{
-		this->yPos = event.tfinger.y * 720;
-		this->xPos = event.tfinger.x * 1280;
+		this->yPos = event.tfinger.y * SCREEN_HEIGHT;
+		this->xPos = event.tfinger.x * SCREEN_WIDTH;
 	}
 #endif
+
+	// offset the x, y positions by the dpi scale
+	this->xPos = (int)(this->xPos * RootDisplay::dpiScale);
+	this->yPos = (int)(this->yPos * RootDisplay::dpiScale);
 
 	toggleHeldButtons();
 

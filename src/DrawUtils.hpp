@@ -66,6 +66,8 @@ CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* s
 void CST_SetQualityHint(const char* quality);
 
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a);
+float CST_GetDpiScale();
+void CST_SetWindowSize(CST_Window* renderer, int w, int h);
 void CST_Delay(int time);
 
 int CST_GetTicks();

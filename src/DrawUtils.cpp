@@ -17,7 +17,12 @@ char* musicData = NULL;
 
 bool CST_DrawInit(RootDisplay* root)
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
+	int sdl2Flags = 0;
+#ifndef SDL1
+	sdl2Flags |= SDL_INIT_GAMECONTROLLER;
+#endif
+
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | sdl2Flags) < 0)
 	{
 		printf("Failed to initialize SDL2 drawing library: %s\n", SDL_GetError());
 		return false;
@@ -31,9 +36,11 @@ bool CST_DrawInit(RootDisplay* root)
 	}
 
 	int SDLFlags = 0;
+	int windowFlags = 0;
 
 #ifndef SDL1
 	SDLFlags |= SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+	windowFlags |= SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
 #else
 	SDLFlags |= SDL_DOUBLEBUF | SDL_HWSURFACE;
 #ifdef _3DS
@@ -42,17 +49,15 @@ bool CST_DrawInit(RootDisplay* root)
 #endif
 
 #ifndef SDL1
-	root->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+	root->window = SDL_CreateWindow(
+		NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		SCREEN_WIDTH, SCREEN_HEIGHT, windowFlags);
 	root->renderer = SDL_CreateRenderer(root->window, -1, SDLFlags);
 	//Detach the texture
 	SDL_SetRenderTarget(root->renderer, NULL);
 #else
 	SDL_WM_SetCaption("chesto", NULL);
-	#ifdef _3DS
-	root->renderer = SDL_SetVideoMode(400, 480, 8, SDLFlags);
-	#else
 	root->renderer = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 8, SDLFlags);
-	#endif
 	root->window = root->renderer;
 #endif
 
@@ -308,6 +313,16 @@ void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32
 	filledCircleRGBA(renderer, x, y, radius, r, g, b, a);
 }
 
+void CST_SetWindowSize(CST_Window* window, int w, int h)
+{
+#ifndef SDL1
+	// actually resize the window, and adjust it for high DPI
+	SDL_SetWindowSize(window, w, h);
+#endif
+	// TODO: some equivalent for SDL1
+}
+
+
 void CST_Delay(int time)
 {
 	SDL_Delay(time);
@@ -330,6 +345,19 @@ bool CST_isRectOffscreen(CST_Rect* rect)
 		return true;
 
 	return false;
+}
+
+// returns the high-dpi scaling factor, by measuring the window size and the drawable size (ratio)
+float CST_GetDpiScale()
+{
+#ifndef SDL1
+	int w, h;
+	SDL_GetWindowSize(RootDisplay::window, &w, &h);
+	int dw, dh;
+	SDL_GL_GetDrawableSize(RootDisplay::window, &dw, &dh);
+	return (dw / (float) w);
+#endif
+	return 1.0;
 }
 
 #ifdef SDL1

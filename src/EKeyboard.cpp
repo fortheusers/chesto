@@ -10,9 +10,9 @@ EKeyboard::EKeyboard() : EKeyboard::EKeyboard(NULL)
 EKeyboard::EKeyboard(std::function<void(char)> typeAction)
 {
 	this->x = 30;
-	this->y = 300;
+	this->y = SCREEN_HEIGHT - 420;
 
-	this->width = 900;
+	this->width = SCREEN_WIDTH - 380;
 
 	this->typeAction = typeAction;
 

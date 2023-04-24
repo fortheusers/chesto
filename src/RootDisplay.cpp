@@ -28,13 +28,16 @@ Element* RootDisplay::nextsubscreen = NULL;
 RootDisplay* RootDisplay::mainDisplay = NULL;
 bool RootDisplay::isDebug = false;
 
+int RootDisplay::screenWidth = 1280;
+int RootDisplay::screenHeight = 720;
+float RootDisplay::dpiScale = 1.0f;
+
 RootDisplay::RootDisplay()
 {
 	// initialize the romfs for switch/wiiu
 #if defined(USE_RAMFS)
 	ramfsInit();
 #endif
-
 	// initialize internal drawing library
 	CST_DrawInit(this);
 
@@ -44,6 +47,11 @@ RootDisplay::RootDisplay()
 	this->height = SCREEN_HEIGHT;
 
 	this->hasBackground = true;
+
+	// set the display scale on high resolution displays
+	RootDisplay::dpiScale = CST_GetDpiScale();
+
+	// set platform-specific default background colors, (which can be overridden)
 #if defined(__WIIU__)
 	this->backgroundColor = fromRGB(0x20 - 0x10, 154 - 0x10, 199 - 0x10);
 #elif defined(_3DS) || defined(_3DS_MOCK)
@@ -52,12 +60,20 @@ RootDisplay::RootDisplay()
 	this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
 #else
 	this->backgroundColor = fromRGB(0x2d, 0x26, 0x49);
+#endif
 
-
+	// set starting resolution based on SDL version
+#ifndef SDL1
+	setScreenResolution(1280, 720);
+#elif defined(_3DS) || defined(_3DS_MOCK)
+	setScreenResolution(400, 480); // 3ds has a special resolution!
+#else
+	setScreenResolution(840, 640);
 #endif
 
 	// the main input handler
 	this->events = new InputEvents();
+
 }
 
 void RootDisplay::initMusic()
@@ -78,6 +94,20 @@ void RootDisplay::initMusic()
 void RootDisplay::startMusic()
 {
 	CST_FadeInMusic(this);
+}
+
+void RootDisplay::setScreenResolution(int width, int height)
+{
+	// set the screen resolution
+	SCREEN_WIDTH = width;
+	SCREEN_HEIGHT = height;
+
+	// update the root element
+	this->width = SCREEN_WIDTH;
+	this->height = SCREEN_HEIGHT;
+
+	// update the renderer, but respect the DPI scaling
+	CST_SetWindowSize(window, SCREEN_WIDTH / RootDisplay::dpiScale, SCREEN_HEIGHT / RootDisplay::dpiScale);
 }
 
 RootDisplay::~RootDisplay()
