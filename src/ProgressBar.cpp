@@ -1,4 +1,5 @@
 #include "ProgressBar.hpp"
+#include "RootDisplay.hpp"
 
 ProgressBar::ProgressBar()
 {
@@ -21,7 +22,7 @@ void ProgressBar::render(Element* parent)
 	if (dimBg)
 	{
 		// draw a big dim layer around the entire window before drawing this progress bar
-		CST_Rect dim = { 0, 0, 1280, 720 };
+		CST_Rect dim = { 0, 0, RootDisplay::screenWidth, RootDisplay::screenHeight };
 
 		CST_SetDrawBlend(renderer, true);
 		CST_SetDrawColorRGBA(renderer, 0x00, 0x00, 0x00, 0xbb);

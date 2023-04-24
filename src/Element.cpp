@@ -1,5 +1,6 @@
 #include "RootDisplay.hpp"
 #include <algorithm>
+#include "Constraint.hpp"
 
 Element::~Element()
 {
@@ -109,6 +110,12 @@ void Element::recalcPosition(Element* parent) {
 	} else {
 		this->xAbs = this->x;
 		this->yAbs = this->y;
+	}
+
+	// go through all constraints and apply them
+	for (Constraint* constraint : constraints)
+	{
+		constraint->apply(this);
 	}
 }
 
@@ -263,6 +270,7 @@ void Element::removeAll(bool moveToTrash)
 		}
 	}
 	elements.clear();
+	constraints.clear(); // remove all constraints too
 }
 
 Element* Element::child(Element* child)
@@ -310,4 +318,10 @@ Element* Element::setAbsolute(bool isAbs)
 
 CST_Renderer* Element::getRenderer() {
 	return RootDisplay::renderer;
+}
+
+Element* Element::constrain(int flags, int padding)
+{
+	constraints.push_back(new Constraint(flags, padding));
+	return this;
 }

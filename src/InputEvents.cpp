@@ -95,6 +95,15 @@ bool InputEvents::processSDLEvents()
 	}
 #endif
 
+	// if (this->type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
+	// 	printf("Window resized to %dx%d\n", event.window.data1, event.window.data2);
+	// 	RootDisplay::mainDisplay->setScreenResolution(
+	// 		event.window.data1 * RootDisplay::dpiScale,
+	// 		event.window.data2 * RootDisplay::dpiScale
+	// 	);
+	// 	RootDisplay::mainDisplay->needsRedraw = true;
+	// }
+
 	// offset the x, y positions by the dpi scale
 	this->xPos = (int)(this->xPos * RootDisplay::dpiScale);
 	this->yPos = (int)(this->yPos * RootDisplay::dpiScale);

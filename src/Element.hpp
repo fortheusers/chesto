@@ -24,6 +24,8 @@
 #define SCALER 1
 #endif
 
+class Constraint;
+
 class Element
 {
 public:
@@ -145,4 +147,11 @@ public:
 	Element* centerVerticallyIn(Element* parent);
 	Element* centerIn(Element* parent);
 	Element* setAbsolute(bool isAbs);
+
+	// constraints that can be added and used by positioning functions
+	std::vector<Constraint*> constraints;
+	Element* constrain(int flags, int padding = 0);
+
+	// a function to call to re-align according to all constraints
+	// std::function<void()> alignmentCommands;
 };
