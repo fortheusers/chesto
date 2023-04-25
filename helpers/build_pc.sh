@@ -22,7 +22,9 @@ if [ "$PLATFORM" = "ubuntu" ]; then
 elif [ "$PLATFORM" = "macos" ]; then
     brew install sdl2 sdl2_mixer sdl2_ttf sdl2_image sdl2_gfx wget git sdl sdl_ttf sdl_image sdl_gfx freetype sdl_mixer mpg123
 elif [ "$PLATFORM" = "windows" ]; then
-    choco install -y mingw make wget git sdl2 sdl
+    choco install -y make wget git sdl2 sdl
+    pacman -S git mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-SDL2 mingw64/mingw-w64-x86_64-SDL
+    export PATH="${PATH}:/mingw64/bin"
 else
     echo "Unknown platform: $PLATFORM"
     exit 1
