@@ -40,10 +40,22 @@ fi
 $COMMAND
 
 # package the binary into a zip, alongside assets
-echo "cd \$(dirname \$0) && ./${NAME}.${EXT}" > run.sh
-chmod +x ${NAME}.${EXT} run.sh
-cp run.sh run.command
-zip -r -9 "${NAME}_${PLATFORM}_${SDL_VERSION}.zip" ${NAME}.${EXT} resin run.sh run.command
+SYSTEM_SPECIFIC=""
+if [ "$PLATFORM" = "ubuntu" ]; then
+    echo "cd \$(dirname \$0) && ./${NAME}.${EXT}" > run.sh
+    chmod +x run.sh
+    SYSTEM_SPECIFIC="run.sh"
+elif [ "$PLATFORM" = "macos" ]; then
+    echo "cd \$(dirname \$0) && ./${NAME}.${EXT}" > run.command
+    chmod +x run.command
+    SYSTEM_SPECIFIC="run.command"
+elif [ "$PLATFORM" = "windows" ]; then
+    cp $NAME.${EXT} $NAME.exe
+    EXT="exe"
+fi
+
+chmod +x ${NAME}.${EXT}
+zip -r -9 "${NAME}_${PLATFORM}_${SDL_VERSION}.zip" ${NAME}.${EXT} resin ${SYSTEM_SPECIFIC}
 
 
 # depending on the OS, package the resulting binary in a zip file
