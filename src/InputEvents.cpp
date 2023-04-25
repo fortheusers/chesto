@@ -93,16 +93,16 @@ bool InputEvents::processSDLEvents()
 		this->yPos = event.tfinger.y * SCREEN_HEIGHT;
 		this->xPos = event.tfinger.x * SCREEN_WIDTH;
 	}
-#endif
 
-	// if (this->type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
-	// 	printf("Window resized to %dx%d\n", event.window.data1, event.window.data2);
-	// 	RootDisplay::mainDisplay->setScreenResolution(
-	// 		event.window.data1 * RootDisplay::dpiScale,
-	// 		event.window.data2 * RootDisplay::dpiScale
-	// 	);
-	// 	RootDisplay::mainDisplay->needsRedraw = true;
-	// }
+	if (this->type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
+		printf("Window resized to %dx%d\n", event.window.data1, event.window.data2);
+		RootDisplay::mainDisplay->setScreenResolution(
+			event.window.data1 * RootDisplay::dpiScale,
+			event.window.data2 * RootDisplay::dpiScale
+		);
+		RootDisplay::mainDisplay->needsRedraw = true;
+	}
+#endif
 
 	// offset the x, y positions by the dpi scale
 	this->xPos = (int)(this->xPos * RootDisplay::dpiScale);
