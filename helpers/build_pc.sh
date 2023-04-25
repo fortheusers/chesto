@@ -22,10 +22,10 @@ if [ "$PLATFORM" = "ubuntu" ]; then
 elif [ "$PLATFORM" = "macos" ]; then
     brew install sdl2 sdl2_mixer sdl2_ttf sdl2_image sdl2_gfx wget git sdl sdl_ttf sdl_image sdl_gfx freetype sdl_mixer mpg123
 elif [ "$PLATFORM" = "windows" ]; then
-    choco install -y make wget git
+    choco install -y make wget git zip
     wget https://repo.msys2.org/distrib/x86_64/msys2-x86_64-20230318.exe
     ./msys2-x86_64-20230318.exe install --confirm-command --root /c/MSYS2
-    export PATH="${PATH}:/c/MSYS2/usr/bin:/c/MSYS2/mingw64/bin"
+    export PATH="/c/MSYS2/usr/bin:/c/MSYS2/mingw64/bin:${PATH}"
     pacman --noconfirm -S mingw-w64-x86_64-curl mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_gfx mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_image mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-SDL_gfx mingw-w64-x86_64-SDL2
 else
     echo "Unknown platform: $PLATFORM"
@@ -36,7 +36,7 @@ fi
 COMMAND="make pc"
 EXT="bin"
 if [ "$SDL_VERSION" = "sdl1" ]; then
-    COMMAND="make pc_sdl1"
+    COMMAND="make pc-sdl1"
     EXT="bin-sdl1"
 fi
 
