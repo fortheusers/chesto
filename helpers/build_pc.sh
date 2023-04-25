@@ -54,9 +54,12 @@ elif [ "$PLATFORM" = "macos" ]; then
     chmod +x run.command
     SYSTEM_SPECIFIC="run.command"
 elif [ "$PLATFORM" = "windows" ]; then
-    python3 ./libs/chesto/helpers/win_copy_dlls.py
-    SYSTEM_SPECIFIC="*.dll"
-    EXT="exe"
+    python3 ./libs/chesto/helpers/win_copy_dlls.py ${NAME}.${EXT} # creates the .exe
+    EXT="bat"   # the batch script is the main now
+    echo "start .\\contents\\${NAME}.exe" > ${NAME}.${EXT}
+    mkdir -p contents
+    mv ${NAME}.exe *.dll contents
+    SYSTEM_SPECIFIC="contents"
 fi
 
 chmod +x ${NAME}.${EXT}
