@@ -83,11 +83,6 @@ export SRCFILES     +=  $(CFILES) $(CPPFILES) $(SFILES)
 
 # rules for each of the targets, which includes the respective makefile fragment
 
-ifeq ($(OS),Windows_NT)
-    LIBS += -lmingw32 -lSDL2main
-    CFLAGS += -DWIN32
-endif
-
 ifeq (pc,$(MAKECMDGOALS))
 include $(HELPERS)/Makefile.sdl2
 include $(HELPERS)/Makefile.pc

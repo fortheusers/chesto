@@ -1,2 +1,7 @@
+ifeq ($(OS),Windows_NT)
+    LIBS += -lmingw32 -lSDLmain
+    CFLAGS += -DWIN32
+endif
+
 LIBS   += -lSDL_ttf -lSDL_gfx -lSDL_image -lfreetype -ljpeg -lpng -lz -lbz2 -lSDL -lSDLmain -lm -lbz2
 CFLAGS += -DSDL1
