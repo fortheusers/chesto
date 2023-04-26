@@ -78,6 +78,12 @@ elif [ "$PLATFORM" = "windows" ]; then
     SYSTEM_SPECIFIC="contents"
 fi
 
+# error out if we don't have the binary!
+if [ ! -f ${NAME}.${EXT} ]; then
+    echo "Binary not found: ${NAME}.${EXT}, build error?"
+    exit 1
+fi
+
 chmod +x ${NAME}.${EXT}
 zip -r -9 "${NAME}_${PLATFORM}_${SDL_VERSION}.zip" ${NAME}.${EXT} resin ${SYSTEM_SPECIFIC}
 
