@@ -30,9 +30,11 @@
 int sockopt_callback_chesto(void *clientp, curl_socket_t curlfd, curlsocktype purpose)
 {
     int winscale = 1, rcvbuf = 0x20000, tcpsack = 1;
+#ifndef WIN32
     setsockopt(curlfd, SOL_SOCKET, SO_WINSCALE, &winscale, sizeof(int));
     setsockopt(curlfd, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(int));
     setsockopt(curlfd, SOL_SOCKET, SO_TCPSACK, &tcpsack, sizeof(int));
+#endif
 	return 0;
 }
 #endif

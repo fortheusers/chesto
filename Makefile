@@ -2,6 +2,10 @@
 # targets are specified by the invoking command. It also contains some
 # information that is common to all targets.
 
+# make sure the pwd is actually set
+PWD ?= $(shell pwd)
+export PWD
+
 # Generic info about the generated target that may be overridden
 # either via environment variables or the top level makefile
 BINARY	    ?= $(shell basename $(PWD))
@@ -78,6 +82,11 @@ export INCLUDE      +=  $(foreach dir,$(INCLUDES),-I$(dir)) \
 export SRCFILES     +=  $(CFILES) $(CPPFILES) $(SFILES)
 
 # rules for each of the targets, which includes the respective makefile fragment
+
+ifeq ($(OS),Windows_NT)
+    LIBS += -lmingw32 -lSDL2main
+    CFLAGS += -DWIN32
+endif
 
 ifeq (pc,$(MAKECMDGOALS))
 include $(HELPERS)/Makefile.sdl2

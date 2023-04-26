@@ -1,13 +1,13 @@
 CXX = g++
 
 CFLAGS   += -g -DPC -Wno-narrowing
-INCLUDES += /usr/local/include /opt/homebrew/include
-LDFLAGS  += -L /opt/homebrew/lib -L /usr/local/lib $(LIBS) -lSDL2_mixer -lmpg123
+INCLUDES += /usr/local/include /opt/homebrew/include C:/MSYS2/mingw64/include
+LDFLAGS  += -L /opt/homebrew/lib -L /usr/local/lib -L C:/MSYS2/mingw64/lib $(LIBS) -lSDL2_mixer -lmpg123
 
 ifeq (pc,$(MAKECMDGOALS))
-	INCLUDES += /usr/include/SDL2 /usr/local/include/SDL2
+	INCLUDES += /usr/include/SDL2 /usr/local/include/SDL2 C:/MSYS2/mingw64/include/SDL2
 else
-	INCLUDES += /usr/include/SDL /usr/local/include/SDL
+	INCLUDES += /usr/include/SDL /usr/local/include/SDL C:/MSYS2/mingw64/include/SDL
 endif
 
 pc: $(OFILES)

@@ -22,9 +22,11 @@ if [ "$PLATFORM" = "ubuntu" ]; then
 elif [ "$PLATFORM" = "macos" ]; then
     brew install sdl2 sdl2_mixer sdl2_ttf sdl2_image sdl2_gfx wget git sdl sdl_ttf sdl_image sdl_gfx freetype sdl_mixer mpg123
 elif [ "$PLATFORM" = "windows" ]; then
-    choco install -y make wget git sdl2 sdl
-    pacman -S git mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-SDL2 mingw64/mingw-w64-x86_64-SDL
-    export PATH="${PATH}:/mingw64/bin"
+    choco install -y make wget git
+    wget https://repo.msys2.org/distrib/x86_64/msys2-x86_64-20230318.exe
+    ./msys2-x86_64-20230318.exe install --confirm-command --root /c/MSYS2
+    export PATH="${PATH}:/c/MSYS2/usr/bin:/c/MSYS2/mingw64/bin"
+    pacman --noconfirm -S mingw-w64-x86_64-curl mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_gfx mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_image mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-SDL_gfx mingw-w64-x86_64-SDL2
 else
     echo "Unknown platform: $PLATFORM"
     exit 1
@@ -52,7 +54,8 @@ elif [ "$PLATFORM" = "macos" ]; then
     chmod +x run.command
     SYSTEM_SPECIFIC="run.command"
 elif [ "$PLATFORM" = "windows" ]; then
-    cp $NAME.${EXT} $NAME.exe
+    python3 ./libs/chesto/helpers/win_copy_dlls.py
+    SYSTEM_SPECIFIC="*.dll"
     EXT="exe"
 fi
 
