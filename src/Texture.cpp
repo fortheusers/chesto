@@ -199,7 +199,8 @@ bool Texture::saveTo(std::string &path)
 {
 	if (!mTexture)
 		return false;
-	
+
+#ifndef SDL1	
 	// render the texture to one that can be saved (TARGET ACCESS)
 	CST_Texture* target = SDL_CreateTexture(getRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, texW, texH);
 	if (!target)
@@ -217,4 +218,6 @@ bool Texture::saveTo(std::string &path)
 
 	// save the surface to the path
 	return CST_SavePNG(target, path.c_str());
+#endif
+	return false;
 }
