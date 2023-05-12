@@ -152,6 +152,26 @@ void CST_MixerInit(RootDisplay* root)
 #endif
 }
 
+// https://stackoverflow.com/a/51238719/4953343
+bool CST_SavePNG(CST_Texture* texture, const char* file_name)
+{
+#ifndef SDL1
+	auto renderer = RootDisplay::mainDisplay->renderer;
+    SDL_Texture* target = SDL_GetRenderTarget(renderer);
+    SDL_SetRenderTarget(renderer, texture);
+	printf("Error: %s\n", SDL_GetError());
+    int width, height;
+    SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+    SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    SDL_RenderReadPixels(renderer, NULL, surface->format->format, surface->pixels, surface->pitch);
+    IMG_SavePNG(surface, file_name);
+    SDL_FreeSurface(surface);
+    SDL_SetRenderTarget(renderer, target);
+#endif
+// TODO: SDL1 implementation
+	return true;
+}
+
 void CST_FadeInMusic(RootDisplay* root)
 {
 #if defined(MUSIC)
@@ -291,10 +311,10 @@ void CST_QueryTexture(CST_Texture* texture, int* w, int* h)
 #endif
 }
 
-CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface)
+CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface, bool isAccessible )
 {
 #ifndef SDL1
-	return SDL_CreateTextureFromSurface(renderer, surface);
+	return SDL_CreateTextureFromSurface(renderer, surface);	
 #else
 	// it's a secret to everyone
 	return SDL_ConvertSurface(surface, surface->format, NULL); //Creates duplicate of surface...psst it's not actually a texture

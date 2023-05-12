@@ -66,9 +66,8 @@ if [ "$PLATFORM" = "ubuntu" ]; then
     chmod +x run.sh
     SYSTEM_SPECIFIC="run.sh"
 elif [ "$PLATFORM" = "macos" ]; then
-    echo "cd \$(dirname \$0) && ./${NAME}.${EXT}" > run.command
-    chmod +x run.command
-    SYSTEM_SPECIFIC="run.command"
+    python3 ./libs/chesto/helpers/mac_copy_libs.py ${NAME}.${EXT} # creates the .app
+    EXT="app"
 elif [ "$PLATFORM" = "windows" ]; then
     python3 ./libs/chesto/helpers/win_copy_dlls.py ${NAME}.${EXT} # creates the .exe
     EXT="bat"   # the batch script is the main now

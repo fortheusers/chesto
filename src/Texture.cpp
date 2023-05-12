@@ -56,7 +56,7 @@ bool Texture::loadFromSurface(CST_Surface *surface)
 	CST_Renderer* renderer = getRenderer();
 
 	// try to create a texture from the surface
-	CST_Texture *texture = CST_CreateTextureFromSurface(renderer, surface);
+	CST_Texture *texture = CST_CreateTextureFromSurface(renderer, surface, true);
 	if (!texture)
 		return false;
 
@@ -193,4 +193,28 @@ void Texture::getTextureSize(int *w, int *h)
 		*w = texW;
 	if (h)
 		*h = texH;
+}
+
+bool Texture::saveTo(std::string &path)
+{
+	if (!mTexture)
+		return false;
+	
+	// render the texture to one that can be saved (TARGET ACCESS)
+	CST_Texture* target = SDL_CreateTexture(getRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, texW, texH);
+	if (!target)
+		return false;
+	
+	// set the target texture
+	SDL_SetRenderTarget(getRenderer(), target);
+
+	// render the texture
+	SDL_RenderCopy(getRenderer(), mTexture, NULL, NULL);
+
+	// reset the target texture
+	SDL_SetRenderTarget(getRenderer(), NULL);
+
+
+	// save the surface to the path
+	return CST_SavePNG(target, path.c_str());
 }

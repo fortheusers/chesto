@@ -56,6 +56,9 @@ public:
 	// chainables
 	Texture* setSize(int w, int h);
 
+	/// save this texture to the given file path as a PNG
+	bool saveTo(std::string& path);
+
 protected:
 	/// Cache previously displayed textures
 	static std::unordered_map<std::string, TextureData> texCache;
