@@ -16,8 +16,8 @@ PLATFORM=$2
 SDL_VERSION=$3
 
 # install deps for the current platform
-SDL2_CMDS = ""
-SDL1_CMDS = ""
+SDL2_CMDS=""
+SDL1_CMDS=""
 
 if [ "$PLATFORM" = "ubuntu" ]; then
     sudo apt-get update
@@ -77,8 +77,8 @@ elif [ "$PLATFORM" = "windows" ]; then
     SYSTEM_SPECIFIC="contents"
 fi
 
-# error out if we don't have the binary!
-if [ ! -f ${NAME}.${EXT} ]; then
+# error out if we don't have the binary! (or folder)
+if [ ! -f ${NAME}.${EXT} ] && [ ! -d ${NAME}.${EXT} ]; then
     echo "Binary not found: ${NAME}.${EXT}, build error?"
     exit 1
 fi
