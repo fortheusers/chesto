@@ -74,6 +74,7 @@ int CST_GetTicks();
 bool CST_isRectOffscreen(CST_Rect* rect);
 
 bool CST_SavePNG(CST_Texture* texture, const char* filename);
+void CST_SetWindowTitle(const char* title);
 
 #ifdef MUSIC
 std::vector<std::string> CST_GetMusicInfo(CST_Music* music);

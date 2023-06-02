@@ -380,6 +380,15 @@ float CST_GetDpiScale()
 	return 1.0;
 }
 
+void CST_SetWindowTitle(const char* title)
+{
+#ifndef SDL1
+	SDL_SetWindowTitle(RootDisplay::mainDisplay->window, title);
+#else
+	SDL_WM_SetCaption(title, NULL);
+#endif
+}
+
 #ifdef SDL1
 CST_Font* CST_CreateFont() { return NULL; }
 void CST_LoadFont(CST_Font* font,  CST_Renderer* renderer, const char* filename_ttf, Uint32 pointSize, CST_Color color, int style) { }

@@ -24,6 +24,7 @@ public:
 	/// Render the image
 	void render(Element* parent);
 	bool loaded = false;
+	bool updateSizeAfterLoad = false;
 
 private:
 	void imgDownloadComplete(DownloadOperation *download);

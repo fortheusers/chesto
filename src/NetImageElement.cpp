@@ -61,6 +61,11 @@ void NetImageElement::imgDownloadComplete(DownloadOperation *download)
 
 		delete imgFallback;
 		imgFallback = nullptr;
+
+		if (updateSizeAfterLoad) {
+			width = texW;
+			height = texH;
+		}
 	}
 
 	delete imgDownload;
