@@ -48,7 +48,7 @@ INCLUDES  += libs/chesto/libs/resinfs/include
 endif
 
 CFLAGS	  += $(INCLUDE) -DAPP_VERSION=\"$(APP_VERSION)\" -frandom-seed=84248
-CXXFLAGS  += $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++20
+CXXFLAGS  += $(CFLAGS) -fno-exceptions -std=gnu++20
 ASFLAGS   += -g $(ARCH)
 
 export TOPDIR := $(CURDIR)
