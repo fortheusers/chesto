@@ -325,3 +325,12 @@ Element* Element::constrain(int flags, int padding)
 	constraints.push_back(new Constraint(flags, padding));
 	return this;
 }
+
+// Move an element up within its parent
+Element* Element::moveToFront() {
+	if (parent != NULL) {
+		parent->remove(this);
+		parent->child(this);
+	}
+	return this;
+}

@@ -152,6 +152,8 @@ public:
 	std::vector<Constraint*> constraints;
 	Element* constrain(int flags, int padding = 0);
 
+	Element* moveToFront();
+
 	// a function to call to re-align according to all constraints
 	// std::function<void()> alignmentCommands;
 };
