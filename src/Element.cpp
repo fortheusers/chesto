@@ -334,3 +334,9 @@ Element* Element::moveToFront() {
 	}
 	return this;
 }
+
+Element* Element::setTouchable(bool touchable)
+{
+	this->touchable = touchable;
+	return this;
+}

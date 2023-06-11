@@ -153,6 +153,7 @@ public:
 	Element* constrain(int flags, int padding = 0);
 
 	Element* moveToFront();
+	Element* setTouchable(bool touchable);
 
 	// a function to call to re-align according to all constraints
 	// std::function<void()> alignmentCommands;
