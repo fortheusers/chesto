@@ -401,6 +401,18 @@ void CST_roundedBoxRGBA (
 #endif
 }
 
+void CST_roundedRectangleRGBA (
+	SDL_Renderer *renderer,
+	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
+	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
+) {
+#ifndef SDL1
+	roundedRectangleRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+#else
+	// TODO: implement me (rounded box for SDL1)
+#endif
+}
+
 #ifdef SDL1
 CST_Font* CST_CreateFont() { return NULL; }
 void CST_LoadFont(CST_Font* font,  CST_Renderer* renderer, const char* filename_ttf, Uint32 pointSize, CST_Color color, int style) { }

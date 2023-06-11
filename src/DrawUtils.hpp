@@ -71,6 +71,11 @@ void CST_roundedBoxRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 );
+void CST_roundedRectangleRGBA (
+	SDL_Renderer *renderer,
+	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
+	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
+);
 float CST_GetDpiScale();
 void CST_SetWindowSize(CST_Window* renderer, int w, int h);
 void CST_Delay(int time);

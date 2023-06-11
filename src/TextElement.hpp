@@ -22,8 +22,11 @@ public:
 	void setWrappedWidth(int wrapped_width);
 
 	/// update TextElement with changes
-	void update(void);
+	void update(bool forceUpdate = false);
 	std::string text = "";
+
+	// if specified, will override any font_type setting
+	std::string customFontPath = "";
 
 private:
 	// default values

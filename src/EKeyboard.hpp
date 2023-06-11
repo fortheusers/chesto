@@ -94,6 +94,10 @@ public:
 	int kYPad = 0;
 	int ySpacing = 0;
 
+	// whether or not to use the rounded rectangle key style
+	bool hasRoundedKeys = false;
+	CST_Font* roundKeyFont = NULL;
+
 	bool touchMode = false;
 	bool immersiveMode = false; // no rendering, but still allow inputs
 								// if using a USB keyboard, they can hide the on-screen one

@@ -47,15 +47,19 @@ void TextElement::setWrappedWidth(int wrapped_width)
 	this->textWrappedWidth = wrapped_width;
 }
 
-void TextElement::update(void)
+void TextElement::update(bool forceUpdate)
 {
 	std::string key = text + std::to_string(textSize);
 
 	clear();
 
-	if (!loadFromCache(key))
+	if (!loadFromCache(key) || forceUpdate)
 	{
-		TTF_Font* font = TTF_OpenFont(fontPaths[textFont % 3], textSize);
+		auto fontPath = fontPaths[textFont % 3];
+		if (customFontPath != "") {
+			fontPath = customFontPath.c_str();
+		}
+		TTF_Font* font = TTF_OpenFont(fontPath, textSize);
 
 		CST_Surface *textSurface = ((textFont == ICON) || (textWrappedWidth == 0)) ?
 			TTF_RenderUTF8_Blended(font, text.c_str(), textColor) :
