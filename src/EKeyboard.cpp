@@ -104,14 +104,16 @@ void EKeyboard::render(Element* parent)
 		if (touchMode)
 		{
 			if (hasRoundedKeys) {
-				CST_roundedBoxRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0xff, 0xff, 0xff, 0x90);
+				CST_roundedBoxRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0xad, 0xd8, 0xe6, 0x90);
+				CST_roundedRectangleRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0x66, 0x7c, 0x89, 0xff);
 			} else {
 				CST_SetDrawColor(renderer, { 0xad, 0xd8, 0xe6, 0x90 }); // TODO: matches the DEEP_HIGHLIGHT color
 				CST_FillRect(renderer, &dimens2);
 			}
 		}
 		else if (hasRoundedKeys) {
-			CST_roundedBoxRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0xff, 0xff, 0xff, 0x90);
+			CST_roundedBoxRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0xad, 0xd8, 0xe6, 0x90);
+			CST_roundedRectangleRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0x66, 0x7c, 0x89, 0xff);
 		}
 		else {
 			CST_SetDrawColor(renderer, { 0xff, 0xff, 0xff, 0xff }); // TODO: matches the DEEP_HIGHLIGHT color
