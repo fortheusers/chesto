@@ -155,6 +155,9 @@ public:
 	Element* moveToFront();
 	Element* setTouchable(bool touchable);
 
+	/// Take a screenshot of this element and its children, and save it to the given path
+	void screenshot(std::string path);
+
 	// a function to call to re-align according to all constraints
 	// std::function<void()> alignmentCommands;
 };

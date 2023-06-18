@@ -340,3 +340,24 @@ Element* Element::setTouchable(bool touchable)
 	this->touchable = touchable;
 	return this;
 }
+
+void Element::screenshot(std::string path) {
+    // render the webview to a target that can be saved (TARGET ACCESS)
+	CST_Texture* target = SDL_CreateTexture(getRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
+
+	// set the target texture
+	SDL_SetRenderTarget(getRenderer(), target);
+
+    // draw a white background first
+    SDL_SetRenderDrawColor(getRenderer(), 255, 255, 255, 255);
+    SDL_RenderClear(getRenderer());
+
+	// render the texture
+    render(parent);
+
+	// reset the target texture
+	SDL_SetRenderTarget(getRenderer(), NULL);
+
+	// save the surface to the path
+	CST_SavePNG(target, path.c_str());
+}
