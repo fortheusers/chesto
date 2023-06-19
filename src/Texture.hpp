@@ -59,6 +59,9 @@ public:
 	/// save this texture to the given file path as a PNG
 	bool saveTo(std::string& path);
 
+	/// update and load or reload the texture
+	void loadPath(std::string& path, bool forceReload = false);
+
 protected:
 	/// Cache previously displayed textures
 	static std::unordered_map<std::string, TextureData> texCache;

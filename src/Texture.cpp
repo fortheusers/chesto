@@ -221,3 +221,12 @@ bool Texture::saveTo(std::string &path)
 #endif
 	return false;
 }
+
+void Texture::loadPath(std::string& path, bool forceReload) {
+	if (forceReload || !loadFromCache(path))
+	{
+		CST_Surface *surface = IMG_Load(path.c_str());
+		loadFromSurfaceSaveToCache(path, surface);
+		CST_FreeSurface(surface);
+	}
+}
