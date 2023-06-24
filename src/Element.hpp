@@ -53,8 +53,8 @@ public:
 
 	/// the action to call (from binded callback) on touch or button selection
 	/// https://stackoverflow.com/questions/14189440/c-class-member-callback-simple-examples
-	std::function<void()> action;
-	std::function<void(InputEvents* event)> actionWithEvents;
+	std::function<void()> action = NULL;
+	std::function<void(InputEvents* event)> actionWithEvents = NULL;
 
 	/// visible GUI child elements of this element
 	std::vector<Element*> elements;
