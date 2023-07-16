@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <vector>
+#include <string>
 
 #define DEEP_HIGHLIGHT 200
 #define THICK_HIGHLIGHT 150
