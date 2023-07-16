@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
 
 // This file should contain all external drawing SDL2/SDL1 calls
 // programs outside of chesto should not be
@@ -472,3 +474,13 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
 
 }
 #endif
+
+// change into the directory of the executable for the current platform
+void chdirForPlatform()
+{
+	auto basePath = SDL_GetBasePath();
+	if (basePath != NULL) {
+		chdir(basePath);
+		SDL_free(basePath);
+	}
+}

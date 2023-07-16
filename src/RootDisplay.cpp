@@ -48,6 +48,10 @@ RootDisplay::RootDisplay()
 
 	this->hasBackground = true;
 
+#ifdef __APPLE__
+	chdirForPlatform();
+#endif
+
 	// set the display scale on high resolution displays
 	RootDisplay::dpiScale = CST_GetDpiScale();
 

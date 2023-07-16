@@ -113,3 +113,5 @@ Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...);
 Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...);
 CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...);
 #endif
+
+void chdirForPlatform();
