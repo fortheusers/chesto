@@ -67,12 +67,12 @@ void CST_SetQualityHint(const char* quality);
 
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a);
 void CST_roundedBoxRGBA (
-	SDL_Renderer *renderer,
+	CST_Renderer *renderer,
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 );
 void CST_roundedRectangleRGBA (
-	SDL_Renderer *renderer,
+	CST_Renderer *renderer,
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 );

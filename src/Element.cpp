@@ -1,6 +1,7 @@
 #include "RootDisplay.hpp"
 #include <algorithm>
 #include "Constraint.hpp"
+#include <string>
 
 Element::~Element()
 {
@@ -342,6 +343,7 @@ Element* Element::setTouchable(bool touchable)
 }
 
 void Element::screenshot(std::string path) {
+#ifndef SDL1
     // render the webview to a target that can be saved (TARGET ACCESS)
 	CST_Texture* target = SDL_CreateTexture(getRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
 
@@ -360,4 +362,5 @@ void Element::screenshot(std::string path) {
 
 	// save the surface to the path
 	CST_SavePNG(target, path.c_str());
+#endif
 }

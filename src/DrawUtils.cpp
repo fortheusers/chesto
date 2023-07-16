@@ -392,7 +392,7 @@ void CST_SetWindowTitle(const char* title)
 }
 
 void CST_roundedBoxRGBA (
-	SDL_Renderer *renderer,
+	CST_Renderer *renderer,
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
@@ -404,7 +404,7 @@ void CST_roundedBoxRGBA (
 }
 
 void CST_roundedRectangleRGBA (
-	SDL_Renderer *renderer,
+	CST_Renderer *renderer,
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
@@ -478,9 +478,11 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
 // change into the directory of the executable for the current platform
 void chdirForPlatform()
 {
+#ifndef SDL1
 	auto basePath = SDL_GetBasePath();
 	if (basePath != NULL) {
 		chdir(basePath);
 		SDL_free(basePath);
 	}
+#endif
 }
