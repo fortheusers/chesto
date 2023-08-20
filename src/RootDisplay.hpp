@@ -52,7 +52,9 @@ public:
 	SDL_Event needsRender;
 
 	// our main input events
-	InputEvents* events;
+	InputEvents* events = NULL;
+
+	std::function<void()> windowResizeCallback = NULL; // Called when the window is resized
 
 #if defined(__WIIU__)
 	void processWiiUHomeOverlay();

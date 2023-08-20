@@ -47,8 +47,14 @@ SOURCES   += libs/chesto/libs/resinfs/source
 INCLUDES  += libs/chesto/libs/resinfs/include
 endif
 
+# for sdl2 platforms (wiiu or pc or switch targets) use sdl font cache
+ifeq ($(filter-out wiiu pc switch,$(MAKECMDGOALS)),)
+SOURCES += $(CHESTO_DIR)/libs/SDL_FontCache
+VPATH   += $(CHESTO_DIR)/libs/SDL_FontCache
+endif
+
 CFLAGS	  += $(INCLUDE) -DAPP_VERSION=\"$(APP_VERSION)\" -frandom-seed=84248
-CXXFLAGS  += $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++20
+CXXFLAGS  += $(CFLAGS) -fno-exceptions -std=gnu++20
 ASFLAGS   += -g $(ARCH)
 
 export TOPDIR := $(CURDIR)
@@ -82,11 +88,6 @@ export INCLUDE      +=  $(foreach dir,$(INCLUDES),-I$(dir)) \
 export SRCFILES     +=  $(CFILES) $(CPPFILES) $(SFILES)
 
 # rules for each of the targets, which includes the respective makefile fragment
-
-ifeq ($(OS),Windows_NT)
-    LIBS += -lmingw32 -lSDL2main
-    CFLAGS += -DWIN32
-endif
 
 ifeq (pc,$(MAKECMDGOALS))
 include $(HELPERS)/Makefile.sdl2

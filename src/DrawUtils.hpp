@@ -62,16 +62,29 @@ void CST_SetDrawBlend(CST_Renderer* renderer, bool enabled);
 void CST_DrawLine(CST_Renderer* renderer, int x, int y, int w, int h);
 
 void CST_QueryTexture(CST_Texture* texture, int* w, int* h);
-CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface);
+CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface, bool isAccessible);
 void CST_SetQualityHint(const char* quality);
 
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a);
+void CST_roundedBoxRGBA (
+	CST_Renderer *renderer,
+	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
+	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
+);
+void CST_roundedRectangleRGBA (
+	CST_Renderer *renderer,
+	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
+	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
+);
 float CST_GetDpiScale();
 void CST_SetWindowSize(CST_Window* renderer, int w, int h);
 void CST_Delay(int time);
 
 int CST_GetTicks();
 bool CST_isRectOffscreen(CST_Rect* rect);
+
+bool CST_SavePNG(CST_Texture* texture, const char* filename);
+void CST_SetWindowTitle(const char* title);
 
 #ifdef MUSIC
 std::vector<std::string> CST_GetMusicInfo(CST_Music* music);
@@ -100,3 +113,5 @@ Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...);
 Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...);
 CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...);
 #endif
+
+void chdirForPlatform();

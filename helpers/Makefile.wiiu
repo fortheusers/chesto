@@ -6,7 +6,6 @@ export APP_DRC_SPLASH := $(PWD)/assets/drc_splash.png
 export APP_ICON       := $(PWD)/assets/icon.png
 
 CFLAGS		+=	-g -Wall -O2 -ffunction-sections \
-				-ffast-math \
 				$(MACHDEP)
 
 CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOURCE -DUSE_RAMFS
@@ -14,7 +13,7 @@ CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOY
 ASFLAGS		+=	-g $(MACHDEP)
 LDFLAGS		+=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 
-LIBS		+= -lSDL2_mixer -lmodplug -lmpg123 -lvorbisidec -logg -lSDL2 -lwut -lcurl -lmbedtls -lmbedcrypto -lmbedx509 -lz -lwut -lharfbuzz -lfreetype
+LIBS		+= -lmodplug -lmpg123 -lvorbisidec -logg -lSDL2 -lwut -lcurl -lmbedtls -lmbedcrypto -lmbedx509 -lz -lwut -lharfbuzz -lfreetype
 
 BUILD		:= build_wiiu
 LIBDIRS		:= $(PORTLIBS) $(WUT_ROOT)

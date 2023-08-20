@@ -100,6 +100,11 @@ bool InputEvents::processSDLEvents()
 			event.window.data1 * RootDisplay::dpiScale,
 			event.window.data2 * RootDisplay::dpiScale
 		);
+
+		// callback to alert the app that the window changed resolution
+		if (RootDisplay::mainDisplay->windowResizeCallback)
+			RootDisplay::mainDisplay->windowResizeCallback();
+
 		RootDisplay::mainDisplay->needsRedraw = true;
 	}
 #endif

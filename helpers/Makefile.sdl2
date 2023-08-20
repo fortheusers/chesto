@@ -1,5 +1,7 @@
-LIBS    += -lSDL2_ttf -lSDL2_gfx -lSDL2_image -lSDL2 -lSDL2main -lfreetype -lpng -lbz2 -ljpeg -lz
-CFLAGS  += -DSDL2 -DMUSIC
+ifeq ($(OS),Windows_NT)
+    LIBS += -lmingw32 -lSDL2main
+    CFLAGS += -DWIN32
+endif
 
-SOURCES += $(CHESTO_DIR)/libs/SDL_FontCache
-VPATH   += $(CHESTO_DIR)/libs/SDL_FontCache
+LIBS    += -lSDL2_ttf -lSDL2_gfx -lSDL2_image -lSDL2_mixer -lmpg123 -lSDL2 -lSDL2main -lfreetype -lpng -lbz2 -ljpeg -lz
+CFLAGS  += -DSDL2 -DMUSIC

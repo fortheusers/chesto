@@ -1,6 +1,7 @@
 #include "RootDisplay.hpp"
 #include <algorithm>
 #include "Constraint.hpp"
+#include <string>
 
 Element::~Element()
 {
@@ -324,4 +325,42 @@ Element* Element::constrain(int flags, int padding)
 {
 	constraints.push_back(new Constraint(flags, padding));
 	return this;
+}
+
+// Move an element up within its parent
+Element* Element::moveToFront() {
+	if (parent != NULL) {
+		parent->remove(this);
+		parent->child(this);
+	}
+	return this;
+}
+
+Element* Element::setTouchable(bool touchable)
+{
+	this->touchable = touchable;
+	return this;
+}
+
+void Element::screenshot(std::string path) {
+#ifndef SDL1
+    // render the webview to a target that can be saved (TARGET ACCESS)
+	CST_Texture* target = SDL_CreateTexture(getRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
+
+	// set the target texture
+	SDL_SetRenderTarget(getRenderer(), target);
+
+    // draw a white background first
+    SDL_SetRenderDrawColor(getRenderer(), 255, 255, 255, 255);
+    SDL_RenderClear(getRenderer());
+
+	// render the texture
+    render(parent);
+
+	// reset the target texture
+	SDL_SetRenderTarget(getRenderer(), NULL);
+
+	// save the surface to the path
+	CST_SavePNG(target, path.c_str());
+#endif
 }

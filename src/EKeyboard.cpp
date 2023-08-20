@@ -33,14 +33,42 @@ void EKeyboard::render(Element* parent)
 	auto renderer = getRenderer();
 
 	CST_SetDrawColor(renderer, { 0xf9, 0xf9, 0xf9, 0xFF });
+	if (hasRoundedKeys) {
+		CST_SetDrawColor(renderer, { 0xdd, 0xdd, 0xdd, 0xFF });
+
+		// rounded keys keyboard is full screen width
+		dimens.x = 0;
+		dimens.y -= 15;
+		dimens.w = RootDisplay::screenWidth;
+	}
+
 	CST_FillRect(renderer, &dimens);
 
 	for (int y = 0; y < rowCount(); y++)
 		for (int x = 0; x < rowLength(y) + 1; x++)
 		{
 			CST_Rect dimens2 = { this->x + kXPad + x * kXOff + y * yYOff, this->y + kYPad + y * ySpacing, keyWidth, keyWidth };
-			CST_SetDrawColor(renderer, { 0xf4, 0xf4, 0xf4, 0xff });
-			CST_FillRect(renderer, &dimens2);
+			if (this->hasRoundedKeys) {
+				CST_roundedBoxRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0xee, 0xee, 0xee, 0xff);
+			} else {
+				CST_SetDrawColor(renderer, { 0xf4, 0xf4, 0xf4, 0xff });
+				CST_FillRect(renderer, &dimens2);
+			}
+
+			// draw the letters with fontcache, for rounded keys
+			if (hasRoundedKeys) {
+				char curChar = rows[y]->at(x*2);
+				auto curCharStr = std::string(1, curChar);
+				int fHeight = CST_GetFontHeight(roundKeyFont, curCharStr.c_str());
+				int fWidth = CST_GetFontWidth(roundKeyFont, curCharStr.c_str());
+				CST_DrawFont(
+					roundKeyFont,
+					renderer,
+					dimens2.x + dimens2.w/2 - fWidth/2,
+					dimens2.y + dimens2.h/2 - fHeight/2,
+					curCharStr.c_str()
+				);
+			}
 		}
 
 	CST_Rect dimensSpace = { this->x + sPos, this->y + dHeight, sWidth, textSize };
@@ -75,33 +103,48 @@ void EKeyboard::render(Element* parent)
 		// draw the currently selected tile if these index things are set
 		if (touchMode)
 		{
-			CST_SetDrawColor(renderer, { 0xad, 0xd8, 0xe6, 0x90 }); // TODO: matches the DEEP_HIGHLIGHT color
-			CST_FillRect(renderer, &dimens2);
+			if (hasRoundedKeys) {
+				CST_roundedBoxRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0xad, 0xd8, 0xe6, 0x90);
+				CST_roundedRectangleRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0x66, 0x7c, 0x89, 0xff);
+			} else {
+				CST_SetDrawColor(renderer, { 0xad, 0xd8, 0xe6, 0x90 }); // TODO: matches the DEEP_HIGHLIGHT color
+				CST_FillRect(renderer, &dimens2);
+			}
 		}
-		else
-		{
+		else if (hasRoundedKeys) {
+			CST_roundedBoxRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0xad, 0xd8, 0xe6, 0x90);
+			CST_roundedRectangleRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0x66, 0x7c, 0x89, 0xff);
+		}
+		else {
 			CST_SetDrawColor(renderer, { 0xff, 0xff, 0xff, 0xff }); // TODO: matches the DEEP_HIGHLIGHT color
 			CST_FillRect(renderer, &dimens2);
 
 			// border
 			for (int z = 4; z >= 0; z--)
 			{
-				CST_SetDrawColor(renderer, { 0x66 - z * 10, 0x7c + z * 20, 0x89 + z * 10, 0xFF });
 				dimens2.x--;
 				dimens2.y--;
 				dimens2.w += 2;
 				dimens2.h += 2;
+
+				CST_SetDrawColor(renderer, { 0x66 - z * 10, 0x7c + z * 20, 0x89 + z * 10, 0xFF });
 				CST_DrawRect(renderer, &dimens2);
 			}
 		}
 	}
 
-	CST_SetDrawColor(renderer, { 0xf4, 0xf4, 0xf4, 0xff });
-	CST_FillRect(renderer, &dimensSpace);
+	if (hasRoundedKeys) {
+		CST_roundedBoxRGBA(renderer, dimensSpace.x, dimensSpace.y, dimensSpace.x + dimensSpace.w, dimensSpace.y + dimensSpace.h, 20, 0xee, 0xee, 0xee, 0xff);
+		CST_roundedBoxRGBA(renderer, dimensEnter.x, dimensEnter.y, dimensEnter.x + dimensEnter.w, dimensEnter.y + dimensEnter.h, 20, 0xee, 0xee, 0xee, 0xff);
+		CST_roundedBoxRGBA(renderer, dimensTab.x, dimensTab.y, dimensTab.x + dimensTab.w, dimensTab.y + dimensTab.h, 20, 0xee, 0xee, 0xee, 0xff);
+	} else {
+		CST_SetDrawColor(renderer, { 0xf4, 0xf4, 0xf4, 0xff });
+		CST_FillRect(renderer, &dimensSpace);
 
-	if (!preventEnterAndTab) {
-		CST_FillRect(renderer, &dimensEnter);
-		CST_FillRect(renderer, &dimensTab);
+		if (!preventEnterAndTab) {
+			CST_FillRect(renderer, &dimensEnter);
+			CST_FillRect(renderer, &dimensTab);
+		}
 	}
 
 	super::render(this);
@@ -330,17 +373,19 @@ bool EKeyboard::listenForPhysicalKeys(InputEvents* e)
 	}
 
 	// primary typing loop, handles all the keycodes on our keyboard
-	for (int x=0; x<KEYCODE_COUNT; x++)
+	auto roundedOffset = hasRoundedKeys ? 1 : 0;
+	for (int x=roundedOffset; x<KEYCODE_COUNT; x++)
 	{
 		int xx = x - offset;
+		int topRowOffset = curBreak == 0 ? roundedOffset : 0;
 
 		if (keyCode == usbKeys[x])
 		{
 			// we got a key down for this code, type our current position
 			// and update cursor
-			type(curBreak, xx);
+			type(curBreak, xx - topRowOffset);
 			curRow = curBreak;
-			index = xx;
+			index = xx - topRowOffset;
 			return true;
 		}
 
@@ -401,6 +446,15 @@ void EKeyboard::updateSize()
 	kYPad = (int)((17 / 135.0) * height);
 	ySpacing = (int)((33 / 400.0) * width);
 
+	if (hasRoundedKeys) {
+		// different positioning for round keyboard
+		// TODO: something else
+		kXOff = (int)((38 / 400.0) * width) + (900.0 / width) * ( 900.0 != width); // when scaling, adjust our key x offset TODO: probably a guesstimate
+		yYOff = (int)((10 / 400.0) * width);
+		kYPad = (int)((0 / 135.0) * height);
+		ySpacing = (int)((37 / 400.0) * width);
+	}
+
 	// these local variables position only the text, and has nothing to do with the
 	// touch. They should likely be based on the above field variables so those
 	// can change quickly
@@ -434,12 +488,18 @@ void EKeyboard::updateSize()
 	int targetHeight = -1;
 
 	// go through and draw each of the three rows at the right position
-	for (int x = 0; x < rowCount(); x++)
-	{
-		TextElement* rowText = new TextElement(rows[x]->c_str(), textSize, &gray, true);
-		if (targetHeight < 0) targetHeight = rowText->height;
-		rowText->position(kXPad + x * kXOff, kYPad + x * kYOff + targetHeight/2 - rowText->height/2);
-		this->elements.push_back(rowText);
+	if (!hasRoundedKeys) {
+		for (int x = 0; x < rowCount(); x++)
+		{
+			TextElement* rowText = new TextElement(rows[x]->c_str(), textSize, &gray, true);
+			// rowText->customFontPath = RAMFS "res/lightsans.ttf";
+			if (targetHeight < 0) {
+				targetHeight = rowText->height;
+			}
+			// rowText->update(true);
+			rowText->position(kXPad + x * kXOff, kYPad + x * kYOff + targetHeight/2 - rowText->height/2);
+			this->elements.push_back(rowText);
+		}
 	}
 
 	// text for space, enter, and symbols
@@ -456,7 +516,7 @@ void EKeyboard::updateSize()
 		enterText->position(d3.x + d3.w / 2 - enterText->width / 2 - 30, 327);
 		this->elements.push_back(enterText);
 
-		TextElement* symText = new TextElement("tab", 30, &grayish);
+		TextElement* symText = new TextElement(hasRoundedKeys ? "shift" : "tab", 30, &grayish);
 		CST_Rect d5 = { this->x + dPos, this->y + enterHeight, enterWidth, textSize }; // todo: extract out hardcoded rects like this
 		symText->position(d5.x + d5.w / 2 - symText->width / 2 - 30, 327);
 		this->elements.push_back(symText);
@@ -513,7 +573,8 @@ void EKeyboard::generateEKeyboard()
 
 	for (int& end : breaks)
 	{
-		string* row = new string(keys.substr(count, end));
+		auto roundedOffset = (hasRoundedKeys && count == 0) ? 1 : 0;
+		string* row = new string(keys.substr(count + roundedOffset, end - roundedOffset));
 		for (int x = 1; x < (int)row->size(); x += 2)
 		{
 			row->insert(row->begin() + x, ' ');
@@ -521,6 +582,14 @@ void EKeyboard::generateEKeyboard()
 
 		rows.push_back(row);
 		count += end;
+	}
+
+	if (hasRoundedKeys && roundKeyFont == NULL) {
+		// load the round key font
+		roundKeyFont = CST_CreateFont();
+		auto fontPath = RAMFS "res/lightsans.ttf";
+		auto renderer = getRenderer();
+		CST_LoadFont(roundKeyFont, renderer, fontPath, 40, CST_MakeColor(0,0,0,255), TTF_STYLE_NORMAL);
 	}
 }
 

@@ -3,7 +3,7 @@
 NetImageElement::NetImageElement(const char *url, std::function<Texture *(void)> getImageFallback, bool immediateLoad)
 {
 	std::string key = std::string(url);
-	// printf("Key: %s\n", key.c_str());
+	printf("Key: %s\n", key.c_str());
 	if (loadFromCache(key)) {
 		loaded = true;
 	}
@@ -61,6 +61,11 @@ void NetImageElement::imgDownloadComplete(DownloadOperation *download)
 
 		delete imgFallback;
 		imgFallback = nullptr;
+
+		if (updateSizeAfterLoad) {
+			width = texW;
+			height = texH;
+		}
 	}
 
 	delete imgDownload;

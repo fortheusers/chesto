@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <vector>
+#include <string>
 
 #define DEEP_HIGHLIGHT 200
 #define THICK_HIGHLIGHT 150
@@ -53,8 +54,8 @@ public:
 
 	/// the action to call (from binded callback) on touch or button selection
 	/// https://stackoverflow.com/questions/14189440/c-class-member-callback-simple-examples
-	std::function<void()> action;
-	std::function<void(InputEvents* event)> actionWithEvents;
+	std::function<void()> action = NULL;
+	std::function<void(InputEvents* event)> actionWithEvents = NULL;
 
 	/// visible GUI child elements of this element
 	std::vector<Element*> elements;
@@ -151,6 +152,12 @@ public:
 	// constraints that can be added and used by positioning functions
 	std::vector<Constraint*> constraints;
 	Element* constrain(int flags, int padding = 0);
+
+	Element* moveToFront();
+	Element* setTouchable(bool touchable);
+
+	/// Take a screenshot of this element and its children, and save it to the given path
+	void screenshot(std::string path);
 
 	// a function to call to re-align according to all constraints
 	// std::function<void()> alignmentCommands;

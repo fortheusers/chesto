@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
 
 // This file should contain all external drawing SDL2/SDL1 calls
 // programs outside of chesto should not be
@@ -152,6 +154,26 @@ void CST_MixerInit(RootDisplay* root)
 #endif
 }
 
+// https://stackoverflow.com/a/51238719/4953343
+bool CST_SavePNG(CST_Texture* texture, const char* file_name)
+{
+#ifndef SDL1
+	auto renderer = RootDisplay::mainDisplay->renderer;
+    SDL_Texture* target = SDL_GetRenderTarget(renderer);
+    SDL_SetRenderTarget(renderer, texture);
+	printf("Error: %s\n", SDL_GetError());
+    int width, height;
+    SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+    SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    SDL_RenderReadPixels(renderer, NULL, surface->format->format, surface->pixels, surface->pitch);
+    IMG_SavePNG(surface, file_name);
+    SDL_FreeSurface(surface);
+    SDL_SetRenderTarget(renderer, target);
+#endif
+// TODO: SDL1 implementation
+	return true;
+}
+
 void CST_FadeInMusic(RootDisplay* root)
 {
 #if defined(MUSIC)
@@ -291,10 +313,10 @@ void CST_QueryTexture(CST_Texture* texture, int* w, int* h)
 #endif
 }
 
-CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface)
+CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface, bool isAccessible )
 {
 #ifndef SDL1
-	return SDL_CreateTextureFromSurface(renderer, surface);
+	return SDL_CreateTextureFromSurface(renderer, surface);	
 #else
 	// it's a secret to everyone
 	return SDL_ConvertSurface(surface, surface->format, NULL); //Creates duplicate of surface...psst it's not actually a texture
@@ -360,6 +382,39 @@ float CST_GetDpiScale()
 	return 1.0;
 }
 
+void CST_SetWindowTitle(const char* title)
+{
+#ifndef SDL1
+	SDL_SetWindowTitle(RootDisplay::mainDisplay->window, title);
+#else
+	SDL_WM_SetCaption(title, NULL);
+#endif
+}
+
+void CST_roundedBoxRGBA (
+	CST_Renderer *renderer,
+	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
+	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
+) {
+#ifndef SDL1
+	roundedBoxRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+#else
+	// TODO: implement me (rounded box for SDL1)
+#endif
+}
+
+void CST_roundedRectangleRGBA (
+	CST_Renderer *renderer,
+	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
+	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
+) {
+#ifndef SDL1
+	roundedRectangleRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+#else
+	// TODO: implement me (rounded box for SDL1)
+#endif
+}
+
 #ifdef SDL1
 CST_Font* CST_CreateFont() { return NULL; }
 void CST_LoadFont(CST_Font* font,  CST_Renderer* renderer, const char* filename_ttf, Uint32 pointSize, CST_Color color, int style) { }
@@ -419,3 +474,15 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
 
 }
 #endif
+
+// change into the directory of the executable for the current platform
+void chdirForPlatform()
+{
+#ifndef SDL1
+	auto basePath = SDL_GetBasePath();
+	if (basePath != NULL) {
+		chdir(basePath);
+		SDL_free(basePath);
+	}
+#endif
+}

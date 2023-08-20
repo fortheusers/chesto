@@ -104,7 +104,8 @@ public:
 	int curFrame = 0;
 
 	static bool bypassKeyEvents;
-	std::function<void()> quitaction; //Called for an SDL_Quit event, usually caused by a SIGINT
+
+	std::function<void()> quitaction = NULL; //Called for an SDL_Quit event, usually caused by a SIGINT
 
 #ifdef PC
 	int wheelScroll = 0;

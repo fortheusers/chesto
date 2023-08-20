@@ -16,8 +16,8 @@ PLATFORM=$2
 SDL_VERSION=$3
 
 # install deps for the current platform
-SDL2_CMDS = ""
-SDL1_CMDS = ""
+SDL2_CMDS=""
+SDL1_CMDS=""
 
 if [ "$PLATFORM" = "ubuntu" ]; then
     sudo apt-get update
@@ -59,6 +59,8 @@ fi
 # call the right make command, (the makefile should take care of platform-dependent stuff)
 $MAKE_COMMAND
 
+resin_path="resin"
+
 # package the binary into a zip, alongside assets
 SYSTEM_SPECIFIC=""
 if [ "$PLATFORM" = "ubuntu" ]; then
@@ -66,9 +68,10 @@ if [ "$PLATFORM" = "ubuntu" ]; then
     chmod +x run.sh
     SYSTEM_SPECIFIC="run.sh"
 elif [ "$PLATFORM" = "macos" ]; then
-    echo "cd \$(dirname \$0) && ./${NAME}.${EXT}" > run.command
-    chmod +x run.command
-    SYSTEM_SPECIFIC="run.command"
+    python3 ./libs/chesto/helpers/mac_copy_libs.py ${NAME}.${EXT} # creates the .app
+    EXT="app"
+    cp -r resin ${NAME}.${EXT}/Contents/Resources # copy assets
+    resin_path="" # no need to repackage the assets
 elif [ "$PLATFORM" = "windows" ]; then
     python3 ./libs/chesto/helpers/win_copy_dlls.py ${NAME}.${EXT} # creates the .exe
     EXT="bat"   # the batch script is the main now
@@ -78,8 +81,14 @@ elif [ "$PLATFORM" = "windows" ]; then
     SYSTEM_SPECIFIC="contents"
 fi
 
+# error out if we don't have the binary! (or folder)
+if [ ! -f ${NAME}.${EXT} ] && [ ! -d ${NAME}.${EXT} ]; then
+    echo "Binary not found: ${NAME}.${EXT}, build error?"
+    exit 1
+fi
+
 chmod +x ${NAME}.${EXT}
-zip -r -9 "${NAME}_${PLATFORM}_${SDL_VERSION}.zip" ${NAME}.${EXT} resin ${SYSTEM_SPECIFIC}
+zip -r -9 "${NAME}_${PLATFORM}_${SDL_VERSION}.zip" ${NAME}.${EXT} ${resin_path} ${SYSTEM_SPECIFIC}
 
 
 # depending on the OS, package the resulting binary in a zip file
@@ -89,5 +98,3 @@ zip -r -9 "${NAME}_${PLATFORM}_${SDL_VERSION}.zip" ${NAME}.${EXT} resin ${SYSTEM
 # elif [ "$PLATFORM" = "windows" ]; then
 #     zip -r -j -9 "${NAME}_${PLATFORM}_${SDL_VERSION}.zip" ${NAME}.${EXT}
 # fi
-
-# TODO: on macos, bundle into a .app folder and add an info.plist
