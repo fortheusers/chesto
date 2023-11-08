@@ -108,7 +108,7 @@ public:
 	std::function<void()> quitaction = NULL; //Called for an SDL_Quit event, usually caused by a SIGINT
 
 #ifdef PC
-	int wheelScroll = 0;
+	float wheelScroll = 0;
 #endif
 
 	int yPos = 0;

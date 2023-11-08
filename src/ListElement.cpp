@@ -91,11 +91,11 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 	{
 		elem->y += elem->elasticCounter;
 
-		int positivity = elem->elasticCounter / abs(elem->elasticCounter);
-		elem->elasticCounter += 10 * (-1 * positivity);
-
-		// when the oval and the elastic counter don't match in positivity, reset it to 0
-		if (elem->elasticCounter != 0 && elem->elasticCounter / abs(elem->elasticCounter) != positivity)
+		// reduce the elastic counter by 5% each time (slows down the scroll)
+		elem->elasticCounter *= 0.95;
+		
+		// if we're less than 10 pixels on the counter, just stop
+		if (abs(elem->elasticCounter) < 10)
 			elem->elasticCounter = 0;
 
 		// TODO: same problem as above todo, also extract into method?
@@ -114,7 +114,11 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 		elem->y += event->wheelScroll * 10;
 		if (elem->y > minYScroll)
 			elem->y = minYScroll;
-		event->wheelScroll = 0;
+		event->wheelScroll *= 0.95;
+
+		if (abs(event->wheelScroll) < 0.1)
+			event->wheelScroll = 0;
+			
 		ret |= true;
 	}
 #endif
