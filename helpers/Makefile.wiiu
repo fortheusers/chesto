@@ -13,7 +13,7 @@ CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOY
 ASFLAGS		+=	-g $(MACHDEP)
 LDFLAGS		+=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 
-LIBS		+= -lmodplug -lmpg123 -lvorbisidec -logg -lSDL2 -lwut -lcurl -lmbedtls -lmbedcrypto -lmbedx509 -lz -lwut
+LIBS		+= -lmodplug -lmpg123 -lvorbisidec -logg -lSDL2 -lwut -lcurl -lmbedtls -lmbedcrypto -lmbedx509 -lz -lwut -lharfbuzz -lfreetype
 
 BUILD		:= build_wiiu
 LIBDIRS		:= $(PORTLIBS) $(WUT_ROOT)
