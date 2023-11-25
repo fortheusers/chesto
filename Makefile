@@ -115,7 +115,8 @@ ifeq (wii,$(MAKECMDGOALS))
 include $(HELPERS)/Makefile.wii
 endif
 
-#.PHONY: clean
-#clean:
-# 	$(shell rm -rf build_3ds build_wii build_wiiu build_switch)
-#	$(shell find . -name "*.o" -exec rm {} \;)
+.PHONY: clean
+clean:
+	$(shell rm -rf build_3ds build_wii build_wiiu build_switch)
+	$(shell find . -name "*.o" -exec rm {} \;)
+	@echo "It is done."

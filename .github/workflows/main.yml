@@ -17,7 +17,7 @@ jobs:
           - platform: pc
             ext: bin
           - platform: wiiu
-            ext: rpx
+            ext: wuhb
           - platform: switch
             ext: nro
           - platform: 3ds
@@ -42,3 +42,8 @@ jobs:
       with:
         name: chestotesto.${{ matrix.ext }}
         path: /__w/chesto/chesto/chestotesto.${{ matrix.ext }}
+    - if: matrix.platform == 'wiiu'
+      uses: actions/upload-artifact@v3
+      with:
+        name: chestotesto.rpx
+        path: /__w/chesto/chesto/chestotesto.rpx
