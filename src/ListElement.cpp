@@ -106,7 +106,6 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 
 	if (ret) event->isScrolling = true;
 
-#ifdef PC
 	if (event->wheelScroll != 0)
 	{
 		// apply wheel scroll directly to y position, and then reset
@@ -120,7 +119,6 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 			
 		ret |= true;
 	}
-#endif
 
 	return ret;
 }
