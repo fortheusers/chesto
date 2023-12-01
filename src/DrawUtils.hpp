@@ -83,6 +83,7 @@ void CST_Delay(int time);
 int CST_GetTicks();
 bool CST_isRectOffscreen(CST_Rect* rect);
 
+void CST_GetRGBA(Uint32 pixel, SDL_PixelFormat* format, CST_Color* cstColor);
 bool CST_SavePNG(CST_Texture* texture, const char* filename);
 void CST_SetWindowTitle(const char* title);
 

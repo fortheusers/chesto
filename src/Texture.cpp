@@ -62,7 +62,7 @@ bool Texture::loadFromSurface(CST_Surface *surface)
 
 	// load first pixel color
 	auto pixelcolor = getpixel(surface, 0, 0);
-	SDL_GetRGBA(pixelcolor, surface->format, &texFirstPixel.r, &texFirstPixel.g, &texFirstPixel.b, &texFirstPixel.a);
+	CST_GetRGBA(pixelcolor, surface->format, &texFirstPixel);
 
 	// load texture size
 	CST_QueryTexture(texture, &texW, &texH);
@@ -134,11 +134,13 @@ void Texture::render(Element* parent)
 	
 		// draw colored background
 		CST_SetDrawColor(renderer, texFirstPixel);
-		auto color = (CST_Color){texFirstPixel.r,texFirstPixel.g,texFirstPixel.b,0xFF};
+		auto color = (CST_Color){texFirstPixel.r, texFirstPixel.g, texFirstPixel.b, 0xFF};
 
 		// if the first pixel is transparent, use white
+#ifndef SDL1
 		if (texFirstPixel.a == 0)
 			color = (CST_Color){0xFF,0xFF,0xFF,0xFF};
+#endif
 
 		CST_SetDrawColor(renderer, color);
 		CST_FillRect(renderer, &rect);
