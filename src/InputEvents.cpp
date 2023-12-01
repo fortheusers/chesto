@@ -44,7 +44,7 @@ bool InputEvents::processSDLEvents()
 	this->type = event.type;
 	this->noop = false;
 
-	// proces joystick hotplugging events
+	// process joystick hotplugging events
 	processJoystickHotplugging(&event);
 
 	this->isScrolling = false;

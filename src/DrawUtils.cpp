@@ -154,6 +154,16 @@ void CST_MixerInit(RootDisplay* root)
 #endif
 }
 
+
+void CST_GetRGBA(Uint32 pixel, SDL_PixelFormat* format, CST_Color* cstColor)
+{
+#ifndef SDL1
+	SDL_GetRGBA(pixel, format, &cstColor->r, &cstColor->g, &cstColor->b, &cstColor->a);
+#else
+	SDL_GetRGB(pixel, format, &cstColor->r, &cstColor->g, &cstColor->b);
+#endif
+}
+
 // https://stackoverflow.com/a/51238719/4953343
 bool CST_SavePNG(CST_Texture* texture, const char* file_name)
 {
