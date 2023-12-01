@@ -18,15 +18,14 @@ bool ListElement::process(InputEvents* event)
 bool ListElement::processUpDown(InputEvents* event)
 {
 	bool ret = false;
-	int SPEED = 60;
+	int SPEED = 1;
 
 	// handle up and down for the scroll view
 	if (event->isKeyDown())
 	{
-		// scroll the view
-		this->y += (SPEED * event->held(UP_BUTTON) - SPEED * event->held(DOWN_BUTTON));
-		if (this->y > minYScroll)
-			this->y = minYScroll;
+		// scroll the view by offsetting the elastic counter
+		event->wheelScroll += (SPEED * event->held(UP_BUTTON) - SPEED * event->held(DOWN_BUTTON));
+
 		ret |= event->held(UP_BUTTON) || event->held(DOWN_BUTTON);
 	}
 
