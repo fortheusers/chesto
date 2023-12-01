@@ -159,6 +159,12 @@ public:
 	/// Take a screenshot of this element and its children, and save it to the given path
 	void screenshot(std::string path);
 
+	/// whether or not to overlay a color mask on top of this element
+	bool useColorMask = false;
+
+	/// The color to overlay on top
+	CST_Color maskColor = {0,0,0,0};
+
 	// a function to call to re-align according to all constraints
 	// std::function<void()> alignmentCommands;
 };
