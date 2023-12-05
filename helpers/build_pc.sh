@@ -59,6 +59,12 @@ fi
 # call the right make command, (the makefile should take care of platform-dependent stuff)
 $MAKE_COMMAND
 
+# fail if the build failed
+if [ $? -ne 0 ]; then
+    echo "PC Build failed!"
+    exit 1
+fi
+
 resin_path="resin"
 
 # package the binary into a zip, alongside assets
