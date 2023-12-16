@@ -16,7 +16,7 @@ LDFLAGS		+=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 LIBS		+= -lmodplug -lmpg123 -lvorbisidec -logg -lSDL2 -lwut -lcurl -lmbedtls -lmbedcrypto -lmbedx509 -lz -lwut -lharfbuzz -lfreetype
 
 BUILD		:= build_wiiu
-LIBDIRS		:= $(PORTLIBS) $(WUT_ROOT)
+LIBDIRS		+= $(PORTLIBS) $(WUT_ROOT)
 
 SOURCES     += $(CHESTO_DIR)/libs/wiiu_kbd
 VPATH       += $(CHESTO_DIR)/libs/wiiu_kbd

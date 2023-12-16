@@ -11,10 +11,10 @@ else
 endif
 
 pc: $(OFILES)
-	$(CXX) $(OFILES) $(LDFLAGS) -o $(BINARY).bin -fstack-protector-all
+	$(CXX) $(OFILES) $(LDFLAGS) $(LIBPATHS) -o $(BINARY).bin -fstack-protector-all
 
 pc-sdl1: $(OFILES)
-	$(CXX) $(OFILES) $(LDFLAGS) -o $(BINARY).bin-sdl1 -fstack-protector-all $(FRAMEWORK_FLAGS)
+	$(CXX) $(OFILES) $(LDFLAGS) $(LIBPATHS) -o $(BINARY).bin-sdl1 -fstack-protector-all $(FRAMEWORK_FLAGS)
 
 %.o: %.cpp %.c
 	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) $< -c -o $@ -fstack-protector-all
