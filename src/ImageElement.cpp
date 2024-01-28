@@ -1,7 +1,6 @@
 #include "ImageElement.hpp"
 
-ImageElement::ImageElement(const char* path)
+ImageElement::ImageElement(std::string key)
 {
-	std::string key = std::string(path);
 	loadPath(key);
 }
