@@ -1,6 +1,7 @@
 #include "RootDisplay.hpp"
 #include <algorithm>
 #include "Constraint.hpp"
+#include "Animation.hpp"
 #include <string>
 
 Element::~Element()
@@ -117,6 +118,26 @@ void Element::recalcPosition(Element* parent) {
 	for (Constraint* constraint : constraints)
 	{
 		constraint->apply(this);
+	}
+
+	// go through all animations and apply them
+	// TODO: animations can modify the actual positions, which can mess up constraints
+	if (animations.size() > 0) {
+		std::vector<Animation*> toRemove;
+		for (Animation* animation : animations)
+		{
+			// if there are any animations, we need to re-render
+			needsRedraw = true;
+
+			bool finished = animation->step();
+			if (finished) {
+				toRemove.push_back(animation);
+			}
+		}
+		for (Animation* animation : toRemove) {
+			animations.erase(std::remove(animations.begin(), animations.end(), animation), animations.end());
+			delete animation;
+		}
 	}
 }
 
@@ -272,6 +293,7 @@ void Element::removeAll(bool moveToTrash)
 	}
 	elements.clear();
 	constraints.clear(); // remove all constraints too
+	animations.clear();
 }
 
 Element* Element::child(Element* child)
@@ -325,6 +347,16 @@ Element* Element::constrain(int flags, int padding)
 {
 	constraints.push_back(new Constraint(flags, padding));
 	return this;
+}
+
+Element* Element::animate(
+	int duration,
+	std::function<void(float)> onStep,
+	std::function<void()> onFinish
+) {
+	animations.push_back(new Animation(
+		CST_GetTicks(),	duration, onStep, onFinish)
+	);
 }
 
 // Move an element up within its parent

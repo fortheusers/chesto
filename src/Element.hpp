@@ -3,6 +3,7 @@
 #include "InputEvents.hpp"
 #include "colorspaces.hpp"
 #include "DrawUtils.hpp"
+#include "Animation.hpp"
 
 #include <functional>
 #include <vector>
@@ -152,6 +153,14 @@ public:
 	// constraints that can be added and used by positioning functions
 	std::vector<Constraint*> constraints;
 	Element* constrain(int flags, int padding = 0);
+
+	// animations that can be added and will tween over time (and remove when finished)
+	std::vector<Animation*> animations;
+	Element* animate(
+		int durationIn,
+		std::function<void(float)> onStep,
+		std::function<void()> onFinish
+	);
 
 	Element* moveToFront();
 	Element* setTouchable(bool touchable);

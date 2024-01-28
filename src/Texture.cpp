@@ -239,4 +239,7 @@ void Texture::loadPath(std::string& path, bool forceReload) {
 		loadFromSurfaceSaveToCache(path, surface);
 		CST_FreeSurface(surface);
 	}
+
+	width = texW;
+	height = texH;
 }
