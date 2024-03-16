@@ -4,7 +4,7 @@ include $(DEVKITPPC)/wii_rules
 CFLAGS      +=	-g -O2 -Wall $(MACHDEP) -DUSE_RAMFS -DUSE_FILE32API -DWII
 LDFLAGS     +=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
-LIBS        +=   -lcurl -lmbedtls -lmbedx509 -lmbedcrypto -lwiisocket -lmodplug -lopusfile -lopus -lmpg123 -lvorbisidec -logg  -lfat -lwiiuse -lbte -laesnd -logc -lwiikeyboard -lharfbuzz -lfreetype -DNETWORK_MOCK
+LIBS        +=   -lmodplug -lopusfile -lopus -lmpg123 -lvorbisidec -logg  -lfat -lwiiuse -lbte -laesnd -logc -lwiikeyboard -lharfbuzz -lfreetype -DNETWORK_MOCK
 
 BUILD   := build_wii
 LIBDIRS	:= $(DEVKITPRO)/portlibs/wii $(DEVKITPRO)/portlibs/ppc
