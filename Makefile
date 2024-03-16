@@ -48,7 +48,7 @@ INCLUDES  += libs/chesto/libs/resinfs/include
 endif
 
 # for sdl2 platforms (wiiu or pc or switch targets) use sdl font cache
-ifeq ($(filter-out wiiu pc switch,$(MAKECMDGOALS)),)
+ifeq ($(filter-out wiiu pc wii switch,$(MAKECMDGOALS)),)
 SOURCES += $(CHESTO_DIR)/libs/SDL_FontCache
 VPATH   += $(CHESTO_DIR)/libs/SDL_FontCache
 endif

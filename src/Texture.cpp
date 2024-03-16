@@ -170,10 +170,14 @@ void Texture::render(Element* parent)
 		CST_RenderCopyRotate(renderer, mTexture, NULL, &rect, this->angle);
 	}
 	else if (useColorMask) {
+#ifndef SDL1
 		// render the texture with a mask color (only can darken the texture)
 		SDL_SetTextureColorMod(mTexture, maskColor.r, maskColor.g, maskColor.b);
+#endif
 		CST_RenderCopy(renderer, mTexture, NULL, &rect);
+#ifndef SDL1
 		SDL_SetTextureColorMod(mTexture, 0xFF, 0xFF, 0xFF);
+#endif
 	} else	{
 		// render the texture normally
 		CST_RenderCopy(renderer, mTexture, NULL, &rect);

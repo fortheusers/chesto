@@ -58,6 +58,9 @@ RootDisplay::RootDisplay()
 	// set platform-specific default background colors, (which can be overridden)
 #if defined(__WIIU__)
 	this->backgroundColor = fromRGB(0x20 - 0x10, 154 - 0x10, 199 - 0x10);
+#elif defined(WII)
+	// the system wii gray
+	this->backgroundColor = fromRGB(0x8b, 0x8b, 0x8b);
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	this->backgroundColor = fromRGB(30, 30, 30);
 #elif defined(SWITCH)
@@ -67,12 +70,12 @@ RootDisplay::RootDisplay()
 #endif
 
 	// set starting resolution based on SDL version
-#ifndef SDL1
-	setScreenResolution(1280, 720);
+#if defined(WII)
+	setScreenResolution(640, 480);
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	setScreenResolution(400, 480); // 3ds has a special resolution!
 #else
-	setScreenResolution(840, 640);
+	setScreenResolution(1280, 720);
 #endif
 
 	// the main input handler

@@ -1,5 +1,7 @@
 #include "InputEvents.hpp"
 #include "RootDisplay.hpp"
+#include <string>
+#include <map>
 
 int TOTAL_BUTTONS = 18;
 
@@ -7,7 +9,7 @@ int TOTAL_BUTTONS = 18;
 CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_q };
 
 #ifndef SDL1
-SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR };
+SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR,  };
 #else
 int pad_buttons[] = { 1, 2, 3, 4, 0, 0, 0, 0, 8, 5, 6, 5, 7 };
 #define SDL_FINGERDOWN SDL_MOUSEBUTTONDOWN
@@ -20,10 +22,65 @@ int pad_buttons[] = { 1, 2, 3, 4, 0, 0, 0, 0, 8, 5, 6, 5, 7 };
 #endif
 
 // our own "buttons" that correspond to the above SDL ones
-unsigned int ie_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
+unsigned int nintendo_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
+
+unsigned int* ie_buttons = nintendo_buttons;
+
+// human readable lowercase names for the buttons (used by the UI)
+std::string nintendoButtonNames[] = { "a", "b", "x", "y", "up", "down", "left", "right", "plus", "l", "r", "zl", "minus", "up", "down", "left", "right", "zr" };
+
+// human readable lowercase keyboard buttons
+std::string keyButtonNames[] = { "a", "b", "x", "y", "up", "down", "left", "right", "return", "l", "r", "z", "backspace", "up", "down", "left", "right", "q" };
+
+// wii remote (alone) buttons, a smaller set of actions
+// (buttons that aren't available will need to be pressed using IR sensor)
+unsigned int wii_buttons[] = { A_BUTTON, B_BUTTON, L_BUTTON, R_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, 0, 0, 0, SELECT_BUTTON, 0, 0, 0, 0, 0 };
+
+std::string wiiButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "right", "plus", "", "", "", "minus", "", "", "", "", "" };
+
+// wii remote and nunchuk, separate and more actions (but still not all) available
+unsigned int nunchuk_buttons[] = { A_BUTTON, B_BUTTON, L_BUTTON, R_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, 0, 0, X_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, Y_BUTTON };
+
+std::string nunchukButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "right", "plus", "", "", "z", "minus", "up", "down", "left", "right", "c" };
 
 // if true, don't count key inputs (PC/usb keyboard) as button events for us
 bool InputEvents::bypassKeyEvents = false;
+
+struct GamepadInfo {
+    unsigned int* buttons;
+    std::string* names;
+    std::string prefix;
+    std::string controller_type;
+
+public:
+    GamepadInfo(unsigned int* buttons, std::string* names, std::string prefix, std::string controller_type)
+        : buttons(buttons), names(names), prefix(prefix), controller_type(controller_type) {}
+};
+
+// map of controller name to buttons, names, prefix, and controller type
+std::map<std::string, GamepadInfo> gamepadMap = {
+	/* Non-controller types, like keyboard */
+	{ "Keyboard", GamepadInfo(nullptr, keyButtonNames, "keyboard", "key") },
+	/* These 5 names are returned by the wiiu SDL2 port */
+	{ "WiiU Gamepad", GamepadInfo(nintendo_buttons, nintendoButtonNames, "wiiu", "gamepad") },
+	{ "WiiU Pro Controller", { nintendo_buttons, nintendoButtonNames, "wiiu", "pro" } },
+	{ "Wii Remote", { wii_buttons, wiiButtonNames, "wii", "remote" } },
+	{ "Wii Remote and Nunchuk", { nunchuk_buttons, nunchukButtonNames, "wii", "nunchuk" } },
+	{ "Wii Classic Controller", { nintendo_buttons, nintendoButtonNames, "wii", "classic"} },
+	/* The switch SDL2 port only returns this string for all controller types*/
+	{ "Switch Controller", { nintendo_buttons, nintendoButtonNames, "switch", "pro" } },
+	/* For PC platforms, more specific Switch controller types can be recognized */
+	// { "Pro Controller", { nintendo_buttons, nintendoButtonNames, "switch" } },
+	// { "Joy-Con (L)", { nintendo_buttons, nintendoButtonNames, "switch" } },
+	// { "Joy-Con (R)", { nintendo_buttons, nintendoButtonNames, "switch" } },
+	// { "Switch Pro Controller", { nintendo_buttons, nintendoButtonNames, "switch" } },
+	/* Other controller types */
+	// { "Xbox 360 Controller", { xbox_buttons, xboxButtonNames, "xbox" } },
+	// { "Xbox One Controller", { xbox_buttons, xboxButtonNames, "xbox" } },
+	// { "Xbox Series X Controller", { xbox_buttons, xboxButtonNames, "xbox" } },
+	// { "PS4 Controller", { ps_buttons, psButtonNames, "playstation" } },
+	// { "PS5 Controller", { ps_buttons, psButtonNames, "playstation" } }
+};
 
 InputEvents::InputEvents()
 {
