@@ -41,6 +41,7 @@ typedef SDL_Color CST_Color;
 typedef SDL_Rect CST_Rect;
 
 class RootDisplay;
+class InputEvents;
 
 // init / rendering analogues
 bool CST_DrawInit(RootDisplay* root);
@@ -86,6 +87,8 @@ bool CST_isRectOffscreen(CST_Rect* rect);
 void CST_GetRGBA(Uint32 pixel, SDL_PixelFormat* format, CST_Color* cstColor);
 bool CST_SavePNG(CST_Texture* texture, const char* filename);
 void CST_SetWindowTitle(const char* title);
+
+void CST_LowRumble(InputEvents* event, int ms);
 
 #ifdef MUSIC
 std::vector<std::string> CST_GetMusicInfo(CST_Music* music);

@@ -365,6 +365,16 @@ int CST_GetTicks()
 	return SDL_GetTicks();
 }
 
+void CST_LowRumble(InputEvents* event, int ms)
+{
+#ifndef SDL1
+	auto joystick = SDL_JoystickFromInstanceID(event->event.jdevice.which);
+	if (joystick && SDL_JoystickGetAttached(joystick)) {
+		SDL_JoystickRumble(joystick, 0x400, 0x400, 200);
+	}
+#endif
+}
+
 bool CST_isRectOffscreen(CST_Rect* rect)
 {
 	// if this element will be offscreen, don't try to render it

@@ -178,7 +178,7 @@ void Texture::render(Element* parent)
 #ifndef SDL1
 		SDL_SetTextureColorMod(mTexture, 0xFF, 0xFF, 0xFF);
 #endif
-	} else	{
+	} else {
 		// render the texture normally
 		CST_RenderCopy(renderer, mTexture, NULL, &rect);
 	}

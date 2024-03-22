@@ -93,7 +93,6 @@ InputEvents::InputEvents()
 bool InputEvents::processSDLEvents()
 {
 	// get an event from SDL
-	SDL_Event event;
 	if (!SDL_PollEvent(&event))
 		return false;
 

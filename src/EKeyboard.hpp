@@ -105,6 +105,8 @@ public:
 	bool preventEnterAndTab = false; // hide and don't allow enter/tab inputs
 	bool storeOwnText = false; // whether or not this keyboard will store the text input on its own
 
+	bool isTouchDrag = false; // set to true during a touchdrag
+
 	void type(int y, int x);
 	void generateEKeyboard();
 	void backspace();

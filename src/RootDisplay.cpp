@@ -75,12 +75,11 @@ RootDisplay::RootDisplay()
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	setScreenResolution(400, 480); // 3ds has a special resolution!
 #else
-	setScreenResolution(1280, 720);
+	setScreenResolution(640, 480);
+	// setScreenResolution(1280, 720);
 #endif
-
 	// the main input handler
 	this->events = new InputEvents();
-
 }
 
 void RootDisplay::initMusic()
@@ -135,11 +134,14 @@ bool RootDisplay::process(InputEvents* event)
 		return true;
 	}
 
+	// process either the subscreen or the children elements, always return true if "dragging"
+	// (may be a mouse cursor or wiimote pointing and moving on the screen)
+
 	if (RootDisplay::subscreen)
-		return RootDisplay::subscreen->process(event);
+		return RootDisplay::subscreen->process(event) || event->isTouchDrag();
 
 	// keep processing child elements
-	return super::process(event);
+	return super::process(event) || event->isTouchDrag();
 }
 
 void RootDisplay::render(Element* parent)

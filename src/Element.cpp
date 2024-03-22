@@ -198,6 +198,22 @@ bool Element::onTouchDrag(InputEvents* event)
 	if (!event->isTouchDrag())
 		return false;
 
+	// if we're not in a deeplight (a touchdown event), draw our own drag highlight
+	if (this->elasticCounter != DEEP_HIGHLIGHT) {
+		if (event->touchIn(this->xAbs, this->yAbs, this->width, this->height)) {
+			// if there's currently _no_ highlight, and we're in a drag event on this element,
+			// so we should turn on the hover highlight
+			this->elasticCounter = THICK_HIGHLIGHT;
+			ret |= true;
+
+			// play a hover sound and vibrate
+			CST_LowRumble(event, 200);
+		} else {
+			// we're in a drag event, but not for this element
+			this->elasticCounter = NO_HIGHLIGHT;
+		}
+	}
+
 	// minimum amount of wiggle allowed by finger before calling off a touch event
 	int TRESHOLD = 40 / SCALER / SCALER;
 
@@ -209,7 +225,6 @@ bool Element::onTouchDrag(InputEvents* event)
 		this->elasticCounter = NO_HIGHLIGHT;
 	}
 
-	// ontouchdrag never decides whether to update the view or not
 	return ret;
 }
 
@@ -357,6 +372,8 @@ Element* Element::animate(
 	animations.push_back(new Animation(
 		CST_GetTicks(),	duration, onStep, onFinish)
 	);
+
+	return this;
 }
 
 // Move an element up within its parent

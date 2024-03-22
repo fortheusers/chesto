@@ -62,6 +62,9 @@ public:
 	/// update and load or reload the texture
 	void loadPath(std::string& path, bool forceReload = false);
 
+	/// Rounded corner radius (if >0, will round)
+	int cornerRadius = 0;
+
 protected:
 	/// Cache previously displayed textures
 	static std::unordered_map<std::string, TextureData> texCache;

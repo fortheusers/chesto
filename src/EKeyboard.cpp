@@ -101,7 +101,7 @@ void EKeyboard::render(Element* parent)
 		}
 
 		// draw the currently selected tile if these index things are set
-		if (touchMode)
+		if (touchMode && !isTouchDrag)
 		{
 			if (hasRoundedKeys) {
 				CST_roundedBoxRGBA(renderer, dimens2.x, dimens2.y, dimens2.x + dimens2.w, dimens2.y + dimens2.h, 20, 0xad, 0xd8, 0xe6, 0x90);
@@ -178,14 +178,24 @@ bool EKeyboard::process(InputEvents* event)
 	{
 		curRow = index = -1;
 		touchMode = true;
+		isTouchDrag = false;
 	}
 
 	if (event->isKeyDown())
 		touchMode = false;
-
+	
 	bool ret = false;
+	
+	// only set touch drag if a selection hasn't been made
+	auto prevTouchDrag = isTouchDrag;
+	isTouchDrag = (event->isTouchDrag() && (!touchMode || (curRow < 0 && index < 0))) || isTouchDrag;
+	if (prevTouchDrag != isTouchDrag && isTouchDrag) {
+		// started a drag event, play vibrate
+		CST_LowRumble(event, 200);
+		ret = true;
+	}
 
-	if (!touchMode)
+	if (!touchMode && !isTouchDrag)
 	{
 		if (curRow < 0 && index < 0)
 		{
@@ -277,16 +287,19 @@ bool EKeyboard::process(InputEvents* event)
 
 	int extWidth = width + 305;
 
-	if (event->isTouchDown() && event->touchIn(this->x, this->y, extWidth, height + 200))
+	if ((event->isTouchDown() || event->isTouchDrag()) && event->touchIn(this->x, this->y, extWidth, height + 200))
 	{
 		for (int y = 0; y < rowCount(); y++)
-			for (int x = 0; x < rowLength(y) + 1; x++)
-				if (event->touchIn(this->x + kXPad + x * kXOff + y * yYOff, this->y + kYPad + y * ySpacing, keyWidth, keyWidth))
+			for (int x = 0; x < rowLength(y) + 1; x++) {
+				auto xStart = this->x + kXPad + x * kXOff + y * yYOff;
+				auto yStart = this->y + kYPad + y * ySpacing;
+				if (event->touchIn(xStart, yStart, keyWidth, keyWidth))
 				{
 					ret |= true;
 					curRow = y;
 					index = x;
 				}
+			}
 		return true;
 	}
 

@@ -63,7 +63,7 @@ void TextElement::update(bool forceUpdate)
 
 		CST_Surface *textSurface = ((textFont == ICON) || (textWrappedWidth == 0)) ?
 			TTF_RenderUTF8_Blended(font, text.c_str(), textColor) :
-			TTF_RenderText_Blended_Wrapped(font, text.c_str(), textColor, textWrappedWidth);
+			TTF_RenderUTF8_Blended_Wrapped(font, text.c_str(), textColor, textWrappedWidth);
 		if(textSurface==NULL) printf("TTF_GetError: %s\n", TTF_GetError());
 
 		loadFromSurfaceSaveToCache(key, textSurface);
