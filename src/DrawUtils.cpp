@@ -13,6 +13,7 @@
 #ifdef SDL1
 static uint32_t CUR_DRAW_COLOR = 0xFFFFFFFF;
 static uint32_t LAST_SDL1_FLIP = 0;
+#define TTF_RenderUTF8_Blended_Wrapped TTF_RenderText_Blended_Wrapped
 #endif
 
 char* musicData = NULL;

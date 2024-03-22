@@ -75,8 +75,8 @@ RootDisplay::RootDisplay()
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	setScreenResolution(400, 480); // 3ds has a special resolution!
 #else
-	setScreenResolution(640, 480);
-	// setScreenResolution(1280, 720);
+	// setScreenResolution(640, 480);
+	setScreenResolution(1280, 720);
 #endif
 	// the main input handler
 	this->events = new InputEvents();
