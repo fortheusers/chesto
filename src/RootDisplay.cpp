@@ -196,15 +196,13 @@ void RootDisplay::processWiiUHomeOverlay() {
 
 int RootDisplay::mainLoop()
 {
-	// consoleDebugInit(debugDevice_SVC);
-	// stdout = stderr; // for yuzu
-
-#if defined(__WIIU__)
-	// WHBLogUdpInit();
-	// WHBLogCafeInit();
-#endif
-
 	DownloadQueue::init();
+
+	// always load english first, to initialize defaults
+	TextElement::loadI18nCache("en-us");
+
+	// TODO: detect language and system, and store preference
+	// TextElement::loadI18nCache("zh-cn");
 
 #ifdef __WIIU__
 	// setup procui callback for resuming application to force a chesto render

@@ -6,7 +6,7 @@ CST_Color Button::colors[2] = {
 	{ 0xff, 0xff, 0xff, 0xff }, // dark
 };
 
-Button::Button(const char* message, int button, bool dark, int size, int width)
+Button::Button(std::string message, int button, bool dark, int size, int width)
 	: physical(button)
 	, dark(dark)
 	, icon(getUnicode(button), (size / SCALER) * 1.25, &colors[dark], ICON)

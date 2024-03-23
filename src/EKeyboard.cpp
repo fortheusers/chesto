@@ -504,12 +504,12 @@ void EKeyboard::updateSize()
 	if (!hasRoundedKeys) {
 		for (int x = 0; x < rowCount(); x++)
 		{
-			TextElement* rowText = new TextElement(rows[x]->c_str(), textSize, &gray, true);
+			TextElement* rowText = new TextElement(rows[x]->c_str(), textSize, &gray, ICON);
 			// rowText->customFontPath = RAMFS "res/lightsans.ttf";
 			if (targetHeight < 0) {
 				targetHeight = rowText->height;
 			}
-			// rowText->update(true);
+			rowText->update(true);
 			rowText->position(kXPad + x * kXOff, kYPad + x * kYOff + targetHeight/2 - rowText->height/2);
 			this->elements.push_back(rowText);
 		}

@@ -5,14 +5,19 @@
 
 #define NORMAL 0
 #define MONOSPACED 1
-#define ICON 2
+#define ICON 2 // old icon font, no longer used
+#define OLD_MONOSPACED 2
+#define SERIF 3
+#define SIMPLIFIED_CHINESE 4
+
+std::string& i18n(std::string key);
 
 class TextElement : public Texture
 {
 public:
 	// constructors
 	TextElement();
-	TextElement(const char* text, int size, CST_Color* color = 0, int font_type = NORMAL, int wrapped_width = 0);
+	TextElement(std::string text, int size, CST_Color* color = 0, int font_type = NORMAL, int wrapped_width = 0);
 
 	// change TextElement
 	void setText(const std::string& text);
@@ -27,6 +32,12 @@ public:
 
 	// if specified, will override any font_type setting
 	std::string customFontPath = "";
+
+	static std::unordered_map<std::string, std::string> i18nCache;
+	static void loadI18nCache(std::string locale);
+
+	// if true, replaces all NORMAL fonts with SIMPLIFIED_CHINESE
+	static bool useSimplifiedChineseFont;
 
 private:
 	// default values
