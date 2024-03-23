@@ -10,7 +10,7 @@
 #define SERIF 3
 #define SIMPLIFIED_CHINESE 4
 
-std::string& i18n(std::string key);
+std::string i18n(std::string key);
 
 class TextElement : public Texture
 {

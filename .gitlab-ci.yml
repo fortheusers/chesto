@@ -31,11 +31,11 @@ PC:
     PLATFORM: pc
     EXT: bin
 
-PC-sdl1:
-  <<: *common
-  variables:
-    PLATFORM: pc-sdl1
-    EXT: bin-sdl1
+# PC-sdl1:
+#   <<: *common
+#   variables:
+#     PLATFORM: pc-sdl1
+#     EXT: bin-sdl1
 
 WiiU:
   <<: *common

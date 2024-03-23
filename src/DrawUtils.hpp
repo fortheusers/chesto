@@ -119,3 +119,4 @@ CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, cons
 #endif
 
 void chdirForPlatform();
+std::string replaceAll(std::string str, const std::string& from, const std::string& to);

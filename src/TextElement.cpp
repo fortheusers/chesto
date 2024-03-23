@@ -23,7 +23,7 @@ void TextElement::loadI18nCache(std::string locale) {
 	// en-us, zh-cn
 	std::string localePath = RAMFS "res/i18n/" + locale + ".ini";
 	std::ifstream file(localePath);
-	printf("Loading i18n cache from %s\n", localePath.c_str());
+	// printf("Loading i18n cache from %s\n", localePath.c_str());
 	if (file.is_open()) {
 		std::string line;
 		while (std::getline(file, line)) {
@@ -38,7 +38,7 @@ void TextElement::loadI18nCache(std::string locale) {
 			}
 			std::string value = line.substr(pos + 2);
 			TextElement::i18nCache[key] = value;
-			printf("Loaded i18n key %s with value %s\n", key.c_str(), value.c_str());
+			// printf("Loaded i18n key %s with value %s\n", key.c_str(), value.c_str());
 		}
 		file.close();
 
@@ -117,9 +117,9 @@ void TextElement::update(bool forceUpdate)
 	getTextureSize(&width, &height);
 }
 
-std::string& i18n(std::string key) {
-	if (TextElement::i18nCache.find(key) != TextElement::i18nCache.end()) {
-		return TextElement::i18nCache[key];
-	}
-	return key;
+std::string i18n(std::string key) {
+    if (const auto& keyItr = TextElement::i18nCache.find(key); keyItr != TextElement::i18nCache.end()) {
+        return keyItr->second;
+    }
+    return key;
 }
