@@ -10,6 +10,9 @@ typedef uint32_t CST_Keycode;
 typedef uint16_t CST_Keymod;
 #endif
 #include <functional>
+#include <string>
+
+#define TOTAL_BUTTONS 18
 
 // clang-format off
 #define LEFT_BUTTON       0b00000000000001
@@ -55,6 +58,21 @@ typedef uint16_t CST_Keymod;
 #define SDL_RIGHT_STICK  (SDL_GameControllerButton)18
 #define SDL_DOWN_STICK   (SDL_GameControllerButton)19
 // clang-format on
+
+struct GamepadInfo {
+    unsigned int* buttons;
+    std::string* names;
+    std::string prefix;
+    std::string controller_type;
+
+public:
+    GamepadInfo(unsigned int* buttons, std::string* names, std::string prefix, std::string controller_type)
+        : buttons(buttons), names(names), prefix(prefix), controller_type(controller_type) {}
+	GamepadInfo()
+        : buttons(nullptr), names(nullptr), prefix(""), controller_type("")
+    {
+    }
+};
 
 class InputEvents
 {
@@ -105,6 +123,8 @@ public:
 	int curFrame = 0;
 
 	static bool bypassKeyEvents;
+	static GamepadInfo& getLastGamepadInfo();
+	static std::string lastGamepadKey;
 
 	std::function<void()> quitaction = NULL; //Called for an SDL_Quit event, usually caused by a SIGINT
 

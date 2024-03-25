@@ -14,12 +14,13 @@ public:
 	void updateText(const char* inc_text);
 	const std::string getText();
 
+	std::string myLastSeenGamepad = "";
+
 	TextElement text;
+	static std::string getControllerButtonImageForPlatform(int button, bool isGray, bool isOutline);
 
 private:
 	static CST_Color colors[2];
-	const char* getUnicode(int button);
-
 	/// the physical button to activate this button
 	int physical = -1;
 
@@ -29,5 +30,5 @@ private:
 	// whether the button is dark or light themed
 	bool dark = false;
 
-	TextElement icon;
+	ImageElement icon;
 };

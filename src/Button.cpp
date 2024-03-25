@@ -9,12 +9,17 @@ CST_Color Button::colors[2] = {
 Button::Button(std::string message, int button, bool dark, int size, int width)
 	: physical(button)
 	, dark(dark)
-	, icon(getUnicode(button), (size / SCALER) * 1.25, &colors[dark], ICON)
+	, icon(getControllerButtonImageForPlatform(button, !dark, false))
 	, text(message, (size / SCALER), &colors[dark])
 {
 
 	super::append(&text);
 	super::append(&icon);
+
+	// on initialization, store the last gamepad info
+	myLastSeenGamepad = InputEvents::lastGamepadKey;
+
+	icon.resize(text.height*1.5, text.height*1.5);
 
 	fixedWidth = width;
 
@@ -58,33 +63,26 @@ void Button::updateText(const char* inc_text)
 	updateBounds();
 }
 
-const char* Button::getUnicode(int button)
+std::string Button::getControllerButtonImageForPlatform(int button, bool isGray, bool isOutline)
 {
-	switch (button)
-	{
-		case A_BUTTON:
-			return "\ue0a0";
-		case B_BUTTON:
-			return "\ue0a1";
-		case Y_BUTTON:
-			return "\ue0a2";
-		case X_BUTTON:
-			return "\ue0a3";
-		case START_BUTTON:
-			return "\ue0a4";
-		case SELECT_BUTTON:
-			return "\ue0a5";
-		case L_BUTTON:
-			return "\ue0a6";
-		case R_BUTTON:
-			return "\ue0a7";
-		case ZL_BUTTON:
-			return "\ue0a8";
-		case ZR_BUTTON:
-			return "\ue0a9";
-		default:
-			break;
+	// grab the current gamepad info
+	GamepadInfo& gamepad = InputEvents::getLastGamepadInfo();
+	// find the button index in the gamepad.buttons array
+	// TODO: use a hashmap instead of an array
+	if (gamepad.buttons != nullptr) {
+		for (int i = 0; i < TOTAL_BUTTONS; i++)
+		{
+			if (gamepad.buttons[i] == button)
+			{
+				auto outlineSuffix = isOutline ? "_outline" : "";
+				auto graySuffix = isGray ? "_gray" : "";
+				auto retVal = RAMFS "res/controllers/buttons/" + gamepad.prefix + "_" + gamepad.names[i] + outlineSuffix + graySuffix + ".svg";
+				return retVal;
+			}
+		}
 	}
+	// if we didn't find it, return an empty string
+	printf("Button %d not found in gamepad, returning empty string\n", button);
 	return "";
 }
 
@@ -97,7 +95,18 @@ bool Button::process(InputEvents* event)
 		return true;
 	}
 
-	return super::process(event);
+	bool ret = false;
+
+	// if the last gamepad is different from the current one, update the button image
+	if (myLastSeenGamepad != InputEvents::lastGamepadKey)
+	{
+		auto newPath = getControllerButtonImageForPlatform(this->physical, !dark, false);
+		icon.loadPath(newPath);
+		icon.resize(text.height*1.5, text.height*1.5);
+		myLastSeenGamepad = InputEvents::lastGamepadKey;
+	}
+
+	return super::process(event) || ret;
 }
 
 const std::string Button::getText()

@@ -1,9 +1,6 @@
 #include "InputEvents.hpp"
 #include "RootDisplay.hpp"
-#include <string>
 #include <map>
-
-int TOTAL_BUTTONS = 18;
 
 // computer key mappings
 CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_q };
@@ -23,8 +20,6 @@ int pad_buttons[] = { 1, 2, 3, 4, 0, 0, 0, 0, 8, 5, 6, 5, 7 };
 
 // our own "buttons" that correspond to the above SDL ones
 unsigned int nintendo_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
-
-unsigned int* ie_buttons = nintendo_buttons;
 
 // human readable lowercase names for the buttons (used by the UI)
 std::string nintendoButtonNames[] = { "a", "b", "x", "y", "up", "down", "left", "right", "plus", "l", "r", "zl", "minus", "up", "down", "left", "right", "zr" };
@@ -46,29 +41,23 @@ std::string nunchukButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "
 // if true, don't count key inputs (PC/usb keyboard) as button events for us
 bool InputEvents::bypassKeyEvents = false;
 
-struct GamepadInfo {
-    unsigned int* buttons;
-    std::string* names;
-    std::string prefix;
-    std::string controller_type;
-
-public:
-    GamepadInfo(unsigned int* buttons, std::string* names, std::string prefix, std::string controller_type)
-        : buttons(buttons), names(names), prefix(prefix), controller_type(controller_type) {}
-};
+auto defaultKeyName = "WiiU Gamepad";
+std::string InputEvents::lastGamepadKey = defaultKeyName;
+unsigned int* currentButtons = nintendo_buttons;
+std::string* currentButtonNames = nintendoButtonNames;
 
 // map of controller name to buttons, names, prefix, and controller type
 std::map<std::string, GamepadInfo> gamepadMap = {
 	/* Non-controller types, like keyboard */
-	{ "Keyboard", GamepadInfo(nullptr, keyButtonNames, "keyboard", "key") },
+	{ "Keyboard", GamepadInfo(nintendo_buttons, keyButtonNames, "keyboard", "key") },
 	/* These 5 names are returned by the wiiu SDL2 port */
-	{ "WiiU Gamepad", GamepadInfo(nintendo_buttons, nintendoButtonNames, "wiiu", "gamepad") },
-	{ "WiiU Pro Controller", { nintendo_buttons, nintendoButtonNames, "wiiu", "pro" } },
-	{ "Wii Remote", { wii_buttons, wiiButtonNames, "wii", "remote" } },
-	{ "Wii Remote and Nunchuk", { nunchuk_buttons, nunchukButtonNames, "wii", "nunchuk" } },
-	{ "Wii Classic Controller", { nintendo_buttons, nintendoButtonNames, "wii", "classic"} },
+	{ "WiiU Gamepad", GamepadInfo(nintendo_buttons, nintendoButtonNames, "wiiu_button", "gamepad") },
+	{ "WiiU Pro Controller", { nintendo_buttons, nintendoButtonNames, "wiiu_button", "pro" } },
+	{ "Wii Remote", { wii_buttons, wiiButtonNames, "wii_button", "remote" } },
+	{ "Wii Remote and Nunchuk", { nunchuk_buttons, nunchukButtonNames, "wii_button", "nunchuk" } },
+	{ "Wii Classic Controller", { nintendo_buttons, nintendoButtonNames, "wii_button", "classic"} },
 	/* The switch SDL2 port only returns this string for all controller types*/
-	{ "Switch Controller", { nintendo_buttons, nintendoButtonNames, "switch", "pro" } },
+	{ "Switch Controller", { nintendo_buttons, nintendoButtonNames, "switch_button", "pro" } },
 	/* For PC platforms, more specific Switch controller types can be recognized */
 	// { "Pro Controller", { nintendo_buttons, nintendoButtonNames, "switch" } },
 	// { "Joy-Con (L)", { nintendo_buttons, nintendoButtonNames, "switch" } },
@@ -102,6 +91,32 @@ bool InputEvents::processSDLEvents()
 
 	// process joystick hotplugging events
 	processJoystickHotplugging(&event);
+
+	std::string curControllerName= lastGamepadKey;
+
+	// get the controller name
+	if (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP) {
+		// keyboard event
+		lastGamepadKey = "Keyboard";
+	} else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP) {
+		SDL_Joystick* joystickId = SDL_JoystickFromInstanceID(event.jbutton.which);
+		if (joystickId != NULL) {
+			std::string controllerName = SDL_JoystickName(joystickId);
+			lastGamepadKey = defaultKeyName; // default in case no match is found
+			if (!controllerName.empty() && gamepadMap.find(controllerName) != gamepadMap.end()){
+				lastGamepadKey = controllerName;
+			}
+		}
+	}
+	if (curControllerName != lastGamepadKey) {
+		printf("Switched to controller profile: %s\n", lastGamepadKey.c_str());
+		GamepadInfo& gamepadInfo = gamepadMap[lastGamepadKey];
+		if (gamepadInfo.buttons != nullptr) {
+			currentButtons = gamepadInfo.buttons;
+		}
+		// keyButtonNames = gamepadInfo.names;
+		// TODO: callback to update all buttons on the UI
+	}
 
 	this->isScrolling = false;
 
@@ -281,7 +296,7 @@ bool InputEvents::held(int buttons)
 	if ((this->type == SDL_KEYDOWN || this->type == SDL_KEYUP) && !InputEvents::bypassKeyEvents)
 	{
 		for (int x = 0; x < TOTAL_BUTTONS; x++)
-			if (key_buttons[x] == keyCode && (buttons & ie_buttons[x]))
+			if (key_buttons[x] == keyCode && (buttons & currentButtons[x]))
 				return true;
 	}
 
@@ -289,7 +304,7 @@ bool InputEvents::held(int buttons)
 	else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
 	{
 		for (int x = 0; x < TOTAL_BUTTONS; x++)
-			if (pad_buttons[x] == keyCode && (buttons & ie_buttons[x]))
+			if (pad_buttons[x] == keyCode && (buttons & currentButtons[x]))
 				return true;
 	}
 
@@ -355,7 +370,7 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 	case SDL_JOYDEVICEADDED:
 		j = SDL_JoystickOpen(event->jdevice.which);
 		if (j)
-			printf("Added joystick device: %s\n", SDL_JoystickName(j));
+			printf("Added joystick device: %s, with ID %d\n", SDL_JoystickName(j), SDL_JoystickInstanceID(j));
 		break;
 	case SDL_JOYDEVICEREMOVED:
 		j = SDL_JoystickFromInstanceID(event->jdevice.which);
@@ -369,4 +384,9 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 		break;
 	}
 	#endif
+}
+
+GamepadInfo& InputEvents::getLastGamepadInfo()
+{
+	return gamepadMap[lastGamepadKey];
 }
