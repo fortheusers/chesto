@@ -1,4 +1,4 @@
-include $(HELPERS)/Makefile.sdl1
+include $(HELPERS)/Makefile.sdl2
 include $(DEVKITARM)/3ds_rules
 
 ARCH      := -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft

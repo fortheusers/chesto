@@ -5,14 +5,7 @@
 // computer key mappings
 CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_q };
 
-#ifndef SDL1
 SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR,  };
-#else
-int pad_buttons[] = { 1, 2, 3, 4, 0, 0, 0, 0, 8, 5, 6, 5, 7 };
-#define SDL_FINGERDOWN SDL_MOUSEBUTTONDOWN
-#define SDL_FINGERUP SDL_MOUSEBUTTONUP
-#define SDL_FINGERMOTION SDL_MOUSEMOTION
-#endif
 
 #if defined(__WIIU__) && defined(USE_KEYBOARD)
 #include "../libs/wiiu_kbd/keybdwrapper.h"
@@ -122,12 +115,10 @@ bool InputEvents::processSDLEvents()
 
 #ifdef PC
 	this->allowTouch = false;
-#ifndef SDL1
 	if (event.type == SDL_MOUSEWHEEL) {
 		this->wheelScroll = event.wheel.y;
 		this->isScrolling = true;
 	}
-#endif
 #endif
 
 	if (this->type == SDL_QUIT)
@@ -135,21 +126,14 @@ bool InputEvents::processSDLEvents()
 		this->quitaction();
 		return false; //Quitting overrides all other events.
 	}
-#ifndef SDL1
-// TODO: key down/up input on SDL1
 	else if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))
 	{
 		this->keyCode = event.key.keysym.sym;
 		this->mod = event.key.keysym.mod;
 	}
-#endif
 	else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
 	{
-	#ifndef SDL1
 		this->keyCode = event.jbutton.button;
-	#else
-		this->keyCode = event.button.button;
-	#endif
 	}
 	else if (this->type == SDL_MOUSEMOTION || this->type == SDL_MOUSEBUTTONUP || this->type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -158,7 +142,6 @@ bool InputEvents::processSDLEvents()
 		this->yPos = isMotion ? event.motion.y : event.button.y;
 		this->xPos = isMotion ? event.motion.x : event.button.x;
 	}
-#ifndef SDL1
 	else if (allowTouch && (this->type == SDL_FINGERMOTION || this->type == SDL_FINGERUP || this->type == SDL_FINGERDOWN))
 	{
 		this->yPos = event.tfinger.y * SCREEN_HEIGHT;
@@ -178,7 +161,6 @@ bool InputEvents::processSDLEvents()
 
 		RootDisplay::mainDisplay->needsRedraw = true;
 	}
-#endif
 
 	// offset the x, y positions by the dpi scale
 	this->xPos = (int)(this->xPos * RootDisplay::dpiScale);
@@ -262,8 +244,6 @@ int InputEvents::directionForKeycode()
 	if (this->type == SDL_KEYDOWN && this->keyCode == SDLK_RETURN)
 		return -1;
 
-#ifndef SDL1
-// TODO: joysticks in SDL1
 	// returns 0 1 2 or 3 for up down left or right
 	switch (this->keyCode)
 	{
@@ -286,7 +266,6 @@ int InputEvents::directionForKeycode()
 	default:
 		return -1;
 	}
-#endif
 	return -1;
 }
 
@@ -363,7 +342,6 @@ bool InputEvents::isKeyUp()
 
 void InputEvents::processJoystickHotplugging(SDL_Event *event)
 {
-	#ifndef SDL1
 	SDL_Joystick *j;
 	switch(event->type)
 	{
@@ -383,7 +361,6 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 	default:
 		break;
 	}
-	#endif
 }
 
 GamepadInfo& InputEvents::getLastGamepadInfo()

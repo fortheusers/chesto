@@ -1,6 +1,5 @@
 #include <vector>
 
-#ifndef SDL1
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -19,24 +18,8 @@
 typedef SDL_Window CST_Window;
 typedef SDL_Renderer CST_Renderer;
 typedef SDL_Texture CST_Texture;
-#else
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_ttf.h>
-#include <SDL/SDL_gfxPrimitives.h>
-#include <SDL/SDL_rotozoom.h>
-
-typedef SDL_Surface CST_Window;
-typedef SDL_Surface CST_Renderer;
-typedef SDL_Surface CST_Texture;
-
-#pragma once
-
-#define TTF_RenderText_Blended_Wrapped(a, b, c, d) TTF_RenderUTF8_Blended(a, b, c)
-#endif
 
 typedef SDL_Surface CST_Surface;
-
 typedef SDL_Color CST_Color;
 typedef SDL_Rect CST_Rect;
 
@@ -95,7 +78,6 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music);
 #endif
 
 // font cache analogues
-#ifndef SDL1
 // SDL2, will be backed by SDL_FontCache
 #define CST_Font FC_Font
 #define CST_CreateFont FC_CreateFont
@@ -105,18 +87,6 @@ std::vector<std::string> CST_GetMusicInfo(CST_Music* music);
 #define CST_GetFontWidth FC_GetWidth
 #define CST_GetFontHeight FC_GetHeight
 #define CST_DrawFont FC_Draw
-#else
-// SDL1 font ops are backed by our own cache (could also be used with other backends)
-// TODO: all these are stubs for now, for SDL1
-typedef TTF_Font CST_Font; // for now, these are the same, we may need our own representation later
-CST_Font* CST_CreateFont();
-void CST_LoadFont(CST_Font* font,  CST_Renderer* renderer, const char* filename_ttf,  Uint32 pointSize, CST_Color color, int style);
-CST_Color CST_MakeColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-Uint16 CST_GetFontLineHeight(CST_Font* font);
-Uint16 CST_GetFontWidth(CST_Font* font, const char* formatted_text, ...);
-Uint16 CST_GetFontHeight(CST_Font* font, const char* formatted_text, ...);
-CST_Rect CST_DrawFont(CST_Font* font, CST_Renderer* dest, float x, float y, const char* formatted_text, ...);
-#endif
 
 void chdirForPlatform();
 std::string replaceAll(std::string str, const std::string& from, const std::string& to);

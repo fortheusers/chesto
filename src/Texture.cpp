@@ -137,10 +137,8 @@ void Texture::render(Element* parent)
 		auto color = (CST_Color){texFirstPixel.r, texFirstPixel.g, texFirstPixel.b, 0xFF};
 
 		// if the first pixel is transparent, use white
-#ifndef SDL1
 		if (texFirstPixel.a == 0)
 			color = (CST_Color){0xFF,0xFF,0xFF,0xFF};
-#endif
 
 		CST_SetDrawColor(renderer, color);
 		CST_FillRect(renderer, &rect);
@@ -170,14 +168,10 @@ void Texture::render(Element* parent)
 		CST_RenderCopyRotate(renderer, mTexture, NULL, &rect, this->angle);
 	}
 	else if (useColorMask) {
-#ifndef SDL1
 		// render the texture with a mask color (only can darken the texture)
 		SDL_SetTextureColorMod(mTexture, maskColor.r, maskColor.g, maskColor.b);
-#endif
 		CST_RenderCopy(renderer, mTexture, NULL, &rect);
-#ifndef SDL1
 		SDL_SetTextureColorMod(mTexture, 0xFF, 0xFF, 0xFF);
-#endif
 	} else {
 		// render the texture normally
 		CST_RenderCopy(renderer, mTexture, NULL, &rect);
@@ -214,7 +208,6 @@ bool Texture::saveTo(std::string &path)
 	if (!mTexture)
 		return false;
 
-#ifndef SDL1	
 	// render the texture to one that can be saved (TARGET ACCESS)
 	CST_Texture* target = SDL_CreateTexture(getRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, texW, texH);
 	if (!target)
@@ -232,8 +225,6 @@ bool Texture::saveTo(std::string &path)
 
 	// save the surface to the path
 	return CST_SavePNG(target, path.c_str());
-#endif
-	return false;
 }
 
 void Texture::loadPath(std::string& path, bool forceReload) {

@@ -33,7 +33,7 @@ ifeq (,$(MAKECMDGOALS))
 all:
 	@echo "This is a Chesto app! For more information see: https://github.com/fortheusers/chesto"
 	@echo "No targets were specified, try:\n\tmake <target>"
-	@echo "Where <target> is one of: pc, pc-sdl1, wiiu, switch, 3ds, wii"
+	@echo "Where <target> is one of: pc, wiiu, switch, 3ds, wii"
 endif
 
 # common variables that all the makefiles will need, and can be appended to by the toplevel
@@ -91,11 +91,6 @@ export SRCFILES     +=  $(CFILES) $(CPPFILES) $(SFILES)
 
 ifeq (pc,$(MAKECMDGOALS))
 include $(HELPERS)/Makefile.sdl2
-include $(HELPERS)/Makefile.pc
-endif
-
-ifeq (pc-sdl1,$(MAKECMDGOALS))
-include $(HELPERS)/Makefile.sdl1
 include $(HELPERS)/Makefile.pc
 endif
 

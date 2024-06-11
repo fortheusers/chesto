@@ -24,8 +24,6 @@ jobs:
           #   ext: 3dsx
           - platform: wii
             ext: dol
-          # - platform: pc-sdl1
-          #   ext: bin-sdl1
     container:
       image: ghcr.io/fortheusers/sealeo:latest
     steps:

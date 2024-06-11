@@ -1,14 +1,9 @@
 #pragma once
 
-#ifndef SDL1
 #include <SDL2/SDL.h>
 typedef SDL_Keycode CST_Keycode;
 typedef uint16_t CST_Keymod;
-#else
-#include <SDL/SDL.h>
-typedef uint32_t CST_Keycode;
-typedef uint16_t CST_Keymod;
-#endif
+
 #include <functional>
 #include <string>
 

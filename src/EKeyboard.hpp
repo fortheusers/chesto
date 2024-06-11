@@ -4,14 +4,6 @@
 
 #define KEYCODE_COUNT 47
 
-// hack to fire these events in SDL1
-#ifdef SDL1
-#define SDL_CONTROLLER_BUTTON_A 1
-#define SDL_CONTROLLER_BUTTON_B 2
-#define SDL_CONTROLLER_BUTTON_X 3
-#define SDL_CONTROLLER_BUTTON_Y 3
-#endif
-
 class EKeyboard : public Element
 {
 public:
