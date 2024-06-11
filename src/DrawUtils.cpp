@@ -34,10 +34,6 @@ bool CST_DrawInit(RootDisplay* root)
 	SDLFlags |= SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 	windowFlags |= SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
 
-#ifdef _3DS
-	SDLFlags |= SDL_HWSURFACE | SDL_DUALSCR;
-#endif
-
 	root->window = SDL_CreateWindow(
 		NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		SCREEN_WIDTH, SCREEN_HEIGHT, windowFlags);
@@ -47,12 +43,6 @@ bool CST_DrawInit(RootDisplay* root)
 
 	if (root->renderer == NULL || root->window == NULL)
 	{
-#ifdef _3DS
-		char* err = SDL_GetError();
-		FILE *file = fopen("error.txt", "w");
-		fprintf(file, "%s", err);
-		fclose(file);
-#endif
 		SDL_Quit();
 		return false;
 	}
@@ -248,7 +238,10 @@ void CST_SetQualityHint(const char* quality)
 
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 {
+	#if !defined(_3DS) && !defined(_3DS_MOCK)
+	// TODO: filledCircleRGBA needs to take a surface on 3DS
 	filledCircleRGBA(renderer, x, y, radius, r, g, b, a);
+	#endif
 }
 
 void CST_SetWindowSize(CST_Window* window, int w, int h)
@@ -310,7 +303,10 @@ void CST_roundedBoxRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
+	#if !defined(_3DS) && !defined(_3DS_MOCK)
+	// TODO: roundedBoxRGBA needs to take a surface on 3DS
 	roundedBoxRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+	#endif
 }
 
 void CST_roundedRectangleRGBA (
@@ -318,7 +314,21 @@ void CST_roundedRectangleRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
+	#if !defined(_3DS) && !defined(_3DS_MOCK)
+	// TODO: roundedRectangleRGBA needs to take a surface on 3DS
 	roundedRectangleRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+	#endif
+}
+
+void CST_rectangleRGBA (
+	CST_Renderer *renderer,
+	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
+	Uint8 r, Uint8 g, Uint8 b, Uint8 a
+) {
+	#if !defined(_3DS) && !defined(_3DS_MOCK)
+	// TODO: rectangleRGBA needs to take a surface on 3DS
+	rectangleRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+	#endif
 }
 
 #ifdef MUSIC

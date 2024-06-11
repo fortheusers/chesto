@@ -43,11 +43,11 @@ Switch:
     PLATFORM: switch
     EXT: nro
 
-# 3ds:
-#   <<: *common
-#   variables:
-#     PLATFORM: 3ds
-#     EXT: 3dsx
+3ds:
+  <<: *common
+  variables:
+    PLATFORM: 3ds
+    EXT: 3dsx
 
 Wii:
   <<: *common

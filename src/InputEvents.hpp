@@ -1,7 +1,14 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+
+#if !defined(_3DS) && !defined(_3DS_MOCK)
+// 3ds has no sdl keycodes
 typedef SDL_Keycode CST_Keycode;
+#else
+typedef int CST_Keycode;
+#endif
+
 typedef uint16_t CST_Keymod;
 
 #include <functional>

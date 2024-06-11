@@ -1,4 +1,6 @@
-#if defined(SWITCH)
+#if defined(__EMSCRIPTEN__)
+#include <emscripten.h>
+#elif defined(SWITCH)
 #include <switch.h>
 #define PLATFORM "Switch"
 #elif defined(__WIIU__)

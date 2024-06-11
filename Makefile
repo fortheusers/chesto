@@ -47,11 +47,9 @@ SOURCES   += libs/chesto/libs/resinfs/source
 INCLUDES  += libs/chesto/libs/resinfs/include
 endif
 
-# for sdl2 platforms (wiiu or pc or switch targets) use sdl font cache
-ifeq ($(filter-out wiiu pc wii switch,$(MAKECMDGOALS)),)
+# for sdl2 platforms, use sdl font cache
 SOURCES += $(CHESTO_DIR)/libs/SDL_FontCache
 VPATH   += $(CHESTO_DIR)/libs/SDL_FontCache
-endif
 
 CFLAGS	  += $(INCLUDE) -DAPP_VERSION=\"$(APP_VERSION)\" -frandom-seed=84248
 CXXFLAGS  += $(CFLAGS) -fno-exceptions -std=gnu++20

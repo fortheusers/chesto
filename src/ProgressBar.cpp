@@ -61,5 +61,5 @@ void ProgressBar::render(Element* parent)
 	CST_FillRect(renderer, &blue_rect);
 
 	// draw right "circle" (rounded part of bar, and ending)
-	filledCircleRGBA(renderer, this->xAbs + width * this->percent, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
+	CST_filledCircleRGBA(renderer, this->xAbs + width * this->percent, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
 }

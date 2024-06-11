@@ -3,14 +3,19 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+
+#if defined(_3DS)
+#include <SDL2/SDL_gfxPrimitives.h> // this file has a different name on 3ds
+#else
 #include <SDL2/SDL2_gfxPrimitives.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
+#endif
 
 #include "../libs/SDL_FontCache/SDL_FontCache.h"
 
+#include <string>
+
 #if defined(MUSIC)
 	#include <SDL2/SDL_mixer.h>
-	#include <string>
 	#include <mpg123.h>
 	typedef Mix_Music CST_Music;
 #endif
@@ -59,6 +64,11 @@ void CST_roundedRectangleRGBA (
 	CST_Renderer *renderer,
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
+);
+void CST_rectangleRGBA (
+	CST_Renderer *renderer,
+	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
+	Uint8 r, Uint8 g, Uint8 b, Uint8 a
 );
 float CST_GetDpiScale();
 void CST_SetWindowSize(CST_Window* renderer, int w, int h);

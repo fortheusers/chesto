@@ -90,14 +90,14 @@ void Element::render(Element* parent)
 	if (this->touchable && this->elasticCounter > NO_HIGHLIGHT)
 	{
 		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
-		rectangleRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
+		CST_rectangleRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
 
 		if (this->elasticCounter == THICK_HIGHLIGHT)
 		{
 			// make it a little thicker by drawing more rectangles TODO: better way to do this?
 			for (int x = 0; x < 5; x++)
 			{
-				rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
+				CST_rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
 			}
 		}
 	}
