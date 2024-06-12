@@ -1,11 +1,14 @@
-ifeq ($(OS),Windows_NT)
-    LIBS += -lmingw32 -lSDL2main
-    CFLAGS += -DWIN32
+ifeq (pc,$(MAKECMDGOALS))
+	ifeq ($(OS),Windows_NT)
+		LIBS += -lmingw32 -lSDL2main
+		CFLAGS += -DWIN32
+	endif
 endif
 
 LIBS    += -lSDL2_ttf -lSDL2_image -lmpg123 -lSDL2 -lSDL2main -lfreetype -lpng -lbz2 -ljpeg -lz
 CFLAGS  += -DSDL2
 
 ifneq (3ds,$(MAKECMDGOALS))
-CFLAGS  += -DMUSIC -lSDL2_gfx -lSDL2_mixer
+	CFLAGS  += -DMUSIC
+	LIBS	+= -lSDL2_gfx -lSDL2_mixer
 endif

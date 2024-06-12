@@ -4,10 +4,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#if defined(_3DS)
-#include <SDL2/SDL_gfxPrimitives.h> // this file has a different name on 3ds
-#else
-#include <SDL2/SDL2_gfxPrimitives.h>
+#if !defined(_3DS)
+#include <SDL2/SDL2_gfxPrimitives.h> // 3ds has no gfx library
 #endif
 
 #include "../libs/SDL_FontCache/SDL_FontCache.h"

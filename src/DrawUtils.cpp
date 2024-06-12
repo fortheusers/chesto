@@ -327,7 +327,7 @@ void CST_rectangleRGBA (
 ) {
 	#if !defined(_3DS) && !defined(_3DS_MOCK)
 	// TODO: rectangleRGBA needs to take a surface on 3DS
-	rectangleRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+	rectangleRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
 	#endif
 }
 
