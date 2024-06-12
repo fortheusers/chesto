@@ -18,6 +18,9 @@ BUILD     := build_3ds
 
 NO_SMDH := 1 # idk how this broke
 
+# remove some libs/flags not used yet on 3DS
+LIBS := $(filter-out -lSDL2_gfx -lSDL2_mixer,$(LIBS))
+CFLAGS := $(filter-out -DMUSIC,$(CFLAGS))
 
 #---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
