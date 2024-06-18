@@ -81,12 +81,11 @@ RootDisplay::RootDisplay()
 	// the main input handler
 	this->events = new InputEvents();
 
-	// TODO: initialize this in a way that doesn't block the main thread
-	// always load english first, to initialize defaults
-	TextElement::loadI18nCache("en-us");
+	// TextElement::loadI18nCache("en-us");
 
 	// TODO: detect language and system, and store preference
-	// TextElement::loadI18nCache("zh-cn");
+	// hardcoded to Chinese for this branch
+	TextElement::loadI18nCache("zh-cn");
 }
 
 void RootDisplay::initMusic()
