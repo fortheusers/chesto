@@ -34,6 +34,8 @@ int RootDisplay::screenWidth = 1280;
 int RootDisplay::screenHeight = 720;
 float RootDisplay::dpiScale = 1.0f;
 
+bool RootDisplay::idleCursorPulsing = false;
+
 RootDisplay::RootDisplay()
 {
 	// initialize the romfs for switch/wiiu
