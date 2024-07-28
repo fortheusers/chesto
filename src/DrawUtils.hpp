@@ -29,6 +29,12 @@ typedef SDL_Rect CST_Rect;
 class RootDisplay;
 class InputEvents;
 
+#define CST_CURSOR_NONE -1
+#define CST_CURSOR_ARROW 0
+#define CST_CURSOR_HAND 1
+#define CST_CURSOR_TEXT 2
+#define CST_CURSOR_SPINNER 3
+
 // init / rendering analogues
 bool CST_DrawInit(RootDisplay* root);
 void CST_MixerInit(RootDisplay* root);
@@ -79,6 +85,7 @@ void CST_GetRGBA(Uint32 pixel, SDL_PixelFormat* format, CST_Color* cstColor);
 bool CST_SavePNG(CST_Texture* texture, const char* filename);
 void CST_SetWindowTitle(const char* title);
 
+void CST_SetCursor(int cursor);
 void CST_LowRumble(InputEvents* event, int ms);
 
 #ifdef MUSIC

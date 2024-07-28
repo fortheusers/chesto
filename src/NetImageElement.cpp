@@ -6,6 +6,11 @@ NetImageElement::NetImageElement(const char *url, std::function<Texture *(void)>
 	// printf("Key: %s\n", key.c_str());
 	if (loadFromCache(key)) {
 		loaded = true;
+
+		// if we're using the cache, we can update the size now
+		// printf("The size of the image is %d x %d\n", texW, texH);
+		width = texW;
+		height = texH;
 	}
 	else {
 		// setup a temporary image fallback

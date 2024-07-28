@@ -208,9 +208,21 @@ bool Element::onTouchDrag(InputEvents* event)
 
 			// play a hover sound and vibrate
 			CST_LowRumble(event, 200);
+
+			// change the cursor to a hand
+			CST_SetCursor(CST_CURSOR_HAND);
 		} else {
+			auto initialElasticCounter = this->elasticCounter;
+
 			// we're in a drag event, but not for this element
 			this->elasticCounter = NO_HIGHLIGHT;
+
+			if (initialElasticCounter != NO_HIGHLIGHT) {
+				// change the cursor back to the arrow
+				CST_SetCursor(CST_CURSOR_ARROW);
+				ret |= true;
+			}
+
 		}
 	}
 

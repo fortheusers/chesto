@@ -269,6 +269,26 @@ void CST_LowRumble(InputEvents* event, int ms)
 	}
 }
 
+void CST_SetCursor(int cursor)
+{
+	if (cursor == CST_CURSOR_NONE) {
+		SDL_ShowCursor(SDL_DISABLE);
+		return;
+	}
+	
+	SDL_ShowCursor(SDL_ENABLE);
+	auto sdlCursor = SDL_SYSTEM_CURSOR_ARROW;
+	if (cursor == CST_CURSOR_HAND) {
+		sdlCursor = SDL_SYSTEM_CURSOR_HAND;
+	} else if (cursor == CST_CURSOR_TEXT) {
+		sdlCursor = SDL_SYSTEM_CURSOR_IBEAM;
+	} else if (cursor == CST_CURSOR_SPINNER) {
+		sdlCursor = SDL_SYSTEM_CURSOR_WAIT;
+	}
+
+	SDL_SetCursor(SDL_CreateSystemCursor(sdlCursor));
+}
+
 bool CST_isRectOffscreen(CST_Rect* rect)
 {
 	// if this element will be offscreen, don't try to render it

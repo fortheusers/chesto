@@ -52,7 +52,7 @@ SOURCES += $(CHESTO_DIR)/libs/SDL_FontCache
 VPATH   += $(CHESTO_DIR)/libs/SDL_FontCache
 
 CFLAGS	  += $(INCLUDE) -DAPP_VERSION=\"$(APP_VERSION)\" -frandom-seed=84248
-CXXFLAGS  += $(CFLAGS) -fno-exceptions -std=gnu++20
+CXXFLAGS  += $(CFLAGS) -fexceptions -std=gnu++20
 ASFLAGS   += -g $(ARCH)
 
 export TOPDIR := $(CURDIR)
