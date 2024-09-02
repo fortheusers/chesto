@@ -58,21 +58,21 @@ RootDisplay::RootDisplay()
 	RootDisplay::dpiScale = CST_GetDpiScale();
 
 	// set platform-specific default background colors, (which can be overridden)
-#if defined(__WIIU__)
+#if defined(__WIIU__) || defined(WIIU_MOCK)
 	this->backgroundColor = fromRGB(0x20 - 0x10, 154 - 0x10, 199 - 0x10);
-#elif defined(WII)
+#elif defined(WII) || defined(WII_MOCK)
 	// the system wii gray
 	this->backgroundColor = fromRGB(0x8b, 0x8b, 0x8b);
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	this->backgroundColor = fromRGB(30, 30, 30);
-#elif defined(SWITCH)
+#elif defined(SWITCH) || defined(SWITCH_MOCK)
 	this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
 #else
 	this->backgroundColor = fromRGB(0x2d, 0x26, 0x49);
 #endif
 
 	// set starting resolution based on SDL version
-#if defined(WII)
+#if defined(WII) || defined(WII_MOCK)
 	setScreenResolution(640, 480);
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	setScreenResolution(400, 480); // 3ds has a special resolution!
@@ -240,7 +240,7 @@ int RootDisplay::mainLoop()
 
 			// if we see a minus, exit immediately!
 			if (events->pressed(SELECT_BUTTON) && this->canUseSelectToExit) {
-				if (events->quitaction) events->quitaction();
+				if (events->quitaction != NULL) events->quitaction();
 				else isRunning = false;
 			}
 		}

@@ -234,7 +234,12 @@ bool Element::onTouchDrag(InputEvents* event)
 	if (this->dragging && (abs(event->yPos - this->lastMouseY) >= TRESHOLD || abs(event->xPos - this->lastMouseX) >= TRESHOLD))
 	{
 		ret |= (this->elasticCounter > 0);
+		auto prevElasticCounter = this->elasticCounter;
 		this->elasticCounter = NO_HIGHLIGHT;
+		if (prevElasticCounter != NO_HIGHLIGHT) {
+			// change the cursor back to the arrow
+			CST_SetCursor(CST_CURSOR_ARROW);
+		}
 	}
 
 	return ret;
