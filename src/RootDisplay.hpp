@@ -43,6 +43,11 @@ public:
 	static int screenHeight;
 	static float dpiScale;
 
+	// if enabled, the cursor will pulse when idle
+	// this uses more energy and forces more redraws
+	// TODO: enable or disable based on battery level or user preference
+	static bool idleCursorPulsing;
+
 	static bool isDebug;
 	bool isRunning = true;
 	bool exitRequested = false;

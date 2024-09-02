@@ -49,6 +49,11 @@ bool Element::process(InputEvents* event)
 		ret |= true;
 	}
 
+	if (RootDisplay::idleCursorPulsing) {
+		// if we are using idle cursor pulsing, and this element's elastic counter is 0, force a redraw
+		return ret | (this->elasticCounter > 0);
+	}
+
 	return ret;
 }
 
@@ -83,22 +88,42 @@ void Element::render(Element* parent)
 	{
 		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
 		CST_SetDrawBlend(renderer, true);
-		CST_SetDrawColorRGBA(renderer, 0xad, 0xd8, 0xe6, 0x90);
+		CST_SetDrawColorRGBA(renderer, 0x10, 0xD9, 0xD9, 0x40);
 		CST_FillRect(renderer, &d);
 	}
 
 	if (this->touchable && this->elasticCounter > NO_HIGHLIGHT)
 	{
 		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
-		CST_rectangleRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
-
 		if (this->elasticCounter == THICK_HIGHLIGHT)
 		{
-			// make it a little thicker by drawing more rectangles TODO: better way to do this?
-			for (int x = 0; x < 5; x++)
-			{
-				CST_rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
+			int ticks = CST_GetTicks() / 100;
+			int pulseState = ticks % 20;
+			if (pulseState > 9) {
+				pulseState = 19 - pulseState;
 			}
+
+			if (!RootDisplay::idleCursorPulsing) {
+				// if we're not using idle cursor pulsing, just draw a simple rectangle
+				pulseState = 0;
+			}
+
+			// make it a little thicker by drawing more rectangles TODO: better way to do this?
+			for (int x = -2; x <= 3; x++)
+			{
+				// draw a rectangle with varying brightness depending on the pulse state
+				int r = 0x10; //- 0x01 * pulseState;
+				int g = 0xD9 - 0x01 * pulseState;
+				int b = 0xD9 - 0x01 * pulseState;
+				int edgeMod = x==1 ? 0 : abs(x); // slight bias towards the inner
+				int a = fmax(0x0, 0xFF - 0x10 * pulseState * edgeMod);
+				CST_rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, r, g, b, a);
+			}
+		} else {
+			// simple rectangle, not pulsing
+			CST_rectangleRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x10, 0xD9, 0xD9, 0xFF);
+			// and one inner rectangle too
+			CST_rectangleRGBA(renderer, d.x + 1, d.y + 1, d.x + d.w - 1, d.y + d.h - 1, 0x10, 0xD9, 0xD9, 0xFF);
 		}
 	}
 }
