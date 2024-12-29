@@ -88,7 +88,6 @@ export SRCFILES     +=  $(CFILES) $(CPPFILES) $(SFILES)
 # rules for each of the targets, which includes the respective makefile fragment
 
 ifeq (pc,$(MAKECMDGOALS))
-include $(HELPERS)/Makefile.sdl2
 include $(HELPERS)/Makefile.pc
 endif
 

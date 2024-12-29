@@ -31,8 +31,12 @@ bool CST_DrawInit(RootDisplay* root)
 	int SDLFlags = 0;
 	int windowFlags = 0;
 
-	SDLFlags |= SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
-	windowFlags |= SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+	SDLFlags |= SDL_RENDERER_PRESENTVSYNC;
+#if !defined(_3DS) && !defined(_3DS_MOCK)
+	// 3ds has no hardware acceleration
+	SDLFlags |= SDL_RENDERER_ACCELERATED;
+#endif
+	windowFlags |= SDL_WINDOW_RESIZABLE; //| SDL_WINDOW_ALLOW_HIGHDPI;
 
 	root->window = SDL_CreateWindow(
 		NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -161,7 +165,7 @@ void CST_FadeInMusic(RootDisplay* root)
 
 void CST_RenderPresent(CST_Renderer* renderer)
 {
-#ifdef _3DS_MOCK
+#if defined(_3DS) || defined(_3DS_MOCK)
 	// draw some borders around parts of the 3ds screen
 	CST_SetDrawColorRGBA(renderer, 0, 0, 0, 255);
 	CST_Rect rect = { 0, 240, 40, 240 };

@@ -1,3 +1,5 @@
+include $(HELPERS)/Makefile.sdl2
+
 CXX = g++
 
 CFLAGS   += -g -DPC -Wno-narrowing
