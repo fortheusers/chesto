@@ -8,7 +8,7 @@ export APP_ICON       := $(PWD)/assets/icon.png
 CFLAGS		+=	-g -Wall -O2 -ffunction-sections \
 				$(MACHDEP)
 
-CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOURCE -DUSE_RAMFS
+CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -DUSE_RAMFS
 
 ASFLAGS		+=	-g $(MACHDEP)
 LDFLAGS		+=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
