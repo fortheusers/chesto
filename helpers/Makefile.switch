@@ -8,7 +8,7 @@ ARCH	+=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -fPIE
 CFLAGS	+=	-g -Wall -O2 \
 			$(ARCH) $(DEFINES) -Wno-implicit-function-declaration
 
-CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DUSE_FILE32API -DNOSTYLUS -D_XOPEN_SOURCE -DUSE_RAMFS -DMUSIC
+CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DUSE_FILE32API -DNOSTYLUS -DUSE_RAMFS -DMUSIC
 
 LDFLAGS	+=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
