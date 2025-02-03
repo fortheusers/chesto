@@ -6,7 +6,7 @@ EXEFS_SRC	:=	exefs_src
 ARCH	+=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -fPIE
 
 CFLAGS	+=	-g -Wall -O2 \
-			$(ARCH) $(DEFINES) -Wno-implicit-function-declaration
+			$(ARCH) $(DEFINES)
 
 CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DUSE_FILE32API -DNOSTYLUS -DUSE_RAMFS -DMUSIC
 

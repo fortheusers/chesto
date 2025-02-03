@@ -37,12 +37,12 @@ jobs:
         cp -rf . /chestotesto/libs/chesto
         (cd /chestotesto && make ${{ matrix.platform }})
         cp /chestotesto/chestotesto.${{ matrix.ext }} chestotesto.${{ matrix.ext }}
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: chestotesto.${{ matrix.ext }}
         path: /__w/chesto/chesto/chestotesto.${{ matrix.ext }}
     - if: matrix.platform == 'wiiu'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: chestotesto.rpx
         path: /__w/chesto/chesto/chestotesto.rpx
