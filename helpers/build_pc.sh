@@ -30,6 +30,7 @@ elif [ "$PLATFORM" = "windows" ]; then
     wget https://repo.msys2.org/distrib/x86_64/msys2-x86_64-20230318.exe
     ./msys2-x86_64-20230318.exe install --confirm-command --root /c/MSYS2
     export PATH="/c/MSYS2/usr/bin:/c/MSYS2/mingw64/bin:${PATH}"
+    pacman -Syu --noconfirm
     pacman --noconfirm -S mingw-w64-x86_64-curl mingw-w64-x86_64-gcc
     SDL2_CMDS="pacman --noconfirm -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_gfx mingw-w64-x86_64-SDL2_mixer"
 else
