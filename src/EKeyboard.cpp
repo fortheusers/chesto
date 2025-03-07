@@ -100,6 +100,21 @@ void EKeyboard::render(Element* parent)
 			}
 		}
 
+		// draw the actual enter/space/tab keys if needed
+		if (hasRoundedKeys) {
+			CST_roundedBoxRGBA(renderer, dimensSpace.x, dimensSpace.y, dimensSpace.x + dimensSpace.w, dimensSpace.y + dimensSpace.h, 20, 0xee, 0xee, 0xee, 0xff);
+			CST_roundedBoxRGBA(renderer, dimensEnter.x, dimensEnter.y, dimensEnter.x + dimensEnter.w, dimensEnter.y + dimensEnter.h, 20, 0xee, 0xee, 0xee, 0xff);
+			CST_roundedBoxRGBA(renderer, dimensTab.x, dimensTab.y, dimensTab.x + dimensTab.w, dimensTab.y + dimensTab.h, 20, 0xee, 0xee, 0xee, 0xff);
+		} else {
+			CST_SetDrawColor(renderer, { 0xf4, 0xf4, 0xf4, 0xff });
+			CST_FillRect(renderer, &dimensSpace);
+	
+			if (!preventEnterAndTab) {
+				CST_FillRect(renderer, &dimensEnter);
+				CST_FillRect(renderer, &dimensTab);
+			}
+		}	
+
 		// draw the currently selected tile if these index things are set
 		if (touchMode && !isTouchDrag)
 		{
@@ -123,22 +138,7 @@ void EKeyboard::render(Element* parent)
 			// draw a rectangle that is inlet a little
 			for (int x=-2; x<3; x++) {
 				CST_rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x10, 0xD9, 0xD9, 0xff);
-				CST_DrawRect(renderer, &d);
 			}
-		}
-	}
-
-	if (hasRoundedKeys) {
-		CST_roundedBoxRGBA(renderer, dimensSpace.x, dimensSpace.y, dimensSpace.x + dimensSpace.w, dimensSpace.y + dimensSpace.h, 20, 0xee, 0xee, 0xee, 0xff);
-		CST_roundedBoxRGBA(renderer, dimensEnter.x, dimensEnter.y, dimensEnter.x + dimensEnter.w, dimensEnter.y + dimensEnter.h, 20, 0xee, 0xee, 0xee, 0xff);
-		CST_roundedBoxRGBA(renderer, dimensTab.x, dimensTab.y, dimensTab.x + dimensTab.w, dimensTab.y + dimensTab.h, 20, 0xee, 0xee, 0xee, 0xff);
-	} else {
-		CST_SetDrawColor(renderer, { 0xf4, 0xf4, 0xf4, 0xff });
-		CST_FillRect(renderer, &dimensSpace);
-
-		if (!preventEnterAndTab) {
-			CST_FillRect(renderer, &dimensEnter);
-			CST_FillRect(renderer, &dimensTab);
 		}
 	}
 
@@ -176,8 +176,10 @@ bool EKeyboard::process(InputEvents* event)
 		isTouchDrag = false;
 	}
 
-	if (event->isKeyDown())
+	if (event->isKeyDown()) {
 		touchMode = false;
+		isTouchDrag = false;
+	}
 	
 	bool ret = false;
 	
