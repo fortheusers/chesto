@@ -194,17 +194,6 @@ void RootDisplay::switchSubscreen(Element* next)
 	nextsubscreen = next;
 }
 
-#ifdef __WIIU__
-// proc ui will block if it keeps control
-void RootDisplay::processWiiUHomeOverlay() {
-		auto status = ProcUIProcessMessages(true);
-    if (status == PROCUI_STATUS_EXITING)
-			exit(0);
-		else if (status == PROCUI_STATUS_RELEASE_FOREGROUND)
-			ProcUIDrawDoneRelease();
-}
-#endif
-
 int RootDisplay::mainLoop()
 {
 	DownloadQueue::init();
@@ -223,10 +212,6 @@ int RootDisplay::mainLoop()
 	{
 		bool atLeastOneNewEvent = false;
 		bool viewChanged = false;
-
-	#ifdef __WIIU__
-		processWiiUHomeOverlay();
-	#endif
 
 		int frameStart = CST_GetTicks();
 
