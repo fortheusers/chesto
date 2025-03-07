@@ -119,16 +119,11 @@ void EKeyboard::render(Element* parent)
 			CST_SetDrawColor(renderer, { 0xff, 0xff, 0xff, 0xff }); // TODO: matches the DEEP_HIGHLIGHT color
 			CST_FillRect(renderer, &dimens2);
 
-			// border
-			for (int z = 4; z >= 0; z--)
-			{
-				dimens2.x--;
-				dimens2.y--;
-				dimens2.w += 2;
-				dimens2.h += 2;
-
-				CST_SetDrawColor(renderer, { 0x66 - z * 10, 0x7c + z * 20, 0x89 + z * 10, 0xFF });
-				CST_DrawRect(renderer, &dimens2);
+			auto d = dimens2;
+			// draw a rectangle that is inlet a little
+			for (int x=-2; x<3; x++) {
+				CST_rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x10, 0xD9, 0xD9, 0xff);
+				CST_DrawRect(renderer, &d);
 			}
 		}
 	}
