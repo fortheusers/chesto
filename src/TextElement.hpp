@@ -11,6 +11,8 @@
 #define SIMPLIFIED_CHINESE 4
 
 std::string i18n(std::string key);
+std::string i18n_number(int number);
+std::string i18n_date(int timestamp);
 
 class TextElement : public Texture
 {
