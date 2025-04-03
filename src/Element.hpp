@@ -22,6 +22,8 @@
 
 #if defined(_3DS) || defined(_3DS_MOCK)
 #define SCALER 2
+#elif defined(WII) || defined(WII_MOCK)
+#define SCALER 1.5
 #else
 #define SCALER 1
 #endif

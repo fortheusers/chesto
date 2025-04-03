@@ -123,3 +123,42 @@ std::string i18n(std::string key) {
     }
     return key;
 }
+
+std::string i18n_number(int number) {
+	std::string decimalSeparator = i18n("number.decimal");
+	std::string thousandsSeparator = i18n("number.thousands");
+	if (decimalSeparator.empty()) {
+		decimalSeparator = ".";
+	}
+	if (thousandsSeparator.empty()) {
+		thousandsSeparator = ",";
+	}
+	std::string numberString = std::to_string(number);
+	size_t decimalPos = numberString.find(".");
+	if (decimalPos == std::string::npos) {
+		decimalPos = numberString.length();
+	}
+	std::string integerPart = numberString.substr(0, decimalPos);
+	std::string decimalPart = numberString.substr(decimalPos);
+	if (decimalPart.length() > 0) {
+		decimalPart = decimalSeparator + decimalPart.substr(1);
+	}
+	for (int i = integerPart.length() - 3; i > 0; i -= 3) {
+		integerPart.insert(i, thousandsSeparator);
+	}
+	return integerPart + decimalPart;
+}
+
+std::string i18n_date(int timestamp) {
+	std::string dateFormatString = i18n("date.format");
+	if (dateFormatString.empty()) {
+		dateFormatString = "%Y-%m-%d";
+	}
+	// convert int to time_t
+	time_t timestamp2 = static_cast<time_t>(timestamp);
+	
+	struct tm* timeinfo = localtime(&timestamp2);
+	char buffer[256];
+	strftime(buffer, sizeof(buffer), dateFormatString.c_str(), timeinfo);
+	return std::string(buffer);
+}
