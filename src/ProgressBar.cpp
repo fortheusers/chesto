@@ -57,6 +57,11 @@ void ProgressBar::render(Element* parent)
 	blue_rect.w = this->width * this->percent;
 	blue_rect.h = 9;
 
+	if (this->percent > 1) {
+		// prevent going too far past the end
+		blue_rect.w = this->width;
+	}
+
 	CST_SetDrawColorRGBA(renderer, 0x56, 0xc1, 0xdf, 0xff); // blue2
 	CST_FillRect(renderer, &blue_rect);
 
