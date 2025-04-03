@@ -61,10 +61,6 @@ public:
 
 	std::function<void()> windowResizeCallback = NULL; // Called when the window is resized
 
-#if defined(__WIIU__)
-	void processWiiUHomeOverlay();
-#endif
-
 	std::vector<Element*> trash;
 	void recycle();
 
