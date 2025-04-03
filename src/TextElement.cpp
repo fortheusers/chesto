@@ -1,6 +1,7 @@
 #include "TextElement.hpp"
 #include "RootDisplay.hpp"
 #include <fstream>
+#include <ctime>   // std::time
 
 const char *TextElement::fontPaths[] = {
 	RAMFS "./res/fonts/OpenSans-Regular.ttf", // 0 = NORMAL
