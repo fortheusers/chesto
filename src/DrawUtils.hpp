@@ -26,6 +26,8 @@ typedef SDL_Surface CST_Surface;
 typedef SDL_Color CST_Color;
 typedef SDL_Rect CST_Rect;
 
+typedef SDL_DisplayMode CST_DisplayMode;
+
 class RootDisplay;
 class InputEvents;
 
@@ -75,6 +77,7 @@ void CST_rectangleRGBA (
 	Uint8 r, Uint8 g, Uint8 b, Uint8 a
 );
 float CST_GetDpiScale();
+CST_DisplayMode CST_GetCurrentDisplayMode();
 void CST_SetWindowSize(CST_Window* renderer, int w, int h);
 void CST_Delay(int time);
 
