@@ -27,8 +27,8 @@ elif [ "$PLATFORM" = "macos" ]; then
     SDL2_CMDS="brew install sdl2 sdl2_ttf sdl2_image sdl2_gfx sdl2_mixer"
 elif [ "$PLATFORM" = "windows" ]; then
     choco install -y make wget git zip
-    wget https://repo.msys2.org/distrib/x86_64/msys2-x86_64-20230318.exe
-    ./msys2-x86_64-20230318.exe install --confirm-command --root /c/MSYS2
+    wget https://repo.msys2.org/distrib/msys2-x86_64-latest.exe
+    ./msys2-x86_64-latest.exe install --confirm-command --root /c/MSYS2
     export PATH="/c/MSYS2/usr/bin:/c/MSYS2/mingw64/bin:${PATH}"
     pacman -Syu --noconfirm
     pacman --noconfirm -S mingw-w64-x86_64-curl mingw-w64-x86_64-gcc
