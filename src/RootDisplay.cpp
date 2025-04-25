@@ -264,6 +264,11 @@ int RootDisplay::mainLoop()
 	if (!isProtected) delete this;
 	DownloadQueue::quit();
 
+#ifdef __WIIU__
+	// if we're on wiiu, exit via procui instead of returning
+	SYSLaunchMenu();
+#endif
+
 	return 0;
 }
 

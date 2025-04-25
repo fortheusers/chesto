@@ -50,7 +50,6 @@ public:
 
 	static bool isDebug;
 	bool isRunning = true;
-	bool exitRequested = false;
 	bool canUseSelectToExit = false;
 
 	int lastFrameTime = 99;
