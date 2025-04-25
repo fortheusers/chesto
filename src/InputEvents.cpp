@@ -123,7 +123,6 @@ bool InputEvents::processSDLEvents()
 
 	if (this->type == SDL_QUIT)
 	{
-		if (this->quitaction != NULL) this->quitaction();
 		return false; //Quitting overrides all other events.
 	}
 	else if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))

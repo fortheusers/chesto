@@ -194,6 +194,22 @@ void RootDisplay::switchSubscreen(Element* next)
 	nextsubscreen = next;
 }
 
+void RootDisplay::requestQuit()
+{
+	// if we've already requested quit, don't proceed
+	if (hasRequestedQuit) {
+		return;
+	}
+	hasRequestedQuit = true;
+
+	// depending on the platform, either break our loop or (wiiu) switch to the home menu
+#ifdef __WIIU__
+	SYSLaunchMenu();
+#else
+	this->isAppRunning = false;
+#endif
+}
+
 int RootDisplay::mainLoop()
 {
 	DownloadQueue::init();
@@ -206,9 +222,17 @@ int RootDisplay::mainLoop()
 		return 0;
 	};
 	ProcUIRegisterCallback(PROCUI_CALLBACK_ACQUIRE, updateDisplay, this, 100);
+
+	// also, register a callback for when we need to quit, to break out the main loop
+	// (other platforms will do this directly, but wiiu needs procui to do stuff first)
+	auto actuallyQuit = +[](void* display) -> unsigned int {
+		((RootDisplay*)display)->isAppRunning = false;
+		return 0;
+	};
+	ProcUIRegisterCallback(PROCUI_CALLBACK_EXIT, actuallyQuit, this, 100);
 #endif
 
-	while (isRunning)
+	while (isAppRunning)
 	{
 		bool atLeastOneNewEvent = false;
 		bool viewChanged = false;
@@ -226,9 +250,8 @@ int RootDisplay::mainLoop()
 			atLeastOneNewEvent = true;
 
 			// if we see a minus, exit immediately!
-			if (events->pressed(SELECT_BUTTON) && this->canUseSelectToExit) {
-				if (events->quitaction != NULL) events->quitaction();
-				else isRunning = false;
+			if (this->canUseSelectToExit && events->pressed(SELECT_BUTTON)) {
+				requestQuit();
 			}
 		}
 
@@ -263,11 +286,6 @@ int RootDisplay::mainLoop()
 
 	if (!isProtected) delete this;
 	DownloadQueue::quit();
-
-#ifdef __WIIU__
-	// if we're on wiiu, exit via procui instead of returning
-	SYSLaunchMenu();
-#endif
 
 	return 0;
 }

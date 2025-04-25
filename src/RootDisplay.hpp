@@ -49,7 +49,6 @@ public:
 	static bool idleCursorPulsing;
 
 	static bool isDebug;
-	bool isRunning = true;
 	bool canUseSelectToExit = false;
 
 	int lastFrameTime = 99;
@@ -63,7 +62,15 @@ public:
 	std::vector<Element*> trash;
 	void recycle();
 
+	void requestQuit();
+
 #if defined(MUSIC)
 	Mix_Music* music = NULL;
 #endif
+
+private:
+	// these bools are managed by RootDisplay mainLoop, and should not be modified
+	// to break out. Instead, call requestQuit() which will update it if needed
+	bool hasRequestedQuit = false;
+	bool isAppRunning = true;
 };
