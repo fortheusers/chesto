@@ -4,7 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#if !defined(_3DS)
+#if !defined(SIMPLE_SDL2)
 #include <SDL2/SDL2_gfxPrimitives.h> // 3ds has no gfx library
 #endif
 
@@ -12,7 +12,7 @@
 
 #include <string>
 
-#if defined(MUSIC)
+#if !defined(SIMPLE_SDL2)
 	#include <SDL2/SDL_mixer.h>
 	#include <mpg123.h>
 	typedef Mix_Music CST_Music;
@@ -88,7 +88,7 @@ void CST_SetWindowTitle(const char* title);
 void CST_SetCursor(int cursor);
 void CST_LowRumble(InputEvents* event, int ms);
 
-#ifdef MUSIC
+#ifndef SIMPLE_SDL2
 std::vector<std::string> CST_GetMusicInfo(CST_Music* music);
 #endif
 

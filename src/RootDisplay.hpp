@@ -64,7 +64,7 @@ public:
 
 	void requestQuit();
 
-#if defined(MUSIC)
+#if !defined(SIMPLE_SDL2)
 	Mix_Music* music = NULL;
 #endif
 

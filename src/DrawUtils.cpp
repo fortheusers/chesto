@@ -73,7 +73,7 @@ void CST_DrawExit()
 	SDL_DestroyWindow(RootDisplay::mainDisplay->window);
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 
-#ifdef MUSIC
+#ifndef SIMPLE_SDL2
 	auto root = RootDisplay::mainDisplay;
 	if (root->music != NULL)
 	{
@@ -92,7 +92,7 @@ void CST_DrawExit()
 
 void CST_MixerInit(RootDisplay* root)
 {
-#if defined(MUSIC)
+#if !defined(SIMPLE_SDL2)
 	Mix_Init(MIX_INIT_MP3);
 	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
 		printf("Failed to initialize SDL2 mixer: %s\n", Mix_GetError());
@@ -149,7 +149,7 @@ bool CST_SavePNG(CST_Texture* texture, const char* file_name)
 
 void CST_FadeInMusic(RootDisplay* root)
 {
-#if defined(MUSIC)
+#if !defined(SIMPLE_SDL2)
 	if (root->music)
 	{
 		Mix_VolumeMusic(0.85 *  MIX_MAX_VOLUME);
@@ -238,8 +238,8 @@ void CST_SetQualityHint(const char* quality)
 
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 {
-	#if !defined(_3DS) && !defined(_3DS_MOCK)
-	// TODO: filledCircleRGBA needs to take a surface on 3DS
+	#if !defined(SIMPLE_SDL2)
+	// TODO: filledCircleRGBA needs to take a surface in SIMPLE_SDL2
 	filledCircleRGBA(renderer, x, y, radius, r, g, b, a);
 	#endif
 }
@@ -323,8 +323,8 @@ void CST_roundedBoxRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
-	#if !defined(_3DS) && !defined(_3DS_MOCK)
-	// TODO: roundedBoxRGBA needs to take a surface on 3DS
+	#if !defined(SIMPLE_SDL2)
+	// TODO: roundedBoxRGBA needs to take a surface in SIMPLE_SDL2
 	roundedBoxRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
 	#endif
 }
@@ -334,8 +334,8 @@ void CST_roundedRectangleRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
-	#if !defined(_3DS) && !defined(_3DS_MOCK)
-	// TODO: roundedRectangleRGBA needs to take a surface on 3DS
+	#if !defined(SIMPLE_SDL2)
+	// TODO: roundedRectangleRGBA needs to take a surface in SIMPLE_SDL2
 	roundedRectangleRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
 	#endif
 }
@@ -345,13 +345,13 @@ void CST_rectangleRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
-	#if !defined(_3DS) && !defined(_3DS_MOCK)
-	// TODO: rectangleRGBA needs to take a surface on 3DS
+	#if !defined(SIMPLE_SDL2)
+	// TODO: rectangleRGBA needs to take a surface in SIMPLE_SDL2
 	rectangleRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
 	#endif
 }
 
-#ifdef MUSIC
+#ifndef SIMPLE_SDL2
 
 // returns a size-3 vector of: (title, artist, album)
 std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
