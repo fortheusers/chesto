@@ -13,9 +13,7 @@ char* musicData = NULL;
 
 bool CST_DrawInit(RootDisplay* root)
 {
-	int sdl2Flags = SDL_INIT_GAMECONTROLLER;
-
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | sdl2Flags) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		printf("Failed to initialize SDL2 drawing library: %s\n", SDL_GetError());
 		return false;
@@ -238,10 +236,17 @@ void CST_SetQualityHint(const char* quality)
 
 void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32_t radius, uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 {
-	#if !defined(SIMPLE_SDL2)
-	// TODO: filledCircleRGBA needs to take a surface in SIMPLE_SDL2
+#if defined(SIMPLE_SDL2)
+	// fallback to drawing a rectangle
+	Uint8 prevR, prevG, prevB, prevA;
+	SDL_GetRenderDrawColor(renderer, &prevR, &prevG, &prevB, &prevA); // TODO: CST?
+	CST_SetDrawColorRGBA(renderer, r, g, b, a);
+	CST_Rect rect = { x - radius, y - radius, radius * 2, radius * 2 };
+	CST_FillRect(renderer, &rect);
+	CST_SetDrawColorRGBA(renderer, prevR, prevG, prevB, prevA);
+#else
 	filledCircleRGBA(renderer, x, y, radius, r, g, b, a);
-	#endif
+#endif
 }
 
 void CST_SetWindowSize(CST_Window* window, int w, int h)
@@ -323,8 +328,15 @@ void CST_roundedBoxRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
-	#if !defined(SIMPLE_SDL2)
-	// TODO: roundedBoxRGBA needs to take a surface in SIMPLE_SDL2
+#if defined(SIMPLE_SDL2)
+	// fallback to drawing a rectangle
+	Uint8 prevR, prevG, prevB, prevA;
+	SDL_GetRenderDrawColor(renderer, &prevR, &prevG, &prevB, &prevA); // TODO: CST?
+	CST_SetDrawColorRGBA(renderer, r, g, b, a);
+	CST_Rect rect = { x1, y1, x2 - x1, y2 - y1 };
+	CST_FillRect(renderer, &rect);
+	CST_SetDrawColorRGBA(renderer, prevR, prevG, prevB, prevA);
+#else	// TODO: roundedBoxRGBA needs to take a surface in SIMPLE_SDL2
 	roundedBoxRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
 	#endif
 }
@@ -334,10 +346,17 @@ void CST_roundedRectangleRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
-	#if !defined(SIMPLE_SDL2)
-	// TODO: roundedRectangleRGBA needs to take a surface in SIMPLE_SDL2
+#if defined(SIMPLE_SDL2)
+	// fallback to drawing a rectangle
+	Uint8 prevR, prevG, prevB, prevA;
+	SDL_GetRenderDrawColor(renderer, &prevR, &prevG, &prevB, &prevA); // TODO: CST?
+	CST_SetDrawColorRGBA(renderer, r, g, b, a);
+	CST_Rect rect = { x1, y1, x2 - x1, y2 - y1 };
+	CST_DrawRect(renderer, &rect);
+	CST_SetDrawColorRGBA(renderer, prevR, prevG, prevB, prevA);
+#else
 	roundedRectangleRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
-	#endif
+#endif
 }
 
 void CST_rectangleRGBA (
@@ -345,8 +364,15 @@ void CST_rectangleRGBA (
 	Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
 	Uint8 r, Uint8 g, Uint8 b, Uint8 a
 ) {
-	#if !defined(SIMPLE_SDL2)
-	// TODO: rectangleRGBA needs to take a surface in SIMPLE_SDL2
+#if defined(SIMPLE_SDL2)
+	// fallback to drawing a rectangle
+	Uint8 prevR, prevG, prevB, prevA;
+	SDL_GetRenderDrawColor(renderer, &prevR, &prevG, &prevB, &prevA); // TODO: CST?
+	CST_SetDrawColorRGBA(renderer, r, g, b, a);
+	CST_Rect rect = { x1, y1, x2 - x1, y2 - y1 };
+	CST_DrawRect(renderer, &rect);
+	CST_SetDrawColorRGBA(renderer, prevR, prevG, prevB, prevA);
+#else
 	rectangleRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
 	#endif
 }

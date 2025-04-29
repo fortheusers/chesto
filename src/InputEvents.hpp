@@ -32,29 +32,24 @@ typedef uint16_t CST_Keymod;
 #define Y_BUTTON          0b01000000000000
 #define ZR_BUTTON         0b10000000000000
 
-// SDL enums should line up with the actual controls
+// SDL enums that line up with the common HB port controls
 // uses switch+wiiu mappings, see: https://github.com/rw-r-r-0644/sdl2-wiiu/blob/master/SDL2-wiiu/src/joystick/wiiu/SDL_sysjoystick.c#L38
 #define SDL_A        SDL_CONTROLLER_BUTTON_A
 #define SDL_B        SDL_CONTROLLER_BUTTON_B
 #define SDL_X        SDL_CONTROLLER_BUTTON_X
 #define SDL_Y        SDL_CONTROLLER_BUTTON_Y
 
-#define SDL_PLUS     SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
-#define SDL_L        SDL_CONTROLLER_BUTTON_START
-#define SDL_R        SDL_CONTROLLER_BUTTON_LEFTSTICK
-#define SDL_ZL       SDL_CONTROLLER_BUTTON_RIGHTSTICK
-#define SDL_ZR       SDL_CONTROLLER_BUTTON_LEFTSHOULDER
-#define SDL_MINUS    SDL_CONTROLLER_BUTTON_DPAD_UP
+#define SDL_PLUS     SDL_CONTROLLER_BUTTON_START
+#define SDL_L        SDL_CONTROLLER_BUTTON_LEFTSHOULDER
+#define SDL_R        SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+#define SDL_ZL       SDL_CONTROLLER_BUTTON_MISC1 // TODO: look at SDL_CONTROLLER_AXIS_TRIGGERRIGHT axes and translate to button
+#define SDL_ZR       SDL_CONTROLLER_BUTTON_MISC1
+#define SDL_MINUS    SDL_CONTROLLER_BUTTON_BACK
 
-#define SDL_UP        SDL_CONTROLLER_BUTTON_DPAD_LEFT
-#define SDL_DOWN      SDL_CONTROLLER_BUTTON_MISC1
-#define SDL_LEFT      SDL_CONTROLLER_BUTTON_DPAD_DOWN
+#define SDL_UP        SDL_CONTROLLER_BUTTON_DPAD_UP
+#define SDL_DOWN      SDL_CONTROLLER_BUTTON_DPAD_DOWN
+#define SDL_LEFT      SDL_CONTROLLER_BUTTON_DPAD_LEFT
 #define SDL_RIGHT     SDL_CONTROLLER_BUTTON_DPAD_RIGHT
-
-#define SDL_LEFT_STICK   (SDL_GameControllerButton)16
-#define SDL_UP_STICK     (SDL_GameControllerButton)17
-#define SDL_RIGHT_STICK  (SDL_GameControllerButton)18
-#define SDL_DOWN_STICK   (SDL_GameControllerButton)19
 // clang-format on
 
 struct GamepadInfo {
@@ -123,8 +118,6 @@ public:
 	static bool bypassKeyEvents;
 	static GamepadInfo& getLastGamepadInfo();
 	static std::string lastGamepadKey;
-
-	std::function<void()> quitaction = NULL; //Called for an SDL_Quit event, usually caused by a SIGINT
 
 	float wheelScroll = 0;
 

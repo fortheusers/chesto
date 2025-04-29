@@ -2,17 +2,19 @@
 #include "RootDisplay.hpp"
 #include <map>
 
-// computer key mappings
-CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_q };
+#include <iostream>
 
-SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR,  };
+// computer key mappings
+CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_q };
+
+SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_ZR };
 
 #if defined(__WIIU__) && defined(USE_KEYBOARD)
 #include "../libs/wiiu_kbd/keybdwrapper.h"
 #endif
 
 // our own "buttons" that correspond to the above SDL ones
-unsigned int nintendo_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
+unsigned int nintendo_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, ZR_BUTTON };
 
 // human readable lowercase names for the buttons (used by the UI)
 std::string nintendoButtonNames[] = { "a", "b", "x", "y", "up", "down", "left", "right", "plus", "l", "r", "zl", "minus", "up", "down", "left", "right", "zr" };
@@ -20,16 +22,20 @@ std::string nintendoButtonNames[] = { "a", "b", "x", "y", "up", "down", "left", 
 // human readable lowercase keyboard buttons
 std::string keyButtonNames[] = { "a", "b", "x", "y", "up", "down", "left", "right", "return", "l", "r", "z", "backspace", "up", "down", "left", "right", "q" };
 
+// xbox 360 controller buttons (aka A<->B, X<->Y)
+unsigned int xbox_buttons[] = { B_BUTTON, A_BUTTON, Y_BUTTON, X_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, ZR_BUTTON };
+std::string xboxButtonNames[] = { "b", "a", "y", "x", "up", "down", "left", "right", "plus", "l", "r", "zl", "minus", "zr" };
+
 // wii remote (alone) buttons, a smaller set of actions
 // (buttons that aren't available will need to be pressed using IR sensor)
-unsigned int wii_buttons[] = { A_BUTTON, B_BUTTON, L_BUTTON, R_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, 0, 0, 0, SELECT_BUTTON, 0, 0, 0, 0, 0 };
+unsigned int wii_buttons[] = { A_BUTTON, B_BUTTON, L_BUTTON, R_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, 0, 0, 0, SELECT_BUTTON, 0 };
 
-std::string wiiButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "right", "plus", "", "", "", "minus", "", "", "", "", "" };
+std::string wiiButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "right", "plus", "", "", "", "minus", ""};
 
 // wii remote and nunchuk, separate and more actions (but still not all) available
-unsigned int nunchuk_buttons[] = { A_BUTTON, B_BUTTON, L_BUTTON, R_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, 0, 0, X_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, Y_BUTTON };
+unsigned int nunchuk_buttons[] = { A_BUTTON, B_BUTTON, L_BUTTON, R_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, 0, 0, X_BUTTON, SELECT_BUTTON, Y_BUTTON };
 
-std::string nunchukButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "right", "plus", "", "", "z", "minus", "up", "down", "left", "right", "c" };
+std::string nunchukButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "right", "plus", "", "", "z", "minus", "c" };
 
 // if true, don't count key inputs (PC/usb keyboard) as button events for us
 bool InputEvents::bypassKeyEvents = false;
@@ -51,17 +57,8 @@ std::map<std::string, GamepadInfo> gamepadMap = {
 	{ "Wii Classic Controller", { nintendo_buttons, nintendoButtonNames, "wii_button", "classic"} },
 	/* The switch SDL2 port only returns this string for all controller types*/
 	{ "Switch Controller", { nintendo_buttons, nintendoButtonNames, "switch_button", "pro" } },
-	/* For PC platforms, more specific Switch controller types can be recognized */
-	// { "Pro Controller", { nintendo_buttons, nintendoButtonNames, "switch" } },
-	// { "Joy-Con (L)", { nintendo_buttons, nintendoButtonNames, "switch" } },
-	// { "Joy-Con (R)", { nintendo_buttons, nintendoButtonNames, "switch" } },
-	// { "Switch Pro Controller", { nintendo_buttons, nintendoButtonNames, "switch" } },
-	/* Other controller types */
-	// { "Xbox 360 Controller", { xbox_buttons, xboxButtonNames, "xbox" } },
-	// { "Xbox One Controller", { xbox_buttons, xboxButtonNames, "xbox" } },
-	// { "Xbox Series X Controller", { xbox_buttons, xboxButtonNames, "xbox" } },
-	// { "PS4 Controller", { ps_buttons, psButtonNames, "playstation" } },
-	// { "PS5 Controller", { ps_buttons, psButtonNames, "playstation" } }
+	/* The XBOX 360 controller is used as a generic input device on some platforms */
+	{ "X360 Controller", { xbox_buttons, xboxButtonNames, "wiiu_button", "pro" } } // use wiiu button icon assets, which are similar, TODO: get xbox ones
 };
 
 InputEvents::InputEvents()
@@ -89,16 +86,16 @@ bool InputEvents::processSDLEvents()
 
 	// get the controller name
 	if (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP) {
-		// keyboard event
 		lastGamepadKey = "Keyboard";
-	} else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP) {
-		SDL_Joystick* joystickId = SDL_JoystickFromInstanceID(event.jbutton.which);
-		if (joystickId != NULL) {
-			std::string controllerName = SDL_JoystickName(joystickId);
+	} else if (this->type == SDL_CONTROLLERBUTTONDOWN || this->type == SDL_CONTROLLERBUTTONUP) {
+		auto controllerId = SDL_GameControllerFromInstanceID(event.jbutton.which);
+		if (controllerId != NULL) {
+			std::string controllerName = SDL_GameControllerName(controllerId);
 			lastGamepadKey = defaultKeyName; // default in case no match is found
 			if (!controllerName.empty() && gamepadMap.find(controllerName) != gamepadMap.end()){
 				lastGamepadKey = controllerName;
 			}
+			std::cout << "Controller name: " << lastGamepadKey << std::endl;
 		}
 	}
 	if (curControllerName != lastGamepadKey) {
@@ -123,6 +120,9 @@ bool InputEvents::processSDLEvents()
 
 	if (this->type == SDL_QUIT)
 	{
+#if !defined(__WIIU__)
+		RootDisplay::mainDisplay->requestQuit(); // on wiiu we don't want to respond to these events in case SDL fires one
+#endif
 		return false; //Quitting overrides all other events.
 	}
 	else if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))
@@ -130,9 +130,9 @@ bool InputEvents::processSDLEvents()
 		this->keyCode = event.key.keysym.sym;
 		this->mod = event.key.keysym.mod;
 	}
-	else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
+	else if (this->type == SDL_CONTROLLERBUTTONDOWN || this->type == SDL_CONTROLLERBUTTONUP)
 	{
-		this->keyCode = event.jbutton.button;
+		this->keyCode = event.cbutton.button;
 	}
 	else if (this->type == SDL_MOUSEMOTION || this->type == SDL_MOUSEBUTTONUP || this->type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -226,7 +226,7 @@ bool InputEvents::processDirectionalButtons()
 
 			// send a corresponding directional event
 			this->type = held_type;
-			bool isGamepad = (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP);
+			bool isGamepad = (this->type == SDL_CONTROLLERBUTTONDOWN || this->type == SDL_CONTROLLERBUTTONUP);
 			this->keyCode = isGamepad ? pad_buttons[4 + x] : key_buttons[4 + x]; // send up through right directions
 			this->noop = false;
 
@@ -246,19 +246,15 @@ int InputEvents::directionForKeycode()
 	// returns 0 1 2 or 3 for up down left or right
 	switch (this->keyCode)
 	{
-	case SDL_UP_STICK:
 	case SDL_UP:
 	case SDLK_UP:
 		return 0;
-	case SDL_DOWN_STICK:
 	case SDL_DOWN:
 	case SDLK_DOWN:
 		return 1;
-	case SDL_LEFT_STICK:
 	case SDL_LEFT:
 	case SDLK_LEFT:
 		return 2;
-	case SDL_RIGHT_STICK:
 	case SDL_RIGHT:
 	case SDLK_RIGHT:
 		return 3;
@@ -271,19 +267,23 @@ int InputEvents::directionForKeycode()
 bool InputEvents::held(int buttons)
 {
 	// if it's a key event
+#ifndef SIMPLE_SDL2
 	if ((this->type == SDL_KEYDOWN || this->type == SDL_KEYUP) && !InputEvents::bypassKeyEvents)
 	{
 		for (int x = 0; x < TOTAL_BUTTONS; x++)
-			if (key_buttons[x] == keyCode && (buttons & currentButtons[x]))
+			if (key_buttons[x] == keyCode && (buttons & currentButtons[x])) {
 				return true;
-	}
+			}
+	} else
+#endif
 
 	// if it's a controller event
-	else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
+	if (this->type == SDL_CONTROLLERBUTTONDOWN || this->type == SDL_CONTROLLERBUTTONUP)
 	{
 		for (int x = 0; x < TOTAL_BUTTONS; x++)
-			if (pad_buttons[x] == keyCode && (buttons & currentButtons[x]))
+			if (pad_buttons[x] == keyCode && (buttons & currentButtons[x])) {
 				return true;
+			}
 	}
 
 	return false;
@@ -331,34 +331,35 @@ bool InputEvents::isScroll()
 
 bool InputEvents::isKeyDown()
 {
-	return this->type == SDL_KEYDOWN || this->type == SDL_JOYBUTTONDOWN;
+	return this->type == SDL_KEYDOWN || this->type == SDL_CONTROLLERBUTTONDOWN;
 }
 
 bool InputEvents::isKeyUp()
 {
-	return this->type == SDL_KEYUP || this->type == SDL_JOYBUTTONUP;
+	return this->type == SDL_KEYUP || this->type == SDL_CONTROLLERBUTTONUP;
 }
 
 void InputEvents::processJoystickHotplugging(SDL_Event *event)
 {
-	SDL_Joystick *j;
+	SDL_GameController* pad;
 	switch(event->type)
 	{
-	case SDL_JOYDEVICEADDED:
-		j = SDL_JoystickOpen(event->jdevice.which);
-		if (j)
-			printf("Added joystick device: %s, with ID %d\n", SDL_JoystickName(j), SDL_JoystickInstanceID(j));
-		break;
-	case SDL_JOYDEVICEREMOVED:
-		j = SDL_JoystickFromInstanceID(event->jdevice.which);
-		if (j && SDL_JoystickGetAttached(j))
-		{
-			printf("Removed joystick device: %s\n", SDL_JoystickName(j));
-			SDL_JoystickClose(j);
-		}
-		break;
-	default:
-		break;
+		case SDL_CONTROLLERDEVICEADDED:
+			pad = SDL_GameControllerOpen(event->cdevice.which);
+			if (pad != NULL) {
+				printf("SDL_CONTROLLERDEVICEADDED: %s\n", SDL_GameControllerName(pad));
+			}
+			break;
+		case SDL_CONTROLLERDEVICEREMOVED:
+			// close the controller
+			pad = SDL_GameControllerFromInstanceID(event->cdevice.which);
+			if (pad != NULL) {
+				SDL_GameControllerClose(pad);
+				printf("SDL_CONTROLLERDEVICEREMOVED: %s\n", SDL_GameControllerName(pad));
+			}
+			break;
+		default:
+			break;
 	}
 }
 

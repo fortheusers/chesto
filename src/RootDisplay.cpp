@@ -73,8 +73,13 @@ RootDisplay::RootDisplay()
 	this->backgroundColor = fromRGB(0x2d, 0x26, 0x49);
 #endif
 
-	// set starting resolution based on SDL version
-#if defined(WII) || defined(WII_MOCK)
+	// set starting resolution based on platform version
+	// TODO: load from a config, if changed in settings
+#if defined(SMALL_SCREEN)
+	// small screen mode, 640x480
+	setScreenResolution(640, 480);
+#elif defined(WII) || defined(WII_MOCK)
+	// TODO: detect widescreen mode
 	setScreenResolution(640, 480);
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	setScreenResolution(400, 480); // 3ds has a special resolution!
@@ -231,6 +236,9 @@ int RootDisplay::mainLoop()
 	};
 	ProcUIRegisterCallback(PROCUI_CALLBACK_EXIT, actuallyQuit, this, 100);
 #endif
+
+	// at app launch, we'll force a few redraws
+	futureRedrawCounter = 100;
 
 	while (isAppRunning)
 	{
