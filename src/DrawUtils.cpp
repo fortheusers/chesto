@@ -244,6 +244,13 @@ void CST_filledCircleRGBA(CST_Renderer* renderer, uint32_t x, uint32_t y, uint32
 	#endif
 }
 
+CST_DisplayMode CST_GetCurrentDisplayMode()
+{
+    CST_DisplayMode currentMode;
+    SDL_GetCurrentDisplayMode(0, &currentMode);
+    return currentMode;
+}
+
 void CST_SetWindowSize(CST_Window* window, int w, int h)
 {
 	// actually resize the window, and adjust it for high DPI
