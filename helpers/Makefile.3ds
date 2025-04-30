@@ -1,3 +1,6 @@
+# remove some libs/flags not used yet on 3DS
+SIMPLE_SDL2 := 1
+
 include $(HELPERS)/Makefile.sdl2
 include $(DEVKITARM)/3ds_rules
 
@@ -17,9 +20,6 @@ LIBDIRS	  := $(CTRULIB) $(PORTLIBS)
 BUILD     := build_3ds
 
 NO_SMDH := 1 # idk how this broke
-
-# remove some libs/flags not used yet on 3DS
-SIMPLE_SDL2 := 1
 
 #---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
