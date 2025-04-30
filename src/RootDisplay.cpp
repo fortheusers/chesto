@@ -59,19 +59,8 @@ RootDisplay::RootDisplay()
 	// set the display scale on high resolution displays
 	RootDisplay::dpiScale = CST_GetDpiScale();
 
-	// set platform-specific default background colors, (which can be overridden)
-#if defined(__WIIU__) || defined(WIIU_MOCK)
-	this->backgroundColor = fromRGB(0x20 - 0x10, 154 - 0x10, 199 - 0x10);
-#elif defined(WII) || defined(WII_MOCK)
-	// the system wii gray
-	this->backgroundColor = fromRGB(0x8b, 0x8b, 0x8b);
-#elif defined(_3DS) || defined(_3DS_MOCK)
+	// default background color is dark-gray, can be overridden by the implementing library
 	this->backgroundColor = fromRGB(30, 30, 30);
-#elif defined(SWITCH) || defined(SWITCH_MOCK)
-	this->backgroundColor = fromRGB(0xd6, 0x0 + 0x20, 0x12 + 0x20);
-#else
-	this->backgroundColor = fromRGB(0x2d, 0x26, 0x49);
-#endif
 
 	// set starting resolution based on SDL version
 #if defined(WII) || defined(WII_MOCK)
