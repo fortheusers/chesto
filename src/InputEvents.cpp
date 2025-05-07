@@ -1,41 +1,7 @@
-#include "InputEvents.hpp"
+#include "gamepadmapping.hpp"
 #include "RootDisplay.hpp"
 #include <map>
-
 #include <iostream>
-
-// computer key mappings
-CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_q };
-
-SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_ZR };
-
-#if defined(__WIIU__) && defined(USE_KEYBOARD)
-#include "../libs/wiiu_kbd/keybdwrapper.h"
-#endif
-
-// our own "buttons" that correspond to the above SDL ones
-unsigned int nintendo_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, ZR_BUTTON };
-
-// human readable lowercase names for the buttons (used by the UI)
-std::string nintendoButtonNames[] = { "a", "b", "x", "y", "up", "down", "left", "right", "plus", "l", "r", "zl", "minus", "up", "down", "left", "right", "zr" };
-
-// human readable lowercase keyboard buttons
-std::string keyButtonNames[] = { "a", "b", "x", "y", "up", "down", "left", "right", "return", "l", "r", "z", "backspace", "up", "down", "left", "right", "q" };
-
-// xbox 360 controller buttons (aka A<->B, X<->Y)
-unsigned int xbox_buttons[] = { B_BUTTON, A_BUTTON, Y_BUTTON, X_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, ZR_BUTTON };
-std::string xboxButtonNames[] = { "b", "a", "y", "x", "up", "down", "left", "right", "plus", "l", "r", "zl", "minus", "zr" };
-
-// wii remote (alone) buttons, a smaller set of actions
-// (buttons that aren't available will need to be pressed using IR sensor)
-unsigned int wii_buttons[] = { A_BUTTON, B_BUTTON, L_BUTTON, R_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, 0, 0, 0, SELECT_BUTTON, 0 };
-
-std::string wiiButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "right", "plus", "", "", "", "minus", ""};
-
-// wii remote and nunchuk, separate and more actions (but still not all) available
-unsigned int nunchuk_buttons[] = { A_BUTTON, B_BUTTON, L_BUTTON, R_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, 0, 0, X_BUTTON, SELECT_BUTTON, Y_BUTTON };
-
-std::string nunchukButtonNames[] = { "a", "b", "1", "2", "up", "down", "left", "right", "plus", "", "", "z", "minus", "c" };
 
 // if true, don't count key inputs (PC/usb keyboard) as button events for us
 bool InputEvents::bypassKeyEvents = false;
@@ -88,14 +54,14 @@ bool InputEvents::processSDLEvents()
 	if (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP) {
 		lastGamepadKey = "Keyboard";
 	} else if (this->type == SDL_CONTROLLERBUTTONDOWN || this->type == SDL_CONTROLLERBUTTONUP) {
-		auto controllerId = SDL_GameControllerFromInstanceID(event.jbutton.which);
+		auto controllerId = SDL_GameControllerFromInstanceID(event.cbutton.which);
 		if (controllerId != NULL) {
 			std::string controllerName = SDL_GameControllerName(controllerId);
 			lastGamepadKey = defaultKeyName; // default in case no match is found
 			if (!controllerName.empty() && gamepadMap.find(controllerName) != gamepadMap.end()){
 				lastGamepadKey = controllerName;
 			}
-			std::cout << "Controller name: " << lastGamepadKey << std::endl;
+			// std::cout << "Controller name: " << lastGamepadKey << std::endl;
 		}
 	}
 	if (curControllerName != lastGamepadKey) {
@@ -133,6 +99,65 @@ bool InputEvents::processSDLEvents()
 	else if (this->type == SDL_CONTROLLERBUTTONDOWN || this->type == SDL_CONTROLLERBUTTONUP)
 	{
 		this->keyCode = event.cbutton.button;
+
+		auto instanceId = event.cbutton.which;
+		auto timestamp = event.cbutton.timestamp;
+		auto button = event.cbutton.button;
+
+		// if our current timestamp and button matches the last one, but is a different instance id, ignore the event
+		// (may indicate one controller was detected as two different ones)
+		if (this->lastGamepadTimestamp == timestamp && this->lastGamepadButton == button && this->lastGamepadInstanceId != instanceId) {
+			return false;
+		}
+
+		this->lastGamepadInstanceId = instanceId;
+		this->lastGamepadTimestamp = timestamp;
+		this->lastGamepadButton = button;
+	}
+	else if (this->type == SDL_CONTROLLERAXISMOTION)
+	{
+		// firstly, pass through raw axis data, in case the implementing app wants it
+		this->axisCode = event.caxis.axis;
+		this->axisValue = ((float)event.caxis.value) / SDL_JOYSTICK_AXIS_MAX;
+
+		// std::cout << "Axis: " << int(axisCode) << " Value: " << this->axisValue << std::endl;
+
+		// also, map ZL/ZR and optionally up/down/left/right to digital events
+		for (auto idx = 0; idx < TOTAL_AXIS_COUNT; idx++)
+		{
+			auto myAxis = this->axisValue;
+			// if we're one of the first 4*2 axes (the directions) we need to clip out either the negative or positive
+			if (idx < 8) {
+				// if we're not using emulated input, skip these directional checks
+				if (!this->useEmulatedDigitalInputs) {
+					continue;
+				}
+				// odd directions can only be negative, even can only be positive
+				if (idx % 2 == 0) {
+					myAxis = fmin(0.0f, myAxis);
+				} else {
+					myAxis = fmax(0.0f, myAxis);
+				}
+				// if it's less than the deadzone, unset it in our hold button array,
+				// but skip further checks (we will never fire a button up event for a joystick direction)
+				if (abs(myAxis) <= this->deadZone) {
+					this->held_buttons[idx/2] = false; // divide by 2 because two sticks -> one direction
+					continue;
+				}
+			}
+			auto btnIdx = idx/2 + (idx==TOTAL_AXIS_COUNT-1); // +1 if it's the last axis (ZR)
+			if (int(event.caxis.axis) == int(axis_values[idx]))
+			{
+				auto prevValue = this->held_buttons[btnIdx];
+				auto newValue = abs(this->axisValue) > this->deadZone; // if we're over the deadzone, hold the button
+				if (prevValue != newValue) {
+					// state changed, so fire a release or press event
+					this->type = newValue ? SDL_CONTROLLERBUTTONDOWN : SDL_CONTROLLERBUTTONUP;
+					this->keyCode = axis_buttons[idx];
+				}
+				this->held_buttons[btnIdx] = newValue;
+			}
+		}
 	}
 	else if (this->type == SDL_MOUSEMOTION || this->type == SDL_MOUSEBUTTONUP || this->type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -174,6 +199,7 @@ bool InputEvents::update()
 {
 	this->type = 0;
 	this->keyCode = -1;
+	this->axisCode = -1;
 	this->noop = true;
 
 	// process SDL or directional events
@@ -189,10 +215,10 @@ void InputEvents::toggleHeldButtons()
 		if (isKeyDown())
 		{
 			// make sure it's not already down
-			if (!held_directions[directionCode])
+			if (!held_buttons[directionCode])
 			{
 				// on key down, set the corresponding held boolean to true
-				held_directions[directionCode] = true;
+				held_buttons[directionCode] = true;
 				held_type = this->type;
 
 				// reset the frame counter so we don't fire on this frame
@@ -204,7 +230,7 @@ void InputEvents::toggleHeldButtons()
 		if (isKeyUp())
 		{
 			// release the corresponding key too
-			held_directions[directionCode] = false;
+			held_buttons[directionCode] = false;
 		}
 	}
 }
@@ -221,7 +247,7 @@ bool InputEvents::processDirectionalButtons()
 	{
 		for (int x = 0; x < 4; x++)
 		{
-			if (!held_directions[x])
+			if (!held_buttons[x])
 				continue;
 
 			// send a corresponding directional event
@@ -345,9 +371,16 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 	switch(event->type)
 	{
 		case SDL_CONTROLLERDEVICEADDED:
-			pad = SDL_GameControllerOpen(event->cdevice.which);
-			if (pad != NULL) {
-				printf("SDL_CONTROLLERDEVICEADDED: %s\n", SDL_GameControllerName(pad));
+			if (SDL_IsGameController(event->cdevice.which)) {
+				// see if it's an existing controller, so we don't re-open it
+				pad = SDL_GameControllerFromInstanceID(event->cdevice.which);
+				if (pad != NULL && SDL_GameControllerGetAttached(pad)) {
+					return;
+				}
+				pad = SDL_GameControllerOpen(event->cdevice.which);
+				if (pad != NULL) {
+					printf("SDL_CONTROLLERDEVICEADDED: %s\n", SDL_GameControllerName(pad));
+				}
 			}
 			break;
 		case SDL_CONTROLLERDEVICEREMOVED:
@@ -355,7 +388,6 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 			pad = SDL_GameControllerFromInstanceID(event->cdevice.which);
 			if (pad != NULL) {
 				SDL_GameControllerClose(pad);
-				printf("SDL_CONTROLLERDEVICEREMOVED: %s\n", SDL_GameControllerName(pad));
 			}
 			break;
 		default:

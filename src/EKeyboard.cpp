@@ -156,6 +156,7 @@ bool EKeyboard::process(InputEvents* event)
 	// our keyboard will be processing its own key events (not button events)
 	InputEvents::bypassKeyEvents = true;
 
+#ifndef SIMPLE_SDL2
 	if (event->type == SDL_KEYDOWN)
 		return listenForPhysicalKeys(event);
 	if (event->type == SDL_KEYUP &&	(event->keyCode == SDLK_LSHIFT ||
@@ -165,6 +166,7 @@ bool EKeyboard::process(InputEvents* event)
 		updateSize();
 		return true;
 	}
+#endif
 
 	// immersive view doesn't use any keyboard touch events
 	if (immersiveMode) return false;
@@ -419,8 +421,8 @@ bool EKeyboard::listenForPhysicalKeys(InputEvents* e)
 		// if don't allow enter, let's consider RETURN as submitting the type action (hardcoded to X button)
 		// TODO: make it its own callback
 		SDL_Event sdlevent;
-		sdlevent.type = SDL_JOYBUTTONDOWN;
-		sdlevent.jbutton.button = SDL_X;
+		sdlevent.type = SDL_CONTROLLERBUTTONDOWN;
+		sdlevent.cbutton.button = SDL_X;
 		SDL_PushEvent(&sdlevent);
 		return true;
 	}
@@ -428,8 +430,8 @@ bool EKeyboard::listenForPhysicalKeys(InputEvents* e)
 	if (keyCode == SDLK_ESCAPE) {
 		// dismiss keyboard, also programmatically
 		SDL_Event sdlevent;
-		sdlevent.type = SDL_JOYBUTTONDOWN;
-		sdlevent.jbutton.button = SDL_Y;
+		sdlevent.type = SDL_CONTROLLERBUTTONDOWN;
+		sdlevent.cbutton.button = SDL_Y;
 		SDL_PushEvent(&sdlevent);
 		return true;
 	}
@@ -617,8 +619,8 @@ void EKeyboard::backspace()
 	// TODO: use a backspace callback instead of hardcoding a B button event
 	// (B is used by vgedit to manage external backspaces)
 	SDL_Event sdlevent;
-	sdlevent.type = SDL_JOYBUTTONDOWN;
-	sdlevent.jbutton.button = SDL_B;
+	sdlevent.type = SDL_CONTROLLERBUTTONDOWN;
+	sdlevent.cbutton.button = SDL_B;
 	SDL_PushEvent(&sdlevent);
 }
 
