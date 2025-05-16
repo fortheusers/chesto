@@ -65,6 +65,9 @@ public:
 	/// Rounded corner radius (if >0, will round)
 	int cornerRadius = 0;
 
+	/// Blend mode to use for this texture
+	SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND;
+
 protected:
 	/// Cache previously displayed textures
 	static std::unordered_map<std::string, TextureData> texCache;

@@ -8,6 +8,7 @@ class Button : public Element
 public:
 	Button(std::string text, int button, bool dark = false, int size = 20, int width = 0);
 
+	void render(Element* parent);
 	bool process(InputEvents* event);
 
 	void updateBounds();
@@ -31,4 +32,6 @@ private:
 	bool dark = false;
 
 	ImageElement icon;
+
+	bool shouldRenderGlossy();
 };

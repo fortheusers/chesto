@@ -132,6 +132,9 @@ public:
 	// x and y offsets (can be used for drawing relative to other elements)
 	int xOff = 0, yOff = 0;
 
+	// corner radius (when non-zero, backgrounds, textures, and rectangles are rounded)
+	int cornerRadius = 0;
+
 	// internal get current renderer or default one
 	CST_Renderer* getRenderer();
 

@@ -86,15 +86,23 @@ void Element::render(Element* parent)
 	// if we're touchable, and we have some animation counter left, draw a rectangle+overlay
 	if (this->touchable && this->elasticCounter > THICK_HIGHLIGHT)
 	{
-		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
-		CST_SetDrawBlend(renderer, true);
-		CST_SetDrawColorRGBA(renderer, 0x10, 0xD9, 0xD9, 0x40);
-		CST_FillRect(renderer, &d);
+		auto marginSpacing = cornerRadius > 0 ? 0 : 5;
+		CST_Rect d = { this->xAbs - marginSpacing, this->yAbs - marginSpacing, this->width + marginSpacing*2, this->height + marginSpacing*2 };
+		if (cornerRadius > 0) {
+			// draw a rounded highlight instead
+			CST_roundedBoxRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h,
+				cornerRadius, 0x10, 0xD9, 0xD9, 0x40);
+		} else {
+			CST_SetDrawBlend(renderer, true);
+			CST_SetDrawColorRGBA(renderer, 0x10, 0xD9, 0xD9, 0x40);
+			CST_FillRect(renderer, &d);
+		}
 	}
 
 	if (this->touchable && this->elasticCounter > NO_HIGHLIGHT)
 	{
-		CST_Rect d = { this->xAbs - 5, this->yAbs - 5, this->width + 10, this->height + 10 };
+		auto marginSpacing = cornerRadius > 0 ? 0 : 5;
+		CST_Rect d = { this->xAbs - marginSpacing, this->yAbs - marginSpacing, this->width + marginSpacing*2, this->height + marginSpacing*2 };
 		if (this->elasticCounter == THICK_HIGHLIGHT)
 		{
 			int ticks = CST_GetTicks() / 100;
@@ -109,7 +117,8 @@ void Element::render(Element* parent)
 			}
 
 			// make it a little thicker by drawing more rectangles TODO: better way to do this?
-			for (int x = -2; x <= 3; x++)
+			auto decreaser = cornerRadius > 0 ? 0 : -2;
+			for (int x = decreaser; x <= 3; x++)
 			{
 				// draw a rectangle with varying brightness depending on the pulse state
 				int r = 0x10; //- 0x01 * pulseState;
@@ -117,13 +126,13 @@ void Element::render(Element* parent)
 				int b = 0xD9 - 0x01 * pulseState;
 				int edgeMod = x==1 ? 0 : abs(x); // slight bias towards the inner
 				int a = fmax(0x0, 0xFF - 0x10 * pulseState * edgeMod);
-				CST_rectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, r, g, b, a);
+				CST_roundedRectangleRGBA(renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, cornerRadius, r, g, b, a);
 			}
 		} else {
 			// simple rectangle, not pulsing
-			CST_rectangleRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x10, 0xD9, 0xD9, 0xFF);
+			CST_roundedRectangleRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h, cornerRadius, 0x10, 0xD9, 0xD9, 0xFF);
 			// and one inner rectangle too
-			CST_rectangleRGBA(renderer, d.x + 1, d.y + 1, d.x + d.w - 1, d.y + d.h - 1, 0x10, 0xD9, 0xD9, 0xFF);
+			CST_roundedRectangleRGBA(renderer, d.x + 1, d.y + 1, d.x + d.w - 1, d.y + d.h - 1, cornerRadius, 0x10, 0xD9, 0xD9, 0xFF);
 		}
 	}
 }
@@ -179,15 +188,19 @@ CST_Rect Element::getBounds()
 void Element::renderBackground(bool fill) {
 	CST_Renderer* renderer = getRenderer();
 	CST_Rect bounds = getBounds();
-	CST_SetDrawColorRGBA(renderer,
-		static_cast<Uint8>(backgroundColor.r * 0xFF),
-		static_cast<Uint8>(backgroundColor.g * 0xFF),
-		static_cast<Uint8>(backgroundColor.b * 0xFF),
-		0xFF
-	);
-	CST_SetDrawBlend(renderer, false);
-	const auto RenderRect = fill ? CST_FillRect : CST_DrawRect;
-	RenderRect(renderer, &bounds);
+	auto r = backgroundColor.r * 0xFF;
+	auto g = backgroundColor.g * 0xFF;
+	auto b = backgroundColor.b * 0xFF;
+	
+	if (cornerRadius > 0) {
+		const auto renderRect = fill ? CST_roundedBoxRGBA : CST_roundedRectangleRGBA;
+		renderRect(renderer, bounds.x, bounds.y, bounds.x + bounds.w, bounds.y + bounds.h,
+			cornerRadius, backgroundColor.r * 0xFF, backgroundColor.g * 0xFF, backgroundColor.b * 0xFF, 0xFF);
+	} else {
+		CST_SetDrawColorRGBA(renderer, r, g, b, 0xFF);
+		const auto renderRect = fill ? CST_FillRect : CST_DrawRect;
+		renderRect(renderer, &bounds);
+	}
 }
 
 void Element::position(int x, int y)

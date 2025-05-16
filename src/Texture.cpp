@@ -57,6 +57,7 @@ bool Texture::loadFromSurface(CST_Surface *surface)
 
 	// try to create a texture from the surface
 	CST_Texture *texture = CST_CreateTextureFromSurface(renderer, surface, true);
+	SDL_SetTextureBlendMode(texture, blendMode);
 	if (!texture)
 		return false;
 
