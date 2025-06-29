@@ -50,7 +50,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     container:
-      image: ubuntu:latest
+      image: node:latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: read
@@ -60,13 +60,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get -y install git doxygen
     - uses: actions/checkout@main
       with:
         submodules: recursive
-    - name: Install Doxygen
-      run: |
-        apt-get update
-        apt-get -y install doxygen
     - name: Generate documentation
       run: |
         doxygen
