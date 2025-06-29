@@ -46,3 +46,40 @@ jobs:
       with:
         name: chestotesto.rpx
         path: /__w/chesto/chesto/chestotesto.rpx
+
+  docs:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - uses: actions/checkout@main
+      with:
+        submodules: recursive
+    - name: Install Doxygen
+      run: |
+        apt-get update
+        apt-get -y install doxygen
+    - name: Generate documentation
+      run: |
+        doxygen
+    - name: Copy over pages files
+      run: |
+        mkdir -p public
+        cp -r docs/html/* public
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./public
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
