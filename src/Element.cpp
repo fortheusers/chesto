@@ -138,7 +138,13 @@ void Element::render(Element* parent)
 }
 
 void Element::recalcPosition(Element* parent) {
-	// calculate absolute x/y positions
+	// go through all constraints and apply them
+	for (Constraint* constraint : constraints)
+	{
+		constraint->apply(this);
+	}
+
+	// calculate any absolute x/y positions after constraints are applied
 	if (parent && !isAbsolute)
 	{
 		this->xAbs = parent->xAbs + this->x;
@@ -146,12 +152,6 @@ void Element::recalcPosition(Element* parent) {
 	} else {
 		this->xAbs = this->x;
 		this->yAbs = this->y;
-	}
-
-	// go through all constraints and apply them
-	for (Constraint* constraint : constraints)
-	{
-		constraint->apply(this);
 	}
 
 	// go through all animations and apply them
@@ -195,9 +195,9 @@ void Element::renderBackground(bool fill) {
 	if (cornerRadius > 0) {
 		const auto renderRect = fill ? CST_roundedBoxRGBA : CST_roundedRectangleRGBA;
 		renderRect(renderer, bounds.x, bounds.y, bounds.x + bounds.w, bounds.y + bounds.h,
-			cornerRadius, backgroundColor.r * 0xFF, backgroundColor.g * 0xFF, backgroundColor.b * 0xFF, 0xFF);
+			cornerRadius, backgroundColor.r * 0xFF, backgroundColor.g * 0xFF, backgroundColor.b * 0xFF, backgroundOpacity);
 	} else {
-		CST_SetDrawColorRGBA(renderer, r, g, b, 0xFF);
+		CST_SetDrawColorRGBA(renderer, r, g, b, backgroundOpacity);
 		const auto renderRect = fill ? CST_FillRect : CST_DrawRect;
 		renderRect(renderer, &bounds);
 	}

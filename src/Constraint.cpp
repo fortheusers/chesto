@@ -41,6 +41,8 @@ void Constraint::apply(Element* element) {
     int posX = 0, posY = 0;
     int width = RootDisplay::screenWidth, height = RootDisplay::screenHeight; // default to screen size
     if (target != NULL) {
+        // For centering constraints, we want to position relative to parent's content area (0,0)
+        // For edge alignment, we use parent's position as reference
         posX = target->x;
         posY = target->y;
         width = target->width;
@@ -53,8 +55,9 @@ void Constraint::apply(Element* element) {
     if (positioningFlags & ALIGN_TOP)      element->y = posY + paddingOffset;
     if (positioningFlags & ALIGN_BOTTOM)   element->y = posY + height - element->height - paddingOffset;
 
-    if (positioningFlags & ALIGN_CENTER_HORIZONTAL)  element->x = posX + width / 2  -  element->width / 2;
-    if (positioningFlags & ALIGN_CENTER_VERTICAL)    element->y = posY + height / 2 - element->height / 2;
+    // For centering, position relative to parent's content area (like centerHorizontallyIn)
+    if (positioningFlags & ALIGN_CENTER_HORIZONTAL)  element->x = width / 2  -  element->width / 2;
+    if (positioningFlags & ALIGN_CENTER_VERTICAL)    element->y = height / 2 - element->height / 2;
 
     // some manual offset constraints, that just move the element
     if (positioningFlags & OFFSET_LEFT)    element->x += paddingOffset;

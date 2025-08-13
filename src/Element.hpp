@@ -97,6 +97,9 @@ public:
 	// the color of the background
 	rgb backgroundColor = {0, 0, 0};
 
+	// opacity of the background (0-255)
+	int backgroundOpacity = 0xff;
+
 	// if this element should ignore parent position and just position itself
 	bool isAbsolute = false;
 
