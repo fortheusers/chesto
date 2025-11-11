@@ -6,6 +6,8 @@
 
 #if defined(_3DS) || defined(_3DS_MOCK)
 #define ICON_SIZE 48
+#elif defined(WII) || defined(WII_MOCK)
+#define ICON_SIZE 120
 #else
 #define ICON_SIZE 150
 #endif

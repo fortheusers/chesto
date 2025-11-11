@@ -12,6 +12,8 @@ enum TextureScaleMode
 
 	/// Keep texture proportions and fill the background with first pixel's color
 	SCALE_PROPORTIONAL_WITH_BG,
+
+	SCALE_PROPORTIONAL_NO_BG,
 };
 
 struct TextureData

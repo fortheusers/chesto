@@ -64,7 +64,8 @@ RootDisplay::RootDisplay()
 
 	// set starting resolution based on SDL version
 #if defined(WII) || defined(WII_MOCK)
-	setScreenResolution(640, 480);
+	// setScreenResolution(640, 480);
+	setScreenResolution(854, 480);
 #elif defined(_3DS) || defined(_3DS_MOCK)
 	setScreenResolution(400, 480); // 3ds has a special resolution!
 #else

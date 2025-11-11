@@ -129,20 +129,27 @@ void Texture::render(Element* parent)
 
 	CST_Renderer* renderer = getRenderer();
 
-	if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG)
+	if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG || texScaleMode == SCALE_PROPORTIONAL_NO_BG)
 	{
 		CST_SetDrawBlend(RootDisplay::renderer, false);
 	
 		// draw colored background
-		CST_SetDrawColor(renderer, texFirstPixel);
-		auto color = (CST_Color){texFirstPixel.r, texFirstPixel.g, texFirstPixel.b, 0xFF};
+		if (texScaleMode == SCALE_PROPORTIONAL_WITH_BG)
+		{
+			CST_SetDrawColor(renderer, texFirstPixel);
+			auto color = (CST_Color){ texFirstPixel.r, texFirstPixel.g, texFirstPixel.b, 0xFF };
 
-		// if the first pixel is transparent, use white
-		if (texFirstPixel.a == 0)
-			color = (CST_Color){0xFF,0xFF,0xFF,0xFF};
+			// if the first pixel is transparent, use the background color
+			if (texFirstPixel.a == 0) {
+				auto r = backgroundColor.r * 0xff;
+				auto g = backgroundColor.g * 0xff;
+				auto b = backgroundColor.b * 0xff;
+				color = (CST_Color){ r, g, b, 0xFF };
+			}
 
-		CST_SetDrawColor(renderer, color);
-		CST_FillRect(renderer, &rect);
+			CST_roundedBoxRGBA(renderer, rect.x, rect.y, rect.x + rect.w, rect.y + rect.h, cornerRadius,
+				color.r, color.g, color.b, 0xFF);
+		}
 
 		// recompute drawing rect
 		if ((width * texH) > (height * texW))
