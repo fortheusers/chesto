@@ -89,7 +89,7 @@ void TextElement::setWrappedWidth(int wrapped_width)
 
 void TextElement::update(bool forceUpdate)
 {
-	std::string key = text + std::to_string(textSize);
+	std::string key = Texture::textElemPrefix + text + std::to_string(textSize);
 
 	clear();
 

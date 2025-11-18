@@ -68,7 +68,7 @@ void Button::updateBounds()
 	}
 }
 
-void Button::updateText(const char* inc_text)
+void Button::updateText(const std::string &inc_text)
 {
 	this->text.setText(inc_text);
 	this->text.update();

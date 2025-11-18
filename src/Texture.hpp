@@ -70,6 +70,15 @@ public:
 	/// Blend mode to use for this texture
 	SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND;
 
+	// the prefix to keys to identify our text elements within our cache
+	static const std::string textElemPrefix;
+
+	/// Wipes the entire texture cache (generally, should only be used to reload entire theme / text)
+	static void wipeEntireCache();
+
+	/// Similar to wipeEntireCache, but only wipes cached text textures (made by TextElement)
+	static void wipeTextCache();
+
 protected:
 	/// Cache previously displayed textures
 	static std::unordered_map<std::string, TextureData> texCache;

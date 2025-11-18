@@ -2,6 +2,8 @@
 
 std::unordered_map<std::string, TextureData> Texture::texCache;
 
+const std::string Texture::textElemPrefix = "(TextElement):";
+
 Texture::~Texture()
 {
 }
@@ -104,6 +106,24 @@ bool Texture::loadFromSurfaceSaveToCache(std::string &key, CST_Surface *surface)
 	}
 
 	return success;
+}
+
+void Texture::wipeEntireCache()
+{
+	texCache.clear();
+}
+
+void Texture::wipeTextCache()
+{
+	for (auto it = texCache.begin(); it != texCache.end(); )
+	{
+		std::string key = it->first;
+		if (key.find(Texture::textElemPrefix) == 0) { // does the key start with our text prefix?
+			it = texCache.erase(it);
+		} else {
+			++it;
+		}
+	}
 }
 
 void Texture::render(Element* parent)
