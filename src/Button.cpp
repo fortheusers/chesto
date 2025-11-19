@@ -34,17 +34,6 @@ Button::Button(std::string message, int button, bool dark, int size, int width)
 
 	// protect "stack" children
 	text.isProtected = icon.isProtected = true;
-
-	if (dark)
-	{
-		backgroundColor = RootDisplay::mainDisplay->backgroundColor;
-		backgroundColor.r += 0x25/255.0;
-		backgroundColor.g += 0x25/255.0;
-		backgroundColor.b += 0x25/255.0;
-		// backgroundColor.r = fmin(backgroundColor.r, 1.0);
-	}
-	else
-		backgroundColor = (rgb){ 0xee/255.0, 0xee/255.0, 0xee/255.0 };
 }
 
 void Button::updateBounds()
@@ -53,9 +42,12 @@ void Button::updateBounds()
 
 	int bWidth = PADDING * 0.5 * (icon.width != 0); // gap space between button
 
+	bool hasPhysicalButton = physical > 0;
+	
 	if (shouldRenderGlossy()) {
 		icon.position(0, 0); // the icon is the overlay, same size as the button
  	} else {
+		// make room for the button label, if we have a button
 		text.position(PADDING * 2 + bWidth + icon.width, PADDING);
 		icon.position(PADDING * 1.7, PADDING + (text.height - icon.height) / 2);
 	}
@@ -66,6 +58,21 @@ void Button::updateBounds()
 	if (shouldRenderGlossy()) {
 		text.position(width / 2 - text.width / 2, PADDING); // y is already centered
 	}
+
+	// update the bg color here too
+	if (dark)
+	{
+		backgroundColor = RootDisplay::mainDisplay->backgroundColor;
+		backgroundColor.r += 0x25/255.0;
+		backgroundColor.g += 0x25/255.0;
+		backgroundColor.b += 0x25/255.0;
+		// backgroundColor.r = fmin(backgroundColor.r, 1.0);
+	}
+	else
+		backgroundColor = (rgb){ 0xee/255.0, 0xee/255.0, 0xee/255.0 };
+	
+	text.setColor(colors[dark]);
+	text.update();
 }
 
 void Button::updateText(const std::string &inc_text)
@@ -158,8 +165,9 @@ bool Button::process(InputEvents* event)
 	bool ret = false;
 
 	// if the last gamepad is different from the current one, update the button image
-	if (myLastSeenGamepad != InputEvents::lastGamepadKey)
+	if (myLastSeenGamepad != InputEvents::lastGamepadKey || needsRedraw)
 	{
+		needsRedraw = false;
 		if (shouldRenderGlossy()) {
 			icon.hide();
 			hasBackground = false; // we'll handle our own two-toned and outlined background drawing

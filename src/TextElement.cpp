@@ -2,6 +2,8 @@
 #include "RootDisplay.hpp"
 #include <fstream>
 #include <ctime>   // std::time
+#include <dirent.h> // for directory reading
+#include <map>
 
 const char *TextElement::fontPaths[] = {
 	RAMFS "./res/fonts/OpenSans-Regular.ttf", // 0 = NORMAL
@@ -11,12 +13,45 @@ const char *TextElement::fontPaths[] = {
 	RAMFS "./res/fonts/NotoSansSC-Regular.ttf", // 4 = SIMPLIFIED_CHINESE
 };
 
-std::unordered_map<std::string, std::string> TextElement::i18nCache = {};
+std::map<std::string, std::string> TextElement::i18nCache = {};
 
 bool TextElement::useSimplifiedChineseFont = false;
 
 TextElement::TextElement()
 {
+}
+
+// static method to enumerate all languages into a map
+std::map<std::string, std::string> TextElement::getAvailableLanguages() {
+	std::map<std::string, std::string> languages;
+	// read all files in RAMFS res/i18n and their 'meta.lang.name' entry
+	std::string i18nPath = RAMFS "res/i18n/";
+	DIR* dir = opendir(i18nPath.c_str());
+	if (dir) {
+		struct dirent* entry;
+		while ((entry = readdir(dir)) != NULL) {
+			std::string fileName = entry->d_name;;
+			if (fileName.length() > 4 && fileName.substr(fileName.length() - 4) == ".ini") {
+				std::string locale = fileName.substr(0, fileName.length() - 4);
+				// read the file to find meta.lang.name
+				std::ifstream file(i18nPath + fileName);
+				if (file.is_open()) {
+					std::string line;
+					while (std::getline(file, line)) {
+						if (line.find("meta.lang.name = ") == 0) {
+							std::string langName = line.substr(strlen("meta.lang.name = "));
+							languages[locale] = langName;
+							break;
+						}
+					}
+					file.close();
+				}
+			}
+		}
+		closedir(dir);
+	}
+
+	return languages;
 }
 
 // static method to load i18n cache

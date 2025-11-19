@@ -22,14 +22,14 @@ public:
 
 	// a width we set the button to regardless of inner text
 	int fixedWidth = 0;
+
+	// whether the button is dark or light themed
+	bool dark = false;
 	
 private:
 	static CST_Color colors[2];
 	/// the physical button to activate this button
 	int physical = -1;
-
-	// whether the button is dark or light themed
-	bool dark = false;
 
 	ImageElement icon;
 

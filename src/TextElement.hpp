@@ -2,6 +2,7 @@
 
 #include "Texture.hpp"
 #include <string>
+#include <map>
 
 #define NORMAL 0
 #define MONOSPACED 1
@@ -35,7 +36,8 @@ public:
 	// if specified, will override any font_type setting
 	std::string customFontPath = "";
 
-	static std::unordered_map<std::string, std::string> i18nCache;
+	static std::map<std::string, std::string> i18nCache;
+	static std::map<std::string, std::string> getAvailableLanguages();
 	static void loadI18nCache(std::string locale);
 
 	// if true, replaces all NORMAL fonts with SIMPLIFIED_CHINESE
