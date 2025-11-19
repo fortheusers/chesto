@@ -11,19 +11,24 @@ const char *TextElement::fontPaths[] = {
 	RAMFS "./res/fonts/oldmono.ttf", // 2 = OLD_MONOSPACED
 	RAMFS "./res/fonts/PTSerif-Regular.ttf", // 3 = SERIF
 	RAMFS "./res/fonts/NotoSansSC-Regular.ttf", // 4 = SIMPLIFIED_CHINESE
+	RAMFS "./res/fonts/NotoSansKR-Regular.ttf", // 5 = KOREAN
+	RAMFS "./res/fonts/NotoSansJP-Regular.ttf", // 6 = JAPANESE
+
 };
 
 std::map<std::string, std::string> TextElement::i18nCache = {};
+std::string TextElement::curLang = "en-us";
 
 bool TextElement::useSimplifiedChineseFont = false;
+bool TextElement::useKoreanFont = false;
 
 TextElement::TextElement()
 {
 }
 
-// static method to enumerate all languages into a map
-std::map<std::string, std::string> TextElement::getAvailableLanguages() {
-	std::map<std::string, std::string> languages;
+// static method to enumerate all languages into a vector of pairs
+std::vector<std::pair<std::string, std::string>> TextElement::getAvailableLanguages() {
+	std::vector<std::pair<std::string, std::string>> languages;
 	// read all files in RAMFS res/i18n and their 'meta.lang.name' entry
 	std::string i18nPath = RAMFS "res/i18n/";
 	DIR* dir = opendir(i18nPath.c_str());
@@ -40,7 +45,7 @@ std::map<std::string, std::string> TextElement::getAvailableLanguages() {
 					while (std::getline(file, line)) {
 						if (line.find("meta.lang.name = ") == 0) {
 							std::string langName = line.substr(strlen("meta.lang.name = "));
-							languages[locale] = langName;
+							languages.push_back({locale, langName});
 							break;
 						}
 					}
@@ -56,6 +61,7 @@ std::map<std::string, std::string> TextElement::getAvailableLanguages() {
 
 // static method to load i18n cache
 void TextElement::loadI18nCache(std::string locale) {
+	TextElement::curLang = locale;
 	// en-us, zh-cn
 	std::string localePath = RAMFS "res/i18n/" + locale + ".ini";
 	std::ifstream file(localePath);
@@ -82,6 +88,10 @@ void TextElement::loadI18nCache(std::string locale) {
 		if (locale == "zh-cn") {
 			printf("Overriding font choice\n");
 			TextElement::useSimplifiedChineseFont = true;
+		}
+		if (locale == "ko-KR") {
+			printf("Overriding font choice for Korean\n");
+			TextElement::useKoreanFont = true;
 		}
 	}
 }
@@ -133,7 +143,10 @@ void TextElement::update(bool forceUpdate)
 		if (TextElement::useSimplifiedChineseFont && textFont == NORMAL) {
 			textFont = SIMPLIFIED_CHINESE;
 		}
-		auto fontPath = fontPaths[textFont % 5];
+		if (TextElement::useKoreanFont && textFont == NORMAL) {
+			textFont = KOREAN;
+		}
+		auto fontPath = fontPaths[textFont % 7];
 		if (customFontPath != "") {
 			fontPath = customFontPath.c_str();
 		}

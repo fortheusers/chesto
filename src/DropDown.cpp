@@ -6,12 +6,17 @@
 DropDown::DropDown(
 	DropDownControllerElement* parentView,
 	int physicalButton,
-	std::map<std::string, std::string> choices,
+	std::vector<std::pair<std::string, std::string>> choices,
 	std::function<void(std::string)> onSelect,
 	int textSize,
 	std::string defaultChoice,
 	bool isDarkMode
-) : Button(defaultChoice.empty() ? "Select..." : (choices.find(defaultChoice) != choices.end() ? choices[defaultChoice] : defaultChoice), physicalButton, isDarkMode, textSize, 0)
+) : Button(defaultChoice.empty() ? "Select..." : ([&choices, &defaultChoice]() {
+		for (const auto& choice : choices) {
+			if (choice.first == defaultChoice) return choice.second;
+		}
+		return defaultChoice;
+	})(), physicalButton, isDarkMode, textSize, 0)
 {
 	this->choices = choices;
 	this->onSelect = onSelect;
@@ -34,7 +39,7 @@ bool DropDown::process(InputEvents* event) {
 }
 
 // The subscreen element that gets created when we want to display the dropdown
-DropDownChoices::DropDownChoices(std::map<std::string, std::string> choices, DropDown* dropdown, bool isDarkMode) {
+DropDownChoices::DropDownChoices(std::vector<std::pair<std::string, std::string>> choices, DropDown* dropdown, bool isDarkMode) {
 	this->width = SCREEN_WIDTH;
 	this->height = SCREEN_HEIGHT;
 	

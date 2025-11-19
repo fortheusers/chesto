@@ -1,5 +1,6 @@
 #include "Button.hpp"
-#include <map>
+#include <vector>
+#include <utility>
 #include <functional>
 #include <string>
 #include "ListElement.hpp"
@@ -23,13 +24,13 @@ public:
 	DropDown(
 		DropDownControllerElement* parentView,
 		int physicalButton,
-		std::map<std::string, std::string> choices,
+		std::vector<std::pair<std::string, std::string>> choices,
 		std::function<void(std::string)> onSelect,
 		int textSize,
 		std::string defaultChoice = "",
 		bool isDarkMode = false
 	);
-	std::map<std::string, std::string> choices;
+	std::vector<std::pair<std::string, std::string>> choices;
 	std::function<void(std::string)> onSelect;
 	std::string selectedChoiceIndex = "";
 	DropDownChoices* dropDownScreen = nullptr;
@@ -42,7 +43,7 @@ public:
 class DropDownChoices : public ListElement
 {
 public:
-	DropDownChoices(std::map<std::string, std::string> choices, DropDown* dropdown, bool isDarkMode);
+	DropDownChoices(std::vector<std::pair<std::string, std::string>> choices, DropDown* dropdown, bool isDarkMode);
 	bool process(InputEvents* event) override;
 	void render(Element* parent) override;
 

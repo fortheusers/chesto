@@ -10,6 +10,7 @@
 #define OLD_MONOSPACED 2
 #define SERIF 3
 #define SIMPLIFIED_CHINESE 4
+#define KOREAN 5
 
 std::string i18n(std::string key);
 std::string i18n_number(int number);
@@ -37,11 +38,13 @@ public:
 	std::string customFontPath = "";
 
 	static std::map<std::string, std::string> i18nCache;
-	static std::map<std::string, std::string> getAvailableLanguages();
+	static std::vector<std::pair<std::string, std::string>> getAvailableLanguages();
 	static void loadI18nCache(std::string locale);
+	static std::string curLang;
 
 	// if true, replaces all NORMAL fonts with SIMPLIFIED_CHINESE
 	static bool useSimplifiedChineseFont;
+	static bool useKoreanFont;
 
 private:
 	// default values
