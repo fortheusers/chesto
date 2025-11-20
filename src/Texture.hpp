@@ -4,6 +4,7 @@
 #include <string>
 #include "RootDisplay.hpp"
 #include "Element.hpp"
+#include <map>
 
 enum TextureScaleMode
 {

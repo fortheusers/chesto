@@ -4,6 +4,7 @@
 #include <ctime>   // std::time
 #include <dirent.h> // for directory reading
 #include <map>
+#include <algorithm>
 
 const char *TextElement::fontPaths[] = {
 	RAMFS "./res/fonts/OpenSans-Regular.ttf", // 0 = NORMAL
@@ -13,7 +14,6 @@ const char *TextElement::fontPaths[] = {
 	RAMFS "./res/fonts/NotoSansSC-Regular.ttf", // 4 = SIMPLIFIED_CHINESE
 	RAMFS "./res/fonts/NotoSansKR-Regular.ttf", // 5 = KOREAN
 	RAMFS "./res/fonts/NotoSansJP-Regular.ttf", // 6 = JAPANESE
-
 };
 
 std::map<std::string, std::string> TextElement::i18nCache = {};
@@ -21,6 +21,10 @@ std::string TextElement::curLang = "en-us";
 
 bool TextElement::useSimplifiedChineseFont = false;
 bool TextElement::useKoreanFont = false;
+bool TextElement::useJapaneseFont = false;
+
+// map of specific text strings to force a specific font type
+std::map<std::string, int> TextElement::forcedLangFonts = {};
 
 TextElement::TextElement()
 {
@@ -38,6 +42,8 @@ std::vector<std::pair<std::string, std::string>> TextElement::getAvailableLangua
 			std::string fileName = entry->d_name;;
 			if (fileName.length() > 4 && fileName.substr(fileName.length() - 4) == ".ini") {
 				std::string locale = fileName.substr(0, fileName.length() - 4);
+				// to lower case
+				std::transform(locale.begin(), locale.end(), locale.begin(), ::tolower);
 				// read the file to find meta.lang.name
 				std::ifstream file(i18nPath + fileName);
 				if (file.is_open()) {
@@ -46,6 +52,17 @@ std::vector<std::pair<std::string, std::string>> TextElement::getAvailableLangua
 						if (line.find("meta.lang.name = ") == 0) {
 							std::string langName = line.substr(strlen("meta.lang.name = "));
 							languages.push_back({locale, langName});
+
+							// also store the language name with its forced font face
+							if (locale == "zh-cn") {
+								forcedLangFonts[langName] = SIMPLIFIED_CHINESE;
+							} else if (locale == "ko-kr") {
+								forcedLangFonts[langName] = KOREAN;
+							} else if (locale == "ja-jp") {
+								forcedLangFonts[langName] = JAPANESE;
+							} else {
+								forcedLangFonts[langName] = NORMAL;
+							}
 							break;
 						}
 					}
@@ -61,9 +78,10 @@ std::vector<std::pair<std::string, std::string>> TextElement::getAvailableLangua
 
 // static method to load i18n cache
 void TextElement::loadI18nCache(std::string locale) {
-	TextElement::curLang = locale;
 	// en-us, zh-cn
 	std::string localePath = RAMFS "res/i18n/" + locale + ".ini";
+	std::transform(locale.begin(), locale.end(), locale.begin(), ::tolower);
+	TextElement::curLang = locale;
 	std::ifstream file(localePath);
 	// printf("Loading i18n cache from %s\n", localePath.c_str());
 	if (file.is_open()) {
@@ -84,14 +102,22 @@ void TextElement::loadI18nCache(std::string locale) {
 		}
 		file.close();
 
+		TextElement::useSimplifiedChineseFont = false;
+		TextElement::useKoreanFont = false;
+		TextElement::useJapaneseFont = false;
+
 		// if locale is zh-cn, we need to force the simple chinese font
 		if (locale == "zh-cn") {
 			printf("Overriding font choice\n");
 			TextElement::useSimplifiedChineseFont = true;
 		}
-		if (locale == "ko-KR") {
+		if (locale == "ko-kr") {
 			printf("Overriding font choice for Korean\n");
 			TextElement::useKoreanFont = true;
+		}
+		if (locale == "ja-jp") {
+			printf("Overriding font choice for Japanese\n");
+			TextElement::useJapaneseFont = true;
 		}
 	}
 }
@@ -140,19 +166,30 @@ void TextElement::update(bool forceUpdate)
 
 	if (!loadFromCache(key) || forceUpdate)
 	{
+		// Use a local variable to determine which font to use, without modifying the instance variable
+		int actualFont = textFont;
 		if (TextElement::useSimplifiedChineseFont && textFont == NORMAL) {
-			textFont = SIMPLIFIED_CHINESE;
+			actualFont = SIMPLIFIED_CHINESE;
 		}
 		if (TextElement::useKoreanFont && textFont == NORMAL) {
-			textFont = KOREAN;
+			actualFont = KOREAN;
 		}
-		auto fontPath = fontPaths[textFont % 7];
+		if (TextElement::useJapaneseFont && textFont == NORMAL) {
+			actualFont = JAPANESE;
+		}
+
+		// also, if the specific text string is in the map of force-lang strings, always use that font instead
+		if (forcedLangFonts.find(text) != forcedLangFonts.end()) {
+			actualFont = forcedLangFonts[text];
+		}
+
+		auto fontPath = fontPaths[actualFont % 7];
 		if (customFontPath != "") {
 			fontPath = customFontPath.c_str();
 		}
 		TTF_Font* font = TTF_OpenFont(fontPath, textSize);
 
-		CST_Surface *textSurface = ((textFont == ICON) || (textWrappedWidth == 0)) ?
+		CST_Surface *textSurface = ((actualFont == ICON) || (textWrappedWidth == 0)) ?
 			TTF_RenderUTF8_Blended(font, text.c_str(), textColor) :
 			TTF_RenderUTF8_Blended_Wrapped(font, text.c_str(), textColor, textWrappedWidth);
 		if(textSurface==NULL) printf("TTF_GetError: %s\n", TTF_GetError());

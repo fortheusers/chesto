@@ -11,6 +11,7 @@
 #define SERIF 3
 #define SIMPLIFIED_CHINESE 4
 #define KOREAN 5
+#define JAPANESE 6
 
 std::string i18n(std::string key);
 std::string i18n_number(int number);
@@ -45,6 +46,9 @@ public:
 	// if true, replaces all NORMAL fonts with SIMPLIFIED_CHINESE
 	static bool useSimplifiedChineseFont;
 	static bool useKoreanFont;
+	static bool useJapaneseFont;
+
+	static std::map<std::string, int> forcedLangFonts;
 
 private:
 	// default values

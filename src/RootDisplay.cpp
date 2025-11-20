@@ -149,6 +149,7 @@ void RootDisplay::render(Element* parent)
 {
 	if (RootDisplay::subscreen)
 	{
+		super::render(parent);
 		RootDisplay::subscreen->render(this);
 		this->update();
 		return;
