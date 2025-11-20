@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 // This file should contain all external drawing SDL2 calls
 // programs outside of chesto should not be
 // responsible for directly interacting with SDL!
@@ -418,4 +417,19 @@ std::string replaceAll(std::string str, const std::string& from, const std::stri
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }
     return str;
+}
+
+CST_Color toCST(rgb color)
+{
+	CST_Color cstColor;
+	cstColor.r = (uint8_t)(color.r * 255);
+	cstColor.g = (uint8_t)(color.g * 255);
+	cstColor.b = (uint8_t)(color.b * 255);
+	cstColor.a = 255;
+	return cstColor;
+}
+
+rgb fromCST(CST_Color color)
+{
+	return (rgb){ color.r / 255.0, color.g / 255.0, color.b / 255.0 };
 }

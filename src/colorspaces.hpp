@@ -1,4 +1,5 @@
 #pragma once
+
 typedef struct {
 	double r;       // a fraction between 0 and 1
 	double g;       // a fraction between 0 and 1

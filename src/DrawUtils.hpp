@@ -18,6 +18,8 @@
 	typedef Mix_Music CST_Music;
 #endif
 
+#include "colorspaces.hpp"
+
 typedef SDL_Window CST_Window;
 typedef SDL_Renderer CST_Renderer;
 typedef SDL_Texture CST_Texture;
@@ -87,6 +89,9 @@ void CST_SetWindowTitle(const char* title);
 
 void CST_SetCursor(int cursor);
 void CST_LowRumble(InputEvents* event, int ms);
+
+CST_Color toCST(rgb color);
+rgb fromCST(CST_Color color);
 
 #ifndef SIMPLE_SDL2
 std::vector<std::string> CST_GetMusicInfo(CST_Music* music);
