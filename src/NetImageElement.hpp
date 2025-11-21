@@ -5,6 +5,8 @@
 #include "Texture.hpp"
 #include "DownloadQueue.hpp"
 
+namespace Chesto {
+
 class NetImageElement : public Texture
 {
 public:
@@ -33,3 +35,5 @@ private:
 	Texture *imgFallback = nullptr;
 	bool downloadStarted = false;
 };
+
+} // namespace Chesto

@@ -2,6 +2,8 @@
 
 #include "Element.hpp"
 
+namespace Chesto {
+
 class ProgressBar : public Element
 {
 public:
@@ -14,3 +16,5 @@ public:
 
 	int width = 0;
 };
+
+} // namespace Chesto

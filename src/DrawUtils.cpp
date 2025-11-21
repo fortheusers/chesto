@@ -8,6 +8,8 @@
 #include "DrawUtils.hpp"
 #include "RootDisplay.hpp"
 
+namespace Chesto {
+
 char* musicData = NULL;
 
 bool CST_DrawInit(RootDisplay* root)
@@ -433,3 +435,5 @@ rgb fromCST(CST_Color color)
 {
 	return (rgb){ color.r / 255.0, color.g / 255.0, color.b / 255.0 };
 }
+
+} // namespace Chesto

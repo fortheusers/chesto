@@ -1,10 +1,12 @@
 #include "DropDown.hpp"
 #include "Button.hpp"
 #include "Constraint.hpp"
+#include "RootDisplay.hpp"
 #include <iostream>
 
+namespace Chesto {
+
 DropDown::DropDown(
-	DropDownControllerElement* parentView,
 	int physicalButton,
 	std::vector<std::pair<std::string, std::string>> choices,
 	std::function<void(std::string)> onSelect,
@@ -20,83 +22,132 @@ DropDown::DropDown(
 {
 	this->choices = choices;
 	this->onSelect = onSelect;
-	this->controller = parentView;
+	this->selectedChoice = defaultChoice;
 	
-	this->setAction([this, parentView, isDarkMode]() {
-		// when clicked, open the dropdown choices subscreen
-		dropDownScreen = new DropDownChoices(this->choices, this, isDarkMode);
-		parentView->curDropDown = dropDownScreen;
-		parentView->append(dropDownScreen);
+	this->setAction([
+		this,
+		callback = this->onSelect,
+		isDarkMode
+	]() {
+		RootDisplay::pushScreen(std::make_unique<DropDownChoices>(
+			this->choices,
+			callback,
+			isDarkMode
+		));
 	});
 }
 
 bool DropDown::process(InputEvents* event) {
-	// if (dropDownScreen) {
-	// 	// if the dropdown choices screen is open, pass events to it first
-	// 	return dropDownScreen->process(event);
-	// }
-	super::process(event);
+	return Button::process(event);
 }
 
-// The subscreen element that gets created when we want to display the dropdown
-DropDownChoices::DropDownChoices(std::vector<std::pair<std::string, std::string>> choices, DropDown* dropdown, bool isDarkMode) {
-	this->width = SCREEN_WIDTH;
-	this->height = SCREEN_HEIGHT;
+// subclass of Screen
+DropDownChoices::DropDownChoices(
+	std::vector<std::pair<std::string, std::string>> choices,
+	std::function<void(std::string)> onSelect,
+	bool isDarkMode,
+	std::string header
+) : choices(choices),
+    onSelectCallback(onSelect),
+    isDarkMode(isDarkMode),
+    header(header)
+{
+	rebuildUI();
 	
-	// overlay and shade bg color TODO: do this directly in DropDownControllerElement render method, without an overlay Element?
-	Element* overlay = new Element();
-    overlay->width = this->width;
-    overlay->height = this->height;
+	int widestWidth = 0;
+	for (const auto& choice : this->choices) {
+		std::string displayText = choice.second.empty() ? "(empty)" : choice.second;
+		
+		auto choiceElement = std::make_unique<Button>(displayText, 0, isDarkMode, 20, 0);
+		widestWidth = std::max(widestWidth, choiceElement->width);
+		
+		choiceElement->setAction([
+			this, // Capture this to access onSelectCallback member
+			choiceKey = choice.first
+		]() {
+			// local copy is needed here to avoid it being destroyed after popScreen
+			std::string choiceKeyCopy = choiceKey;
+			
+			// same as above?
+			auto callbackCopy = this->onSelectCallback;
+			
+			// pop the dropdown screen (deletes 'this'!)
+			RootDisplay::popScreen();
+			
+			// use local copies now
+			if (callbackCopy) {
+				callbackCopy(choiceKeyCopy);
+			}
+		});
+		container->add(std::move(choiceElement));
+	}
+
+	// make each choice the same width (widest)
+	for (const auto& child : container->elements) {
+		if (auto buttonChild = dynamic_cast<Button*>(child.get())) {
+			buttonChild->fixedWidth = widestWidth;
+			buttonChild->updateBounds();
+		}
+	}
+}
+
+void DropDownChoices::rebuildUI() {
+	removeAll();
+	
+	// Create a full-screen scrollable list to hold everything
+	// TODO: a common way for Screen's to have all their content be scrollable without making a new element each time
+	auto scrollContainer = std::make_unique<ListElement>();
+	scrollContainer->width = SCREEN_WIDTH;
+	scrollContainer->height = SCREEN_HEIGHT;
+	scrollList = scrollContainer.get(); // Keep pointer for scrolling
+	
+	// overlay and shade bg color
+	// also TODO: a common way to have the dim background exist and fade in
+	auto overlay = std::make_unique<Element>();
+    overlay->width = SCREEN_WIDTH;
+    overlay->height = SCREEN_HEIGHT;
     overlay->backgroundColor = fromRGB(0, 0, 0);
     overlay->backgroundOpacity = 0x70;
-    overlay->cornerRadius = 1; // forces transparency to render properly (via sdl_gfx)
+    overlay->cornerRadius = 1; // needed to force transparency
     overlay->hasBackground = true;
-	overlay->isAbsolute = true;
-    this->child(overlay); // first element is this full screen barrier
+	overlay->isAbsolute = true; // doesn't move
+    scrollContainer->append(std::move(overlay));
 	
-	// create a vertical container
-	container = new Container(COL_LAYOUT, 20);
-	container->backgroundColor = dropdown->backgroundColor;
+	auto backBtn = std::make_unique<Button>(i18n("dropdown.back"), B_BUTTON, isDarkMode, 15);
+	backBtn->constrain(ALIGN_BOTTOM | ALIGN_LEFT, 10);
+	backBtn->setAction([]() {
+		// hides the dropdown without any callback
+		RootDisplay::popScreen();
+	});
+	scrollContainer->append(std::move(backBtn));
+	
+	// header text if specified
+	if (!header.empty()) {
+		auto headerText = std::make_unique<TextElement>(header.c_str(), 28);
+		headerText->constrain(ALIGN_CENTER_HORIZONTAL);
+		headerText->position(0, SCREEN_HEIGHT / 5 - 60);
+		scrollContainer->append(std::move(headerText));
+	}
+	
+	// vertical container for the choices
+	auto containerPtr = std::make_unique<Container>(COL_LAYOUT, 20);
+	container = containerPtr.get();
+	
+	// TODO: Chesto doesn't know about light/dark themes, these are hardcoded to match HBAS themes
+	if (isDarkMode) {
+		container->backgroundColor = fromRGB(0x2d, 0x2c, 0x31); // match theme dark background
+	} else {
+		container->backgroundColor = fromRGB(0xf5, 0xf5, 0xf5); // light gray for light mode
+	}
 	container->hasBackground = true;
 
 	// center the container horizontally within our full screen overlay
 	container->constrain(ALIGN_CENTER_HORIZONTAL);
 	// position the start of the dropdown in the upper fifth of the screen
-	// TODO: auto scroll towards the default selection
 	container->y = SCREEN_HEIGHT / 5;
 	
-	// populate the dropdown choices
-	int widestWidth = 0;
-	for (const auto& choice : dropdown->choices) {
-		auto choiceElement = new Button(choice.second, 0, isDarkMode, 20, 0);
-		widestWidth = std::max(widestWidth, choiceElement->width);
-		choiceElement->setAction([this, choice, dropdown]() {
-			// when a choice is selected, update the button text and invoke the onSelect callback
-			dropdown->selectedChoiceIndex = choice.first;
-			dropdown->updateText(choice.second);
-			if (dropdown->onSelect) {
-				dropdown->onSelect(dropdown->selectedChoiceIndex);
-			}
-			// close the dropdown screen (deletes us)
-			dropdown->controller->remove(this);
-			dropdown->controller->curDropDown = nullptr; // TODO: probably this cleanup should be a method
-			dropdown->dropDownScreen = nullptr;
-			this->container = nullptr;
-		});
-		container->add(choiceElement);
-	}
-
-	// this->width = widestWidth; // our container dropdown also needs this width
-
-	// for each choice, make its width the widest 
-	for (const auto& child : container->elements) {
-		if (auto buttonChild = dynamic_cast<Button*>(child)) {
-			buttonChild->fixedWidth = widestWidth;
-			buttonChild->updateBounds();
-		}
-	}
-
-	super::append(container);
+	scrollContainer->append(std::move(containerPtr));
+	append(std::move(scrollContainer));
 }
 
 void DropDownChoices::render(Element* parent) {
@@ -105,14 +156,14 @@ void DropDownChoices::render(Element* parent) {
 
 bool DropDownChoices::process(InputEvents* event) {
 	// if we have an up or down button event, instead of scrolling the list element, move cursor selection within the container
-	if (event->held(A_BUTTON) && this->curHighlighted >= 0) {
+	if (event->held(A_BUTTON) && this->curHighlighted >= 0 && this->curHighlighted < (int)container->elements.size()) {
 		this->container->elements[this->curHighlighted]->action(); // fire that button's action
 		return true;
 	}
 
 	if (event->held(B_BUTTON)) {
-		// just dismiss without a selection
-		// TODO: that
+		// dismiss without a selection - pop this screen
+		RootDisplay::popScreen();
 		return true;
 	}
 
@@ -125,7 +176,7 @@ bool DropDownChoices::process(InputEvents* event) {
 			
 			// look up whatever is currently chosen as the highlighted position
 			// and remove its highlight
-			if (curHighlighted >= 0 && container->elements[curHighlighted])
+			if (curHighlighted >= 0 && curHighlighted < (int)container->elements.size() && container->elements[curHighlighted])
 				container->elements[curHighlighted]->elasticCounter = NO_HIGHLIGHT;
 
 			// adjust it by R for up and down
@@ -136,62 +187,32 @@ bool DropDownChoices::process(InputEvents* event) {
 			if (curHighlighted < 0) curHighlighted = 0;
 
 			// highlight the new element
-			if (container->elements[curHighlighted])
+			if (curHighlighted < (int)container->elements.size() && container->elements[curHighlighted])
 				container->elements[curHighlighted]->elasticCounter = THICK_HIGHLIGHT;
+
+			// Auto-scroll to keep highlighted element on screen (similar to AppList logic)
+			if (curHighlighted >= 0 && curHighlighted < (int)container->elements.size() && container->elements[curHighlighted] && scrollList) {
+				Element* curElement = container->elements[curHighlighted].get();
+				
+				// Calculate the y-position of the currently highlighted element on screen (accounting for scroll)
+				// scrollList->y is the scroll offset, container->y is the initial position, curElement->y is relative to container
+				int normalizedY = container->y + curElement->y + scrollList->y;
+				
+				// If element is going off the top of the screen, scroll down to keep it visible
+				if (normalizedY < 50) {
+					event->wheelScroll = 1;
+				}
+				// If element is going off the bottom of the screen, scroll up to keep it visible
+				else if (normalizedY + curElement->height > SCREEN_HEIGHT - 50) {
+					event->wheelScroll = -1;
+				}
+			}
 
 			return true;
 		}
 	}
 
-	// Auto-scroll to keep highlighted element on screen (similar to AppList logic)
-	if (curHighlighted >= 0 && curHighlighted < (int)container->elements.size() && container->elements[curHighlighted]) {
-		Element* curElement = container->elements[curHighlighted];
-		
-		// Calculate the y-position of the currently highlighted element on screen (accounting for scroll)
-		// this->y is the scroll offset, container->y is the initial position, curElement->y is relative to container
-		int normalizedY = container->y + curElement->y + this->y;
-		
-		// If element is going off the top of the screen, scroll down to keep it visible
-		if (normalizedY < 100) {
-			event->wheelScroll = 1;
-		}
-		// If element is going off the bottom of the screen, scroll up to keep it visible
-		else if (normalizedY + curElement->height > SCREEN_HEIGHT - 100) {
-			event->wheelScroll = -1;
-		}
-	}
-
-	// pass remaining processing (touch events mostly) to the container as usual
-	bool ret = ListElement::process(event); // ListElement's, which handles scrolling
-
-	// If container was deleted (from above process) stop!
-	if (!container) {
-		return ret;
-	}
-
-	// Calculate the absolute bottom position of the container
-	// container->yAbs accounts for both the container's initial y position and any scrolling (this->y)
-	int containerBottom = container->yAbs + container->height;
-	
-	// Define minimum allowed bottom position (keep 50% of container visible)
-	int minBottomPosition = container->height / 2;
-	
-	// If container bottom has scrolled too far up (less than minBottomPosition), snap back
-	if ((!event->isScrolling || event->isTouchUp()) && containerBottom < minBottomPosition) {
-		// Calculate what this->y should be to put the bottom at minBottomPosition
-		int adjustment = minBottomPosition - containerBottom;
-		this->y += adjustment;
-		// Zero out elastic counter to prevent jittery re-snapping
-		this->elasticCounter = 0;
-	}
-
-	return ret;
+	return Screen::process(event);
 }
 
-bool DropDownControllerElement::process(InputEvents* event) {
-	// if we have a current dropdown open, pass events to it instead
-	if (curDropDown) {
-		return curDropDown->process(event);
-	}
-	return super::process(event);
-}
+} // namespace Chesto

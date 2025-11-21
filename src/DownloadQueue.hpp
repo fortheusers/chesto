@@ -13,6 +13,8 @@
 #include <string>
 #include <list>
 
+namespace Chesto {
+
 struct DownloadOperation;
 
 enum class DownloadStatus
@@ -79,3 +81,5 @@ private:
 	/// number of active transfers
 	int transfers = 0;
 };
+
+} // namespace Chesto

@@ -20,15 +20,21 @@
 #endif
 
 #include "RootDisplay.hpp"
+#include "Screen.hpp"
 #include "DownloadQueue.hpp"
 #include "Button.hpp"
+#include <vector>
+
+namespace Chesto {
 
 CST_Renderer* RootDisplay::renderer = NULL;
 CST_Window* RootDisplay::window = NULL;
-Element* RootDisplay::subscreen = NULL;
-Element* RootDisplay::nextsubscreen = NULL;
 RootDisplay* RootDisplay::mainDisplay = NULL;
 bool RootDisplay::isDebug = false;
+
+std::vector<std::unique_ptr<Screen>> RootDisplay::screenStack;
+std::vector<RootDisplay::PendingScreenOp> RootDisplay::pendingScreenOps;
+bool RootDisplay::isProcessingEvents = false;
 
 int RootDisplay::screenWidth = 1280;
 int RootDisplay::screenHeight = 720;
@@ -73,7 +79,7 @@ RootDisplay::RootDisplay()
 	setScreenResolution(1280, 720);
 #endif
 	// the main input handler
-	this->events = new InputEvents();
+	this->events = std::make_unique<InputEvents>();
 
 	// TODO: initialize this in a way that doesn't block the main thread
 	// always load english first, to initialize defaults
@@ -117,6 +123,84 @@ void RootDisplay::setScreenResolution(int width, int height)
 	CST_SetWindowSize(window, SCREEN_WIDTH / RootDisplay::dpiScale, SCREEN_HEIGHT / RootDisplay::dpiScale);
 }
 
+// Screen stack management
+void RootDisplay::pushScreen(std::unique_ptr<Screen> screen)
+{
+	if (!screen) return;
+	
+	if (isProcessingEvents) {
+		// Defer operation until after event processing
+		pendingScreenOps.push_back({ScreenOp::PUSH, std::move(screen)});
+	} else {
+		// Safe to execute immediately
+		screenStack.push_back(std::move(screen));
+		if (mainDisplay) mainDisplay->needsRedraw = true;
+	}
+}
+
+void RootDisplay::popScreen()
+{
+	if (isProcessingEvents) {
+		// Defer operation until after event processing
+		pendingScreenOps.push_back({ScreenOp::POP, nullptr});
+	} else {
+		// Safe to execute immediately
+		if (!screenStack.empty()) {
+			screenStack.pop_back();
+			if (mainDisplay) mainDisplay->needsRedraw = true;
+		}
+	}
+}
+
+void RootDisplay::clearScreens()
+{
+	if (isProcessingEvents) {
+		// Defer operation until after event processing
+		pendingScreenOps.push_back({ScreenOp::CLEAR, nullptr});
+	} else {
+		// Safe to execute immediately
+		screenStack.clear();
+		if (mainDisplay) mainDisplay->needsRedraw = true;
+	}
+}
+
+void RootDisplay::processPendingScreenOps()
+{
+	// Process all pending operations in order
+	for (auto& op : pendingScreenOps) {
+		switch (op.op) {
+			case ScreenOp::PUSH:
+				if (op.screen) {
+					screenStack.push_back(std::move(op.screen));
+				}
+				break;
+			case ScreenOp::POP:
+				if (!screenStack.empty()) {
+					screenStack.pop_back();
+				}
+				break;
+			case ScreenOp::CLEAR:
+				screenStack.clear();
+				break;
+		}
+	}
+	
+	if (!pendingScreenOps.empty()) {
+		pendingScreenOps.clear();
+		if (mainDisplay) mainDisplay->needsRedraw = true;
+	}
+}
+
+Screen* RootDisplay::topScreen()
+{
+	return screenStack.empty() ? nullptr : screenStack.back().get();
+}
+
+bool RootDisplay::hasScreens()
+{
+	return !screenStack.empty();
+}
+
 RootDisplay::~RootDisplay()
 {
 	CST_DrawExit();
@@ -128,29 +212,38 @@ RootDisplay::~RootDisplay()
 
 bool RootDisplay::process(InputEvents* event)
 {
-	if (nextsubscreen != subscreen)
-	{
-		delete subscreen;
-		subscreen = nextsubscreen;
-		return true;
-	}
+	// While this is true, screen operations will be delayed
+	isProcessingEvents = true;
 
 	// process either the subscreen or the children elements, always return true if "dragging"
 	// (may be a mouse cursor or wiimote pointing and moving on the screen)
 
-	if (RootDisplay::subscreen)
-		return RootDisplay::subscreen->process(event) || event->isTouchDrag();
-
-	// keep processing child elements
-	return super::process(event) || event->isTouchDrag();
+	bool result = false;
+	
+	if (!screenStack.empty()) {
+		result = screenStack.back()->process(event) || event->isTouchDrag();
+	} else {
+		// keep processing child elements
+		result = super::process(event) || event->isTouchDrag();
+	}
+	
+	isProcessingEvents = false;
+	processPendingScreenOps(); // process deferred screen operations
+	
+	return result;
 }
 
 void RootDisplay::render(Element* parent)
-{
-	if (RootDisplay::subscreen)
+{	
+	// if we have a screen stack, render each screen as layers
+	if (!screenStack.empty())
 	{
 		super::render(parent);
-		RootDisplay::subscreen->render(this);
+		
+		for (const auto& screen : screenStack) {
+			screen->render(this);
+		}
+		
 		this->update();
 		return;
 	}
@@ -176,13 +269,6 @@ void RootDisplay::update()
 
 	CST_RenderPresent(this->renderer);
 	//  this->lastFrameTime = now;
-}
-
-void RootDisplay::switchSubscreen(Element* next)
-{
-	if (nextsubscreen != subscreen)
-		delete nextsubscreen;
-	nextsubscreen = next;
 }
 
 void RootDisplay::requestQuit()
@@ -237,7 +323,7 @@ int RootDisplay::mainLoop()
 		while (events->update())
 		{
 			// process the inputs of the supplied event
-			viewChanged |= this->process(events);
+			viewChanged |= this->process(events.get());
 			atLeastOneNewEvent = true;
 
 			// if we see a minus, exit immediately!
@@ -251,7 +337,7 @@ int RootDisplay::mainLoop()
 		if ((!atLeastOneNewEvent && !viewChanged))
 		{
 			events->update();
-			viewChanged |= this->process(events);
+			viewChanged |= this->process(events.get());
 		}
 
 		// draw the display if we processed an event or the view
@@ -268,12 +354,9 @@ int RootDisplay::mainLoop()
 			if (delayTime < 16)
 				CST_Delay(16 - delayTime);
 		}
-
-		// free up any elements that are in the trash
-		this->recycle();
 	}
 
-	delete events;
+	// unique_ptr will automatically clean up events
 
 	if (!isProtected) delete this;
 	DownloadQueue::quit();
@@ -281,9 +364,4 @@ int RootDisplay::mainLoop()
 	return 0;
 }
 
-void RootDisplay::recycle()
-{
-	for (auto e : trash)
-		e->wipeAll(true);
-	trash.clear();
-}
+} // namespace Chesto

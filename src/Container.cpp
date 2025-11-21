@@ -1,6 +1,8 @@
 #include <algorithm>
 #include "Container.hpp"
 
+namespace Chesto {
+
 Container::Container(int layout, int padding)
 {
 	// these values only affect adds into this container
@@ -8,15 +10,19 @@ Container::Container(int layout, int padding)
 	this->padding = padding;
 }
 
-Element* Container::add(Element* elem)
+Element* Container::add(std::unique_ptr<Element> elem)
 {
 	int newPosX = (layout == ROW_LAYOUT) ? this->width + padding : this->x;
 	int newPosY = (layout == COL_LAYOUT) ? this->height + padding : this->y;
 
-	child(elem->setPosition(newPosX, newPosY));
+	Element* rawPtr = elem.get();
+	rawPtr->setPosition(newPosX, newPosY);
+	child(std::move(elem)); // transfers ownership to the container
 
-	this->width = (layout == ROW_LAYOUT) ? this->width + elem->width + padding : std::max(this->width, elem->width);
-	this->height = (layout == COL_LAYOUT) ? this->height + elem->height + padding :  std::max(this->height, elem->height);
+	this->width = (layout == ROW_LAYOUT) ? this->width + rawPtr->width + padding : std::max(this->width, rawPtr->width);
+	this->height = (layout == COL_LAYOUT) ? this->height + rawPtr->height + padding :  std::max(this->height, rawPtr->height);
 
-	return elem;
+	return rawPtr;
 }
+
+} // namespace Chesto

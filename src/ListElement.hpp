@@ -2,6 +2,8 @@
 
 #include "Element.hpp"
 
+namespace Chesto {
+
 // ListElement keeps track of a currently highlighted piece, as well as handling scrolling as a unit
 class ListElement : public Element
 {
@@ -13,3 +15,5 @@ public:
 	bool handleInertiaScroll(InputEvents* event);
 	bool processUpDown(InputEvents* event);
 };
+
+} // namespace Chesto

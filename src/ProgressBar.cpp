@@ -1,6 +1,8 @@
 #include "ProgressBar.hpp"
 #include "RootDisplay.hpp"
 
+namespace Chesto {
+
 ProgressBar::ProgressBar()
 {
 	// total width of full progress bar
@@ -68,3 +70,5 @@ void ProgressBar::render(Element* parent)
 	// draw right "circle" (rounded part of bar, and ending)
 	CST_filledCircleRGBA(renderer, this->xAbs + width * this->percent, this->yAbs, 4, 0x56, 0xc1, 0xdf, 0xff);
 }
+
+} // namespace Chesto

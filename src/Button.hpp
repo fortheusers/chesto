@@ -3,6 +3,8 @@
 #include "ImageElement.hpp"
 #include "TextElement.hpp"
 
+namespace Chesto {
+
 class Button : public Element
 {
 public:
@@ -35,3 +37,5 @@ private:
 
 	bool shouldRenderGlossy();
 };
+
+} // namespace Chesto

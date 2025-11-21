@@ -3,6 +3,8 @@
 #include "Texture.hpp"
 #include <string>
 
+namespace Chesto {
+
 class ImageElement : public Texture
 {
 public:
@@ -10,3 +12,5 @@ public:
 	/// from the specified filesystem path
 	ImageElement(std::string path);
 };
+
+} // namespace Chesto

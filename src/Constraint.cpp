@@ -1,6 +1,8 @@
 #include "Constraint.hpp"
 #include "RootDisplay.hpp"
 
+namespace Chesto {
+
 /** 
  * Constraints are used to define the positioning of an element relative to other elements.
  * Currently only within another element or padding from a parent edge is supported.
@@ -66,3 +68,5 @@ void Constraint::apply(Element* element) {
     if (positioningFlags & OFFSET_BOTTOM)  element->y -= paddingOffset;
 
 }
+
+} // namespace Chesto

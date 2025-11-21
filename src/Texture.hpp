@@ -6,6 +6,8 @@
 #include "Element.hpp"
 #include <map>
 
+namespace Chesto {
+
 enum TextureScaleMode
 {
 	/// Stretch the texture to fill the size
@@ -96,3 +98,5 @@ protected:
 	/// Texture's scaling mode
 	TextureScaleMode texScaleMode = SCALE_STRETCH;
 };
+
+} // namespace Chesto

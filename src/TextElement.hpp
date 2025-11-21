@@ -13,6 +13,8 @@
 #define KOREAN 5
 #define JAPANESE 6
 
+namespace Chesto {
+
 std::string i18n(std::string key);
 std::string i18n_number(int number);
 std::string i18n_date(int timestamp);
@@ -60,3 +62,5 @@ private:
 	// font ttf files path
 	static const char *fontPaths[];
 };
+
+} // namespace Chesto

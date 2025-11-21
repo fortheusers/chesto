@@ -1,5 +1,7 @@
 #include "NetImageElement.hpp"
 
+namespace Chesto {
+
 NetImageElement::NetImageElement(const char *url, std::function<Texture *(void)> getImageFallback, bool immediateLoad)
 {
 	std::string key = std::string(url);
@@ -96,3 +98,5 @@ void NetImageElement::render(Element* parent)
 		imgFallback->render(parent);
 	}
 }
+
+} // namespace Chesto

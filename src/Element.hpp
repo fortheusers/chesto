@@ -8,6 +8,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <memory>
 
 #define DEEP_HIGHLIGHT 200
 #define THICK_HIGHLIGHT 150
@@ -25,6 +26,8 @@
 #else
 #define SCALER 1
 #endif
+
+namespace Chesto {
 
 class Constraint;
 
@@ -59,9 +62,10 @@ public:
 	std::function<void(InputEvents* event)> actionWithEvents = NULL;
 
 	/// visible GUI child elements of this element
-	std::vector<Element*> elements;
+	std::vector<std::unique_ptr<Element, std::function<void(Element*)>>> elements;
 
-	void append(Element* element);
+	void append(std::unique_ptr<Element> element);
+	void appendProtected(Element* element); // For stack-allocated members
 	void remove(Element* element);
 	void removeAll(bool moveToTrash = false);
 
@@ -101,8 +105,8 @@ public:
 	// if this element should ignore parent position and just position itself
 	bool isAbsolute = false;
 
-	/// the parent element (can sometimes be null if it isn't set)
-	Element* parent = NULL;
+	/// the parent element (can sometimes be null if it isn't set, is only a reference)
+	Element* parent = nullptr;
 
 	/// whether this element should skip rendering or not
 	bool hidden = false;
@@ -136,6 +140,9 @@ public:
 	// corner radius (when non-zero, backgrounds, textures, and rectangles are rounded)
 	int cornerRadius = 0;
 
+	// user-definable tag for finding elements (defaults to 0)
+	int tag = 0;
+
 	// internal get current renderer or default one
 	CST_Renderer* getRenderer();
 
@@ -146,9 +153,19 @@ public:
 	void wipeAll(bool delSelf = false);
 
 	// fun chain-able wrappers to some fields, returns back the same element
-	Element* child(Element* child);
+	Element* child(std::unique_ptr<Element> child);
 	Element* setPosition(int x, int y);
 	Element* setAction(std::function<void()> func);
+	
+	// Helper to create and add a child in one step
+	// Returns a raw pointer for convenience
+	template<typename T, typename... Args>
+	T* createChild(Args&&... args) {
+		auto ptr = std::make_unique<T>(std::forward<Args>(args)...);
+		T* rawPtr = ptr.get();
+		append(std::move(ptr));
+		return rawPtr;
+	}
 
 	// alignment chainers
 	Element* centerHorizontallyIn(Element* parent);
@@ -157,11 +174,11 @@ public:
 	Element* setAbsolute(bool isAbs);
 
 	// constraints that can be added and used by positioning functions
-	std::vector<Constraint*> constraints;
+	std::vector<std::unique_ptr<Constraint>> constraints;
 	Element* constrain(int flags, int padding = 0);
 
 	// animations that can be added and will tween over time (and remove when finished)
-	std::vector<Animation*> animations;
+	std::vector<std::unique_ptr<Animation>> animations;
 	Element* animate(
 		int durationIn,
 		std::function<void(float)> onStep,
@@ -183,3 +200,5 @@ public:
 	// a function to call to re-align according to all constraints
 	// std::function<void()> alignmentCommands;
 };
+
+} // namespace Chesto

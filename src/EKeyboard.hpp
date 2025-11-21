@@ -4,6 +4,8 @@
 
 #define KEYCODE_COUNT 47
 
+namespace Chesto {
+
 class EKeyboard : public Element
 {
 public:
@@ -103,3 +105,5 @@ public:
 	void generateEKeyboard();
 	void backspace();
 };
+
+} // namespace Chesto

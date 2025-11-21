@@ -2,6 +2,9 @@
 #include "Element.hpp"
 
 #include <vector>
+
+namespace Chesto {
+
 class Element;
 
 
@@ -41,3 +44,5 @@ public:
     /* the amount to pad or  offset this element by */
     int paddingOffset = 0;
 };
+
+} // namespace Chesto

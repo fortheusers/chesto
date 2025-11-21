@@ -3,6 +3,8 @@
 
 #include "colorspaces.hpp"
 #include <unordered_map>
+#include <memory>
+#include <vector>
 
 #if defined(_3DS) || defined(_3DS_MOCK)
 #define ICON_SIZE 48
@@ -11,6 +13,10 @@
 #else
 #define ICON_SIZE 150
 #endif
+
+namespace Chesto {
+
+class Screen;
 
 #define SCREEN_WIDTH RootDisplay::screenWidth
 #define SCREEN_HEIGHT RootDisplay::screenHeight
@@ -36,9 +42,26 @@ public:
 	static CST_Window* window;
 	static RootDisplay* mainDisplay;
 
-	static void switchSubscreen(Element* next);
-	static Element* subscreen;
-	static Element* nextsubscreen;
+	// New methods for managing the subscreen stack
+	static void pushScreen(std::unique_ptr<Screen> screen);
+	static void popScreen();
+	static Screen* topScreen();
+	static void clearScreens();
+	static bool hasScreens();
+	
+	// Process any pending screen operations (called after event processing)
+	static void processPendingScreenOps();
+
+	// Screen stack storage, iterateable to draw layers at a time
+	static std::vector<std::unique_ptr<Screen>> screenStack;
+	
+	enum class ScreenOp { PUSH, POP, CLEAR };
+	struct PendingScreenOp {
+		ScreenOp op;
+		std::unique_ptr<Screen> screen;
+	};
+	static std::vector<PendingScreenOp> pendingScreenOps;
+	static bool isProcessingEvents;
 
 	// dimensions of the screen, which can be modified
 	static int screenWidth;
@@ -57,12 +80,9 @@ public:
 	SDL_Event needsRender;
 
 	// our main input events
-	InputEvents* events = NULL;
+	std::unique_ptr<InputEvents> events;
 
 	std::function<void()> windowResizeCallback = NULL; // Called when the window is resized
-
-	std::vector<Element*> trash;
-	void recycle();
 
 	void requestQuit();
 
@@ -76,3 +96,5 @@ private:
 	bool hasRequestedQuit = false;
 	bool isAppRunning = true;
 };
+
+} // namespace Chesto

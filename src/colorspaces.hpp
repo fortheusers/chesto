@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Chesto {
+
 typedef struct {
 	double r;       // a fraction between 0 and 1
 	double g;       // a fraction between 0 and 1
@@ -16,3 +18,5 @@ hsv rgb2hsv(rgb in);
 rgb hsv2rgb(hsv in);
 rgb fromRGB(int r, int g, int b);
 rgb randomColor();
+
+} // namespace Chesto

@@ -57,6 +57,8 @@ typedef uint16_t CST_Keymod;
 #define SDL_DOWN_STICK   (SDL_GameControllerButton)19
 // clang-format on
 
+namespace Chesto {
+
 struct GamepadInfo {
     unsigned int* buttons;
     std::string* names;
@@ -134,3 +136,5 @@ public:
 
 	Uint32 type;
 };
+
+} // namespace Chesto

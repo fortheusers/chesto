@@ -3,26 +3,27 @@
 #include <utility>
 #include <functional>
 #include <string>
-#include "ListElement.hpp"
 #include "Container.hpp"
+#include "Screen.hpp"
+#include "ListElement.hpp"
 
 #ifndef DROPDOWN_HPP_
 #define DROPDOWN_HPP_
 
+namespace Chesto {
+
 class DropDownChoices;
 
-class DropDownControllerElement : public Element
+class DropDownControllerElement : public Screen
 {
 public:
-	DropDownChoices* curDropDown = nullptr;
-	bool process(InputEvents* event) override;
+	void rebuildUI() override {}
 };
 
 class DropDown : public Button
 {
 public:
 	DropDown(
-		DropDownControllerElement* parentView,
 		int physicalButton,
 		std::vector<std::pair<std::string, std::string>> choices,
 		std::function<void(std::string)> onSelect,
@@ -32,23 +33,37 @@ public:
 	);
 	std::vector<std::pair<std::string, std::string>> choices;
 	std::function<void(std::string)> onSelect;
-	std::string selectedChoiceIndex = "";
-	DropDownChoices* dropDownScreen = nullptr;
-	DropDownControllerElement* controller = nullptr;
+	std::string selectedChoice; // Current selection
 
 	// element overriden functions
 	bool process(InputEvents* event);
 };
 
-class DropDownChoices : public ListElement
+// DropDownChoices is now a Screen that gets pushed onto the screen stack
+class DropDownChoices : public Screen
 {
 public:
-	DropDownChoices(std::vector<std::pair<std::string, std::string>> choices, DropDown* dropdown, bool isDarkMode);
+	DropDownChoices(
+		std::vector<std::pair<std::string, std::string>> choices,
+		std::function<void(std::string)> onSelect,
+		bool isDarkMode,
+		std::string header = ""
+	);
 	bool process(InputEvents* event) override;
 	void render(Element* parent) override;
+	void rebuildUI() override; // Required by Screen
 
 	int curHighlighted = -1;
 	Container* container = nullptr; // the container that contains the actual choice elements (used for navigation)
+	ListElement* scrollList = nullptr; // the scrollable wrapper for everything
+	
+private:
+	std::vector<std::pair<std::string, std::string>> choices;
+	std::function<void(std::string)> onSelectCallback;
+	bool isDarkMode;
+	std::string header;
 };
+
+} // namespace Chesto
 
 #endif

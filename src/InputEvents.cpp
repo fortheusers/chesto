@@ -2,6 +2,8 @@
 #include "RootDisplay.hpp"
 #include <map>
 
+namespace Chesto {
+
 // computer key mappings
 CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_q };
 
@@ -366,3 +368,5 @@ GamepadInfo& InputEvents::getLastGamepadInfo()
 {
 	return gamepadMap[lastGamepadKey];
 }
+
+} // namespace Chesto

@@ -1,6 +1,8 @@
 #include "Button.hpp"
 #include <iostream>
 
+namespace Chesto {
+
 CST_Color Button::colors[2] = {
 	{ 0x00, 0x00, 0x00, 0xff }, // light
 	{ 0xff, 0xff, 0xff, 0xff }, // dark
@@ -13,8 +15,8 @@ Button::Button(std::string message, int button, bool dark, int size, int width)
 	, text(message, (size / SCALER), &colors[dark])
 {
 
-	super::append(&text);
-	super::append(&icon);
+	super::appendProtected(&text);
+	super::appendProtected(&icon);
 
 	// on initialization, store the last gamepad info
 	myLastSeenGamepad = "";
@@ -31,9 +33,6 @@ Button::Button(std::string message, int button, bool dark, int size, int width)
 
 	this->touchable = true;
 	this->hasBackground = true;
-
-	// protect "stack" children
-	text.isProtected = icon.isProtected = true;
 }
 
 void Button::updateBounds()
@@ -198,3 +197,5 @@ bool Button::shouldRenderGlossy()
 
 	return InputEvents::lastGamepadKey == "Wii Remote" || InputEvents::lastGamepadKey == "Wii Remote and Nunchuk";
 }
+
+} // namespace Chesto

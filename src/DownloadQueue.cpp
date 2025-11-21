@@ -1,5 +1,7 @@
 #include "DownloadQueue.hpp"
 
+namespace Chesto {
+
 #if defined(USE_RAMFS)
 #define RAMFS "resin:/"
 #else
@@ -190,3 +192,5 @@ int DownloadQueue::process()
 	return false;
 #endif
 }
+
+} // namespace Chesto

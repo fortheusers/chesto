@@ -1,5 +1,7 @@
 #include "Texture.hpp"
 
+namespace Chesto {
+
 std::unordered_map<std::string, TextureData> Texture::texCache;
 
 const std::string Texture::textElemPrefix = "(TextElement):";
@@ -256,6 +258,13 @@ bool Texture::saveTo(std::string &path)
 }
 
 void Texture::loadPath(std::string& path, bool forceReload) {
+	// Guard against empty paths
+	if (path.empty()) {
+		width = 0;
+		height = 0;
+		return;
+	}
+	
 	if (forceReload || !loadFromCache(path))
 	{
 		CST_Surface *surface = IMG_Load(path.c_str());
@@ -266,3 +275,4 @@ void Texture::loadPath(std::string& path, bool forceReload) {
 	width = texW;
 	height = texH;
 }
+} // namespace Chesto

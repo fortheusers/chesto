@@ -6,6 +6,8 @@
 #include <map>
 #include <algorithm>
 
+namespace Chesto {
+
 const char *TextElement::fontPaths[] = {
 	RAMFS "./res/fonts/OpenSans-Regular.ttf", // 0 = NORMAL
 	RAMFS "./res/fonts/UbuntuMono-Regular.ttf", // 1 = MONOSPACED
@@ -75,15 +77,9 @@ std::vector<std::pair<std::string, std::string>> TextElement::getAvailableLangua
 
 	return languages;
 }
-
-// static method to load i18n cache
-void TextElement::loadI18nCache(std::string locale) {
-	// en-us, zh-cn
-	std::string localePath = RAMFS "res/i18n/" + locale + ".ini";
-	std::transform(locale.begin(), locale.end(), locale.begin(), ::tolower);
-	TextElement::curLang = locale;
-	std::ifstream file(localePath);
-	// printf("Loading i18n cache from %s\n", localePath.c_str());
+// Helper function to load i18n file into cache
+static void loadI18nFile(const std::string& filePath, std::map<std::string, std::string>& cache) {
+	std::ifstream file(filePath);
 	if (file.is_open()) {
 		std::string line;
 		while (std::getline(file, line)) {
@@ -97,28 +93,45 @@ void TextElement::loadI18nCache(std::string locale) {
 				continue;
 			}
 			std::string value = line.substr(pos + 2);
-			TextElement::i18nCache[key] = value;
-			// printf("Loaded i18n key %s with value %s\n", key.c_str(), value.c_str());
+			cache[key] = value;
 		}
 		file.close();
+	}
+}
 
-		TextElement::useSimplifiedChineseFont = false;
-		TextElement::useKoreanFont = false;
-		TextElement::useJapaneseFont = false;
+// static method to load i18n cache
+void TextElement::loadI18nCache(std::string locale) {
+	std::transform(locale.begin(), locale.end(), locale.begin(), ::tolower);
+	TextElement::curLang = locale;
+	
+	// clear existing cache
+	TextElement::i18nCache.clear();
+	
+	// always use English as the base (fallback for missing translations)
+	std::string englishPath = RAMFS "res/i18n/en-us.ini";
+	loadI18nFile(englishPath, TextElement::i18nCache);
+	
+	// overlay the target locale (if not English)
+	if (locale != "en-us") {
+		std::string localePath = RAMFS "res/i18n/" + locale + ".ini";
+		loadI18nFile(localePath, TextElement::i18nCache);
+	}
+	
+	TextElement::useSimplifiedChineseFont = false;
+	TextElement::useKoreanFont = false;
+	TextElement::useJapaneseFont = false;
 
-		// if locale is zh-cn, we need to force the simple chinese font
-		if (locale == "zh-cn") {
-			printf("Overriding font choice\n");
-			TextElement::useSimplifiedChineseFont = true;
-		}
-		if (locale == "ko-kr") {
-			printf("Overriding font choice for Korean\n");
-			TextElement::useKoreanFont = true;
-		}
-		if (locale == "ja-jp") {
-			printf("Overriding font choice for Japanese\n");
-			TextElement::useJapaneseFont = true;
-		}
+	if (locale == "zh-cn") {
+		printf("Overriding font choice for Simplified Chinese\n");
+		TextElement::useSimplifiedChineseFont = true;
+	}
+	if (locale == "ko-kr") {
+		printf("Overriding font choice for Korean\n");
+		TextElement::useKoreanFont = true;
+	}
+	if (locale == "ja-jp") {
+		printf("Overriding font choice for Japanese\n");
+		TextElement::useJapaneseFont = true;
 	}
 }
 
@@ -166,7 +179,6 @@ void TextElement::update(bool forceUpdate)
 
 	if (!loadFromCache(key) || forceUpdate)
 	{
-		// Use a local variable to determine which font to use, without modifying the instance variable
 		int actualFont = textFont;
 		if (TextElement::useSimplifiedChineseFont && textFont == NORMAL) {
 			actualFont = SIMPLIFIED_CHINESE;
@@ -187,7 +199,15 @@ void TextElement::update(bool forceUpdate)
 		if (customFontPath != "") {
 			fontPath = customFontPath.c_str();
 		}
+		
 		TTF_Font* font = TTF_OpenFont(fontPath, textSize);
+		
+		if (font == NULL) {
+			printf("TTF_OpenFont failed for '%s' at size %d: %s\n", fontPath, textSize, TTF_GetError());
+			width = 0;
+			height = 0;
+			return;
+		}
 
 		CST_Surface *textSurface = ((actualFont == ICON) || (textWrappedWidth == 0)) ?
 			TTF_RenderUTF8_Blended(font, text.c_str(), textColor) :
@@ -248,3 +268,5 @@ std::string i18n_date(int timestamp) {
 	strftime(buffer, sizeof(buffer), dateFormatString.c_str(), timeinfo);
 	return std::string(buffer);
 }
+
+} // namespace Chesto

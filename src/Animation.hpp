@@ -1,6 +1,8 @@
 #pragma once
 #include <functional>
 
+namespace Chesto {
+
 class Animation
 {
 public:
@@ -13,3 +15,5 @@ public:
     std::function<void(float)> onStep = NULL;
     std::function<void()> onFinish = NULL;
 };
+
+} // namespace Chesto

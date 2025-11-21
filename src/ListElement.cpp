@@ -1,5 +1,7 @@
 #include "ListElement.hpp"
 
+namespace Chesto {
+
 bool ListElement::process(InputEvents* event)
 {
 	bool ret = false;
@@ -122,3 +124,5 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 
 	return ret;
 }
+
+} // namespace Chesto

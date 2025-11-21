@@ -1,5 +1,7 @@
 #include "EKeyboard.hpp"
 
+namespace Chesto {
+
 using namespace std;
 
 EKeyboard::EKeyboard() : EKeyboard::EKeyboard(NULL)
@@ -502,34 +504,32 @@ void EKeyboard::updateSize()
 		for (int x = 0; x < rowCount(); x++)
 		{
 			TextElement* rowText = new TextElement(rows[x]->c_str(), textSize, &gray, ICON);
-			// rowText->customFontPath = RAMFS "res/lightsans.ttf";
-			if (targetHeight < 0) {
-				targetHeight = rowText->height;
-			}
-			rowText->update(true);
-			rowText->position(kXPad + x * kXOff, kYPad + x * kYOff + targetHeight/2 - rowText->height/2);
-			this->elements.push_back(rowText);
+		// rowText->customFontPath = RAMFS "res/lightsans.ttf";
+		if (targetHeight < 0) {
+			targetHeight = rowText->height;
 		}
+		rowText->update(true);
+		rowText->position(kXPad + x * kXOff, kYPad + x * kYOff + targetHeight/2 - rowText->height/2);
+		this->append(std::unique_ptr<TextElement>(rowText));
 	}
-
-	// text for space, enter, and symbols
+}	// text for space, enter, and symbols
 	CST_Color grayish = { 0x55, 0x55, 0x55, 0xff };
 	TextElement* spaceText = new TextElement("space", 30, &grayish);
 	CST_Rect d4 = { this->x + sPos, this->y + dHeight, sWidth, textSize }; // todo: extract out hardcoded rects like this
 	spaceText->position(d4.x + d4.w / 2 - spaceText->width / 2 - 15, 345);
-	this->elements.push_back(spaceText);
+	this->append(std::unique_ptr<TextElement>(spaceText));
 
 	if (!preventEnterAndTab)
 	{
 		TextElement* enterText = new TextElement("enter", 30, &grayish);
 		CST_Rect d3 = { this->x + enterPos, this->y + enterHeight, enterWidth, textSize }; // todo: extract out hardcoded rects like this
 		enterText->position(d3.x + d3.w / 2 - enterText->width / 2 - 30, 327);
-		this->elements.push_back(enterText);
+		this->append(std::unique_ptr<TextElement>(enterText));
 
 		TextElement* symText = new TextElement(hasRoundedKeys ? "shift" : "tab", 30, &grayish);
 		CST_Rect d5 = { this->x + dPos, this->y + enterHeight, enterWidth, textSize }; // todo: extract out hardcoded rects like this
 		symText->position(d5.x + d5.w / 2 - symText->width / 2 - 30, 327);
-		this->elements.push_back(symText);
+		this->append(std::unique_ptr<TextElement>(symText));
 	}
 }
 
@@ -631,3 +631,5 @@ EKeyboard::~EKeyboard()
 {
 	InputEvents::bypassKeyEvents = false;
 }
+
+} // namespace Chesto

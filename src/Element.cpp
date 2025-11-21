@@ -4,9 +4,21 @@
 #include "Animation.hpp"
 #include <string>
 
+namespace Chesto {
+
+// Shared deleter for all elements - respects isProtected flag
+static void safeElementDeleter(Element* elem) {
+	if (elem && !elem->isProtected) {
+		delete elem;
+	}
+}
+
 Element::~Element()
 {
-	removeAll();
+	// unique_ptrs will automatically cleaned up
+	elements.clear();
+	constraints.clear();
+	animations.clear();
 }
 
 Element::Element()
@@ -32,13 +44,32 @@ bool Element::process(InputEvents* event)
 	{
 		ret |= onTouchDown(event);
 		ret |= onTouchDrag(event);
-		ret |= onTouchUp(event);
+		
+		bool touchUpHandled = onTouchUp(event);
+		ret |= touchUpHandled;
+		
+		if (touchUpHandled && (action != NULL || actionWithEvents != NULL)) {
+			// an action was fired, whicih may delete our element, so return right away
+			return true;
+		}
 	}
 
 	// call process on subelements
-	for (int x = 0; x < this->elements.size(); x++)
-		if (this->elements.size() > x && this->elements[x])
-			ret |= this->elements[x]->process(event);
+	size_t elementCount = this->elements.size();
+	for (size_t x = 0; x < elementCount; x++)
+	{
+		// ensure element still exists before trying to process it
+		if (x < this->elements.size() && this->elements[x])
+		{
+			bool childHandled = this->elements[x]->process(event);
+			ret |= childHandled;
+
+			if (childHandled && this->elements.size() != elementCount) {
+				// size changed while we were processing, break out
+				break;
+			}
+		}
+	}
 
 	ret |= this->needsRedraw;
 	this->needsRedraw = false;
@@ -58,7 +89,7 @@ bool Element::process(InputEvents* event)
 }
 
 void Element::render(Element* parent)
-{
+{	
 	//if we're hidden, don't render
 	if (hidden) return;
 
@@ -76,7 +107,7 @@ void Element::render(Element* parent)
 	}
 
 	// go through every subelement and run render
-	for (Element* subelement : elements)
+	for (auto& subelement : elements)
 	{
 		subelement->render(this);
 	}
@@ -139,7 +170,7 @@ void Element::render(Element* parent)
 
 void Element::recalcPosition(Element* parent) {
 	// go through all constraints and apply them
-	for (Constraint* constraint : constraints)
+	for (auto& constraint : constraints)
 	{
 		constraint->apply(this);
 	}
@@ -155,22 +186,22 @@ void Element::recalcPosition(Element* parent) {
 	}
 
 	// go through all animations and apply them
-	// TODO: animations can modify the actual positions, which can mess up constraints
 	if (animations.size() > 0) {
-		std::vector<Animation*> toRemove;
-		for (Animation* animation : animations)
+		std::vector<size_t> toRemove;
+		for (size_t i = 0; i < animations.size(); i++)
 		{
+			auto& animation = animations[i];
 			// if there are any animations, we need to re-render
 			needsRedraw = true;
 
 			bool finished = animation->step();
 			if (finished) {
-				toRemove.push_back(animation);
+				toRemove.push_back(i);
 			}
 		}
-		for (Animation* animation : toRemove) {
-			animations.erase(std::remove(animations.begin(), animations.end(), animation), animations.end());
-			delete animation;
+
+		for (auto it = toRemove.rbegin(); it != toRemove.rend(); ++it) {
+			animations.erase(animations.begin() + *it);
 		}
 	}
 }
@@ -301,15 +332,25 @@ bool Element::onTouchUp(InputEvents* event)
 			// elasticCounter must be nonzero to allow a click through (highlight must be shown)
 			if (this->elasticCounter > 0)
 			{
+				bool wasHighlighted = (this->elasticCounter > 0);
+				
+				this->dragging = false;
+				this->elasticCounter = 0;
+				
 				// invoke this element's action
 				if (action != NULL) {
 					this->action();
-					ret |= true;
+					// returns early since an action may delete 'this'
+					return true;
 				}
 				if (actionWithEvents != NULL) {
 					this->actionWithEvents(event);
-					ret |= true;
+					// returns early since an action may delete 'this'
+					return true;
 				}
+				
+				// If we get here, we had elasticCounter but no action
+				ret |= wasHighlighted;
 			}
 		}
 	}
@@ -325,52 +366,96 @@ bool Element::onTouchUp(InputEvents* event)
 	return ret;
 }
 
-void Element::append(Element *element)
+void Element::append(std::unique_ptr<Element> element)
 {
-	auto position = std::find(elements.begin(), elements.end(), element);
-	if (position == elements.end()) {
-		elements.push_back(element);
+	if (!element) return;
+	
+	// check if element already exists (by raw pointer comparison)
+	Element* rawPtr = element.get();
+	for (const auto& existing : elements) {
+		if (existing.get() == rawPtr) {
+			return;
+		}
 	}
+	
+	// convert to unique_ptr with custom deleter that respects isProtected flag
+	Element* ptr = element.release();
+	std::unique_ptr<Element, std::function<void(Element*)>> convertedElement(
+		ptr,
+		safeElementDeleter
+	);
+	
+	ptr->parent = this;
+	elements.push_back(std::move(convertedElement));
 }
+
+void Element::appendProtected(Element* element)
+{
+	if (!element) return;
+	
+	// check if element already exists
+	for (const auto& existing : elements) {
+		if (existing.get() == element) {
+			return;
+		}
+	}
+	
+	element->parent = this;
+	element->isProtected = true; // Mark as protected
+	
+	// For protected (stack-allocated) elements, use the shared safe deleter
+	// the deleter checks isProtected flag and skips deletion
+	elements.push_back(std::unique_ptr<Element, std::function<void(Element*)>>(
+		element,
+		safeElementDeleter
+	));
+}
+
 
 void Element::remove(Element *element)
 {
-	auto position = std::find(elements.begin(), elements.end(), element);
+	// single element remove
+
+	auto position = std::find_if(elements.begin(), elements.end(),
+		[element](const std::unique_ptr<Element, std::function<void(Element*)>>& e) { 
+			return e.get() == element; 
+		});
 	if (position != elements.end())
 		elements.erase(position);
 }
 
 void Element::wipeAll(bool delSelf)
 {
-	// delete's this element's children, then itself
-	for (auto child : elements) {
-		child->wipeAll(true);
-	}
+	// Deletes all children (unique_ptr handles the deletion)
 	elements.clear();
 
 	if (delSelf && !isProtected) {
-		delete this;
+		delete this; // (...is this ok?)
 	}
 }
 
 void Element::removeAll(bool moveToTrash)
 {
-	if (moveToTrash) {
-		// store in a list for free-ing up memory later
-		for (auto e : elements) {
-			RootDisplay::mainDisplay->trash.push_back(e);
-		}
-	}
+	// unique_ptrs automatically handle clean up
 	elements.clear();
-	constraints.clear(); // remove all constraints too
+	constraints.clear();
 	animations.clear();
 }
 
-Element* Element::child(Element* child)
+Element* Element::child(std::unique_ptr<Element> child)
 {
-	this->elements.push_back(child);
-	child->parent = this;
-	child->recalcPosition(this);
+	if (child) {
+		child->parent = this;
+		child->recalcPosition(this);
+		
+		// convert to unique_ptr with shared safe deleter
+		// TODO: reconcile child() and append() methods
+		Element* ptr = child.release();
+		elements.push_back(std::unique_ptr<Element, std::function<void(Element*)>>(
+			ptr,
+			safeElementDeleter
+		));
+	}
 	return this;
 }
 
@@ -415,7 +500,7 @@ CST_Renderer* Element::getRenderer() {
 
 Element* Element::constrain(int flags, int padding)
 {
-	constraints.push_back(new Constraint(flags, padding));
+	constraints.push_back(std::make_unique<Constraint>(flags, padding));
 	return this;
 }
 
@@ -424,7 +509,7 @@ Element* Element::animate(
 	std::function<void(float)> onStep,
 	std::function<void()> onFinish
 ) {
-	animations.push_back(new Animation(
+	animations.push_back(std::make_unique<Animation>(
 		CST_GetTicks(),	duration, onStep, onFinish)
 	);
 
@@ -434,8 +519,18 @@ Element* Element::animate(
 // Move an element up within its parent
 Element* Element::moveToFront() {
 	if (parent != NULL) {
-		parent->remove(this);
-		parent->child(this);
+		// lookup this element in parent's vector
+		auto position = std::find_if(parent->elements.begin(), parent->elements.end(),
+			[this](const std::unique_ptr<Element, std::function<void(Element*)>>& e) { 
+				return e.get() == this; 
+			});
+		
+		if (position != parent->elements.end()) {
+			// move it to the end
+			auto elem = std::move(*position);
+			parent->elements.erase(position);
+			parent->elements.push_back(std::move(elem));
+		}
 	}
 	return this;
 }
@@ -466,3 +561,5 @@ void Element::screenshot(std::string path) {
 	// save the surface to the path
 	CST_SavePNG(target, path.c_str());
 }
+
+} // namespace Chesto

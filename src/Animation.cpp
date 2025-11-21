@@ -1,6 +1,8 @@
 #include "Animation.hpp"
 #include "./DrawUtils.hpp"
 
+namespace Chesto {
+
 Animation::Animation(int startTime, int duration, std::function<void(float)> onStep, std::function<void()> onFinish) {
     this->startTime = startTime;
     this->duration = duration;
@@ -24,3 +26,5 @@ bool Animation::step() {
     }
     return false;
 }
+
+} // namespace Chesto
