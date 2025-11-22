@@ -176,6 +176,7 @@ public:
 	// constraints that can be added and used by positioning functions
 	std::vector<std::unique_ptr<Constraint>> constraints;
 	Element* constrain(int flags, int padding = 0);
+	Element* constrainToTarget(Element* target, int flags, int padding = 0);
 
 	// animations that can be added and will tween over time (and remove when finished)
 	std::vector<std::unique_ptr<Animation>> animations;

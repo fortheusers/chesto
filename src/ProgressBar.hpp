@@ -14,7 +14,6 @@ public:
 	int color;
 	bool dimBg = false;
 
-	int width = 0;
 };
 
 } // namespace Chesto

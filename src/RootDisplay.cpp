@@ -87,6 +87,9 @@ RootDisplay::RootDisplay()
 
 	// TODO: detect language and system, and store preference
 	// TextElement::loadI18nCache("zh-cn");
+	
+	// Initialize download queue early so it's available during screen construction
+	DownloadQueue::init();
 }
 
 void RootDisplay::initMusic()
@@ -203,6 +206,13 @@ bool RootDisplay::hasScreens()
 
 RootDisplay::~RootDisplay()
 {
+	// Clean up screens before destroying download queue
+	// This ensures NetImageElements can cancel downloads properly
+	screenStack.clear();
+	
+	// Now safe to destroy download queue
+	DownloadQueue::quit();
+	
 	CST_DrawExit();
 
 #if defined(USE_RAMFS)
@@ -289,8 +299,6 @@ void RootDisplay::requestQuit()
 
 int RootDisplay::mainLoop()
 {
-	DownloadQueue::init();
-
 #ifdef __WIIU__
 	// setup procui callback for resuming application to force a chesto render
 	// https://stackoverflow.com/a/56145528 and http://bannalia.blogspot.com/2016/07/passing-capturing-c-lambda-functions-as.html
@@ -357,10 +365,7 @@ int RootDisplay::mainLoop()
 	}
 
 	// unique_ptr will automatically clean up events
-
-	if (!isProtected) delete this;
-	DownloadQueue::quit();
-
+	
 	return 0;
 }
 

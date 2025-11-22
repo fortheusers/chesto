@@ -95,6 +95,9 @@ void DownloadQueue::downloadCancel(DownloadOperation *download)
 #ifndef NETWORK_MOCK
 void DownloadQueue::setPlatformCurlFlags(CURL* c)
 {
+	// TODO: if this file is missing, downloads fail silently, provide some kind of notification
+	// system that's able to inform the user, regardless of the app's usual rendering logic.
+
 	// from https://github.com/GaryOderNichts/wiiu-examples/blob/main/curl-https/romfs/cacert.pem
 	curl_easy_setopt(c, CURLOPT_CAINFO, RAMFS "res/cacert.pem");
 

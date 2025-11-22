@@ -37,11 +37,14 @@ void Constraint::addTarget(Element* target) {
 }
 
 void Constraint::apply(Element* element) {
-    // if the vector of targets is blank, grab the parent
-    // TODO: anything with the vector, to extract a target from it
-    auto target = element->parent;
+    // if the vector of targets is not empty, use the first target, otherwise use parent
+    auto target = targets.empty() ? element->parent : targets[0];
+    auto isSpecificTarget = !targets.empty();
     int posX = 0, posY = 0;
     int width = RootDisplay::screenWidth, height = RootDisplay::screenHeight; // default to screen size
+
+    auto paddingOffset = this->paddingOffset; // copy so we don't flicker/modify it on the fly
+    
     if (target != NULL) {
         // For centering constraints, we want to position relative to parent's content area (0,0)
         // For edge alignment, we use parent's position as reference
@@ -49,6 +52,18 @@ void Constraint::apply(Element* element) {
         posY = target->y;
         width = target->width;
         height = target->height;
+
+        if (isSpecificTarget) {
+            // with an element target, we have to inverse our padding offset
+            paddingOffset = -paddingOffset;
+
+            //also, if it's top or left, we need to account for our own height/width
+            if (positioningFlags & ALIGN_TOP)    posY -= element->height;
+            if (positioningFlags & ALIGN_LEFT)   posX -= element->width;
+            // if it's bottom or right, we need to account for the target's height/width
+            if (positioningFlags & ALIGN_BOTTOM) posY += target->height;
+            if (positioningFlags & ALIGN_RIGHT)  posX += target->width;
+        }
     }
 
     // look at the flags and decide what to do

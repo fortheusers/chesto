@@ -91,6 +91,9 @@ void NetImageElement::render(Element* parent)
 	}
 	else if (imgFallback)
 	{
+		// we need to apply our constraints
+		Element::render(parent); // not texture's
+		
 		imgFallback->x = x;
 		imgFallback->y = y;
 		imgFallback->width = width;

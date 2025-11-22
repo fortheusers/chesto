@@ -504,6 +504,13 @@ Element* Element::constrain(int flags, int padding)
 	return this;
 }
 
+Element* Element::constrainToTarget(Element* target, int flags, int padding)
+{
+	constraints.push_back(std::make_unique<Constraint>(flags, padding, std::vector<Element*>{target}));
+	return this;
+}
+
+
 Element* Element::animate(
 	int duration,
 	std::function<void(float)> onStep,
