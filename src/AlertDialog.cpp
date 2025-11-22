@@ -110,7 +110,7 @@ void AlertDialog::show()
 	this->width = dialogHeight;
 }
 
-void AlertDialog::render(Element* parent)
+void AlertDialog::render(Element*)
 {
 	// Implementation for rendering the dialog
 	super::render(this);

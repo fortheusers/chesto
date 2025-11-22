@@ -29,7 +29,7 @@ namespace Chesto {
 #ifndef NETWORK_MOCK
 // networking optimizations adapted from:
 //  - https://github.com/samdejong86/Arria-V-ADC-Ethernet-software/blob/master/ADC_Socket_bsp/iniche/src/h/socket.h
-int sockopt_callback_chesto(void *clientp, curl_socket_t curlfd, curlsocktype purpose)
+int sockopt_callback_chesto(void*, curl_socket_t curlfd, curlsocktype)
 {
     int winscale = 1, rcvbuf = 0x20000, tcpsack = 1;
 #ifndef WIN32
@@ -167,7 +167,7 @@ int DownloadQueue::process()
 	curl_multi_perform(cm, &still_alive);
 
 	// handle completed or failed downloads
-	while(msg = curl_multi_info_read(cm, &msgs_left))
+	while((msg = curl_multi_info_read(cm, &msgs_left)))
 	{
 		long response_code = 404;
 

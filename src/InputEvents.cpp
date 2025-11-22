@@ -1,11 +1,13 @@
 #include "InputEvents.hpp"
 #include "RootDisplay.hpp"
 #include <map>
+#include <algorithm>
+#include <limits>
 
 namespace Chesto {
 
 // computer key mappings
-CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_q };
+CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_q };
 
 SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR,  };
 
@@ -164,8 +166,16 @@ bool InputEvents::processSDLEvents()
 	}
 
 	// offset the x, y positions by the dpi scale
-	this->xPos = (int)(this->xPos * RootDisplay::dpiScale);
-	this->yPos = (int)(this->yPos * RootDisplay::dpiScale);
+	// clamp to prevent overflow when casting float to int
+	float scaledX = (float)this->xPos * RootDisplay::dpiScale;
+	float scaledY = (float)this->yPos * RootDisplay::dpiScale;
+	
+	// clamp to int range to avoid undefined behavior
+	scaledX = std::max(std::min(scaledX, (float)std::numeric_limits<int>::max()), (float)std::numeric_limits<int>::min());
+	scaledY = std::max(std::min(scaledY, (float)std::numeric_limits<int>::max()), (float)std::numeric_limits<int>::min());
+	
+	this->xPos = (int)scaledX;
+	this->yPos = (int)scaledY;
 
 	toggleHeldButtons();
 

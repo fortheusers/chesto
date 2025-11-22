@@ -9,10 +9,10 @@ CST_Color Button::colors[2] = {
 };
 
 Button::Button(std::string message, int button, bool dark, int size, int width)
-	: physical(button)
+	: text(message, (size / SCALER), &colors[dark])
 	, dark(dark)
+	, physical(button)
 	, icon(getControllerButtonImageForPlatform(button, !dark, false))
-	, text(message, (size / SCALER), &colors[dark])
 {
 
 	super::appendProtected(&text);
@@ -40,8 +40,6 @@ void Button::updateBounds()
 	int PADDING = 10 / SCALER;
 
 	int bWidth = PADDING * 0.5 * (icon.width != 0); // gap space between button
-
-	bool hasPhysicalButton = physical > 0;
 	
 	if (shouldRenderGlossy()) {
 		icon.position(0, 0); // the icon is the overlay, same size as the button
@@ -81,13 +79,14 @@ void Button::updateText(const std::string &inc_text)
 	updateBounds();
 }
 
-std::string Button::getControllerButtonImageForPlatform(int button, bool isGray, bool isOutline)
+std::string Button::getControllerButtonImageForPlatform(int buttonInc, bool isGray, bool isOutline)
 {
 	// grab the current gamepad info
 	GamepadInfo& gamepad = InputEvents::getLastGamepadInfo();
 
 	// find the button index in the gamepad.buttons array
 	// TODO: use a hashmap instead of an array
+	unsigned int button = buttonInc;
 	if (gamepad.buttons != nullptr) {
 		for (int i = 0; i < TOTAL_BUTTONS; i++)
 		{

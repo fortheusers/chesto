@@ -227,7 +227,7 @@ void CST_QueryTexture(CST_Texture* texture, int* w, int* h)
 	SDL_QueryTexture(texture, nullptr, nullptr, w, h);
 }
 
-CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface, bool isAccessible )
+CST_Texture* CST_CreateTextureFromSurface(CST_Renderer* renderer, CST_Surface* surface, bool)
 {
 	return SDL_CreateTextureFromSurface(renderer, surface);	
 }
@@ -262,7 +262,7 @@ int CST_GetTicks()
 	return SDL_GetTicks();
 }
 
-void CST_LowRumble(InputEvents* event, int ms)
+void CST_LowRumble(InputEvents* event, int) // duration unused
 {
 	auto joystick = SDL_JoystickFromInstanceID(event->event.jdevice.which);
 	if (joystick && SDL_JoystickGetAttached(joystick)) {
@@ -355,7 +355,7 @@ void CST_rectangleRGBA (
 #ifndef SIMPLE_SDL2
 
 // returns a size-3 vector of: (title, artist, album)
-std::vector<std::string> CST_GetMusicInfo(CST_Music* music) {
+std::vector<std::string> CST_GetMusicInfo(CST_Music*) { /// unused, see comment below
 	std::vector<std::string> info;
 	// these methods can use recent (late 2019) SDL_Mixer versions to read info about the song
 	// (Currently commented out)

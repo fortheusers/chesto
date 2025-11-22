@@ -434,7 +434,7 @@ void Element::wipeAll(bool delSelf)
 	}
 }
 
-void Element::removeAll(bool moveToTrash)
+void Element::removeAll(bool)
 {
 	// unique_ptrs automatically handle clean up
 	elements.clear();

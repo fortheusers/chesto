@@ -33,7 +33,7 @@ void ProgressBar::render(Element* parent)
 
 	this->recalcPosition(parent);
 
-	int blue = this->color;
+	// int blue = this->color;
 	//	int gray = 0x989898ff;
 
 	// draw full grayed out bar first

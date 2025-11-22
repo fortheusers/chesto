@@ -55,7 +55,7 @@ public:
 private:
 	// default values
 	int textSize = 16;
-	CST_Color textColor = (CST_Color){ 0xff, 0xff, 0xff };
+	CST_Color textColor = (CST_Color){ 0xff, 0xff, 0xff, 0xff };
 	int textFont = NORMAL;
 	int textWrappedWidth = 0;
 

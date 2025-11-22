@@ -25,7 +25,7 @@ EKeyboard::EKeyboard(std::function<void(char)> typeAction)
 	updateSize();
 }
 
-void EKeyboard::render(Element* parent)
+void EKeyboard::render(Element*)
 {
 	if (hidden || immersiveMode)
 		return;
@@ -356,7 +356,7 @@ bool EKeyboard::listenForPhysicalKeys(InputEvents* e)
 	int offset = 0;
 
 	auto keyCode = e->keyCode;
-	auto mod = e->mod;
+	// auto mod = e->mod;
 
 	// special keys
 	if (keyCode == SDLK_LSHIFT || keyCode == SDLK_RSHIFT || keyCode == SDLK_CAPSLOCK) {
