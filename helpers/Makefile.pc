@@ -1,6 +1,6 @@
 CXX = g++
 
-CFLAGS   += -g -DPC -Wno-narrowing
+CFLAGS   += -g -Wall -DPC
 INCLUDES += /usr/local/include /opt/homebrew/include C:/MSYS2/mingw64/include
 LDFLAGS  += -L /opt/homebrew/lib -L /usr/local/lib -L C:/MSYS2/mingw64/lib $(LIBS)
 

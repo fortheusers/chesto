@@ -19,49 +19,7 @@ AlertDialog::AlertDialog(const std::string& title, const std::string& message)
 	 */
 	hidden = true;
 
-	// Create the message text element
-	auto messageTextPtr = std::make_unique<TextElement>("(Placeholder text)", 20, &blackColor, NORMAL, 400);
-	messageText = messageTextPtr.get();
-	messageText->setText(message);
-	messageText->update(); // to set the size
-
-	// just add the single button for now
-	auto okButton = std::make_unique<Button>("OK", A_BUTTON);
-	okButton->setAction([this]()
-		{
-        if (onConfirm) onConfirm(); });
-	okButton->cornerRadius = 10;
-	okButton->updateBounds();
-
-	auto innerVStack = std::make_unique<Container>(COL_LAYOUT, 50);
-	innerVStack->add(std::move(messageTextPtr));
-	innerVStack->add(std::move(okButton));
-	innerVStack->width = dialogWidth;
-	// innerVStack->backgroundColor = fromRGB(0xff, 0, 0);
-	// innerVStack->hasBackground = true;
-
-	messageText->constrain(ALIGN_CENTER_HORIZONTAL, 0);
-	okButton->constrain(ALIGN_CENTER_HORIZONTAL, 0);
-
-	// Create vStack container
-	auto vStackPtr = std::make_unique<Container>(COL_LAYOUT, 50);
-	vStack = vStackPtr.get();
-	
-	// prompt background color
-	vStack->backgroundColor = fromRGB(0xdd, 0xdd, 0xdd);
-	vStack->hasBackground = true;
-	vStack->cornerRadius = 15;
-	vStack->width = dialogWidth;
-	vStack->height = dialogHeight;
-	vStack->add(std::move(innerVStack));
-
-	innerVStack->constrain(ALIGN_CENTER_BOTH, 0);
-
-	// Create overlay element
-	auto overlayPtr = std::make_unique<Element>();
-	overlay = overlayPtr.get();
-	
-	// overlay and shade bg color
+	overlay = createChild<Element>();
 	overlay->width = RootDisplay::mainDisplay->width;
 	overlay->height = RootDisplay::mainDisplay->height;
 	overlay->backgroundColor = fromRGB(0, 0, 0);
@@ -69,11 +27,35 @@ AlertDialog::AlertDialog(const std::string& title, const std::string& message)
 	overlay->cornerRadius = 1; // forces transparency to render properly (via sdl_gfx)
 	overlay->hasBackground = true;
 
-	overlay->child(std::move(vStackPtr));
-
+	vStack = overlay->createChild<Container>(COL_LAYOUT, 50);
+	vStack->backgroundColor = fromRGB(0xdd, 0xdd, 0xdd);
+	vStack->hasBackground = true;
+	vStack->cornerRadius = 15;
+	vStack->width = dialogWidth;
+	vStack->height = dialogHeight;
 	vStack->constrain(ALIGN_CENTER_BOTH, 0);
 
-	append(std::move(overlayPtr));
+	auto innerVStack = vStack->createChild<Container>(COL_LAYOUT, 50);
+	innerVStack->width = dialogWidth;
+	innerVStack->constrain(ALIGN_CENTER_BOTH, 0);
+	// innerVStack->backgroundColor = fromRGB(0xff, 0, 0);
+	// innerVStack->hasBackground = true;
+
+	messageText = innerVStack->createChild<TextElement>("(Placeholder text)", 20, &blackColor, NORMAL, 400);
+	messageText->setText(message);
+	messageText->update(); // to set the size
+	messageText->constrain(ALIGN_CENTER_HORIZONTAL, 0);
+
+	// TODO: add a second button for prompts, not just alerts
+	auto okButton = innerVStack->createChild<Button>("OK", A_BUTTON);
+	okButton->setAction([this]() {
+        if (onConfirm) {
+			onConfirm();
+		}
+	});
+	okButton->cornerRadius = 10;
+	okButton->updateBounds();
+	okButton->constrain(ALIGN_CENTER_HORIZONTAL, 0);
 }
 
 void AlertDialog::setText(const std::string& newText)

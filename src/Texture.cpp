@@ -163,9 +163,9 @@ void Texture::render(Element* parent)
 
 			// if the first pixel is transparent, use the background color
 			if (texFirstPixel.a == 0) {
-				auto r = backgroundColor.r * 0xff;
-				auto g = backgroundColor.g * 0xff;
-				auto b = backgroundColor.b * 0xff;
+				auto r = (Uint8)(backgroundColor.r * 0xff);
+				auto g = (Uint8)(backgroundColor.g * 0xff);
+				auto b = (Uint8)(backgroundColor.b * 0xff);
 				color = (CST_Color){ r, g, b, 0xFF };
 			}
 
