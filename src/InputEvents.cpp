@@ -152,7 +152,7 @@ bool InputEvents::processSDLEvents()
 	}
 
 	if (this->type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
-		printf("Window resized to %dx%d\n", event.window.data1, event.window.data2);
+		// printf("Window resized to %dx%d\n", event.window.data1, event.window.data2);
 		RootDisplay::mainDisplay->setScreenResolution(
 			event.window.data1 * RootDisplay::dpiScale,
 			event.window.data2 * RootDisplay::dpiScale
@@ -358,14 +358,14 @@ void InputEvents::processJoystickHotplugging(SDL_Event *event)
 	{
 	case SDL_JOYDEVICEADDED:
 		j = SDL_JoystickOpen(event->jdevice.which);
-		if (j)
-			printf("Added joystick device: %s, with ID %d\n", SDL_JoystickName(j), SDL_JoystickInstanceID(j));
+		// if (j)
+		// 	printf("Added joystick device: %s, with ID %d\n", SDL_JoystickName(j), SDL_JoystickInstanceID(j));
 		break;
 	case SDL_JOYDEVICEREMOVED:
 		j = SDL_JoystickFromInstanceID(event->jdevice.which);
 		if (j && SDL_JoystickGetAttached(j))
 		{
-			printf("Removed joystick device: %s\n", SDL_JoystickName(j));
+			// printf("Removed joystick device: %s\n", SDL_JoystickName(j));
 			SDL_JoystickClose(j);
 		}
 		break;

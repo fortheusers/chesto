@@ -10,6 +10,9 @@ CFLAGS    +=  -g -Wall -O0 -mword-relocations \
 			  -fomit-frame-pointer -ffunction-sections \
 			  $(ARCH)
 
+# 3ds port has some unused features in the build, due to lack of sdl_gfx
+CFLAGS	+=	-Wno-unused-parameter
+
 CFLAGS    += -DARM11 -D_3DS -DUSE_RAMFS -DNOCRYPT -DUSE_FILE32API -D__3DS__
 LDFLAGS	  += -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 ASFLAGS   += -g $(ARCH)
