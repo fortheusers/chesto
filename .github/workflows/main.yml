@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - sdl2-only
+      - namespace-smart-pointers
   pull_request:
     branches:
       - main
