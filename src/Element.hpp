@@ -64,16 +64,29 @@ public:
 	/// visible GUI child elements of this element
 	std::vector<std::unique_ptr<Element, std::function<void(Element*)>>> elements;
 
-	void append(std::unique_ptr<Element> element);
-	void appendProtected(Element* element); // For stack-allocated members
+	// add already-built node to tree and transfer ownership to parent
+	void addNode(std::unique_ptr<Element> node);
+	
+	// remove specific child by pointer
 	void remove(Element* element);
-	void removeAll(bool moveToTrash = false);
+	
+	// clear all children, constraints, and animations
+	void removeAll();
+
+protected:
+	// Internal helper for stack-allocated members
+	void addStackMember(Element* element);
+
+public:
 
 	/// position the element
 	void position(int x, int y);
 
 	// recalculate xAbs and yAbs based on the given parent
 	void recalcPosition(Element* parent);
+	
+	// the effective scale for this element after global scaling
+	float getEffectiveScale() const;
 
 	// the scale of the element (and its subelements!)
 	float scale = 1.0f;
@@ -105,7 +118,7 @@ public:
 	// if this element should ignore parent position and just position itself
 	bool isAbsolute = false;
 
-	/// the parent element (can sometimes be null if it isn't set, is only a reference)
+	/// the parent element (reference only, not owned)
 	Element* parent = nullptr;
 
 	/// whether this element should skip rendering or not
@@ -114,7 +127,7 @@ public:
 	// bounds on screen of this element
 	CST_Rect getBounds();
 
-	// whether or not this should be automatically free'd by wipeAll
+	// whether this element is protected from automatic deletion logic TODO: do we sitl lneed this?
 	bool isProtected = false;
 
 	/// how much time is left in an elastic-type flick/scroll
@@ -126,16 +139,15 @@ public:
 
 	typedef Element super;
 
-	// position relative to parent (if given) or screen (NULL parent)
+	// relative position within parent (set by user or constraints)
 	int x = 0, y = 0;
 
-	// actual onscreen position (calculated at render time)
+	// actual onscreen position (calculated by recalcPosition)
+	// these should be read-only, not set directly
 	int xAbs = 0, yAbs = 0;
+	
 	/// rotation angle in degrees
 	double angle = 0;
-
-	// x and y offsets (can be used for drawing relative to other elements)
-	int xOff = 0, yOff = 0;
 
 	// corner radius (when non-zero, backgrounds, textures, and rectangles are rounded)
 	int cornerRadius = 0;
@@ -146,32 +158,20 @@ public:
 	// internal get current renderer or default one
 	CST_Renderer* getRenderer();
 
-	// delete this element's children, and their children, and so on
-	// if you've been using `new` everywhere, calling this can make sense in your
-	// top level component's destructor to free all the memory from that branch
-	// (not automatically invoked in case implementor wants to manage it)
-	void wipeAll(bool delSelf = false);
-
 	// fun chain-able wrappers to some fields, returns back the same element
-	Element* child(std::unique_ptr<Element> child);
 	Element* setPosition(int x, int y);
 	Element* setAction(std::function<void()> func);
+	Element* setAbsolute(bool isAbs);
 	
-	// Helper to create and add a child in one step
-	// Returns a raw pointer for convenience
+	// Create and add node to tree in one step
+	// Returns raw pointer for convenience
 	template<typename T, typename... Args>
-	T* createChild(Args&&... args) {
+	T* createNode(Args&&... args) {
 		auto ptr = std::make_unique<T>(std::forward<Args>(args)...);
 		T* rawPtr = ptr.get();
-		append(std::move(ptr));
+		addNode(std::move(ptr));
 		return rawPtr;
 	}
-
-	// alignment chainers
-	Element* centerHorizontallyIn(Element* parent);
-	Element* centerVerticallyIn(Element* parent);
-	Element* centerIn(Element* parent);
-	Element* setAbsolute(bool isAbs);
 
 	// constraints that can be added and used by positioning functions
 	std::vector<std::unique_ptr<Constraint>> constraints;

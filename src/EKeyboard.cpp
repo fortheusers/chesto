@@ -510,26 +510,26 @@ void EKeyboard::updateSize()
 		}
 		rowText->update(true);
 		rowText->position(kXPad + x * kXOff, kYPad + x * kYOff + targetHeight/2 - rowText->height/2);
-		this->append(std::unique_ptr<TextElement>(rowText));
+		this->addNode(std::unique_ptr<TextElement>(rowText));
 	}
 }	// text for space, enter, and symbols
 	CST_Color grayish = { 0x55, 0x55, 0x55, 0xff };
 	TextElement* spaceText = new TextElement("space", 30, &grayish);
 	CST_Rect d4 = { this->x + sPos, this->y + dHeight, sWidth, textSize }; // todo: extract out hardcoded rects like this
 	spaceText->position(d4.x + d4.w / 2 - spaceText->width / 2 - 15, 345);
-	this->append(std::unique_ptr<TextElement>(spaceText));
+	this->addNode(std::unique_ptr<TextElement>(spaceText));
 
 	if (!preventEnterAndTab)
 	{
 		TextElement* enterText = new TextElement("enter", 30, &grayish);
 		CST_Rect d3 = { this->x + enterPos, this->y + enterHeight, enterWidth, textSize }; // todo: extract out hardcoded rects like this
 		enterText->position(d3.x + d3.w / 2 - enterText->width / 2 - 30, 327);
-		this->append(std::unique_ptr<TextElement>(enterText));
+		this->addNode(std::unique_ptr<TextElement>(enterText));
 
 		TextElement* symText = new TextElement(hasRoundedKeys ? "shift" : "tab", 30, &grayish);
 		CST_Rect d5 = { this->x + dPos, this->y + enterHeight, enterWidth, textSize }; // todo: extract out hardcoded rects like this
 		symText->position(d5.x + d5.w / 2 - symText->width / 2 - 30, 327);
-		this->append(std::unique_ptr<TextElement>(symText));
+		this->addNode(std::unique_ptr<TextElement>(symText));
 	}
 }
 

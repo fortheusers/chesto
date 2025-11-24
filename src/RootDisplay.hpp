@@ -49,24 +49,29 @@ public:
 	static void clearScreens();
 	static bool hasScreens();
 	
-	// Process any pending screen operations (called after event processing)
-	static void processPendingScreenOps();
+	// Schedule an action callback to run after event processing in the main loop
+	static void deferAction(std::function<void()> action);
+	
+	// Process any deferred actions (called after event processing)
+	static void processDeferredActions();
 
 	// Screen stack storage, iterateable to draw layers at a time
 	static std::vector<std::unique_ptr<Screen>> screenStack;
 	
-	enum class ScreenOp { PUSH, POP, CLEAR };
-	struct PendingScreenOp {
-		ScreenOp op;
-		std::unique_ptr<Screen> screen;
-	};
-	static std::vector<PendingScreenOp> pendingScreenOps;
+	// Actions that need to be deferred until after event processing
+	static std::vector<std::function<void()>> deferredActions;
+	
 	static bool isProcessingEvents;
 
 	// dimensions of the screen, which can be modified
 	static int screenWidth;
 	static int screenHeight;
+
+	// OS's DPI value (separate from our globalScale)
 	static float dpiScale;
+	
+	// Global UI scale multiplier for DPI-like rendering
+	static float globalScale;
 
 	// if enabled, the cursor will pulse when idle
 	// this uses more energy and forces more redraws

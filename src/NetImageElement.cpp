@@ -45,9 +45,24 @@ NetImageElement::~NetImageElement()
 void NetImageElement::fetch()
 {
 	if (!downloadStarted && imgDownload) {
+		downloadStarted = true; // guard against re-entry
 		DownloadQueue::downloadQueue->downloadAdd(imgDownload);
-		downloadStarted = true;
 	}
+}
+
+bool NetImageElement::process(InputEvents* event)
+{
+	bool ret = Texture::process(event); // updates xAbs/yAbs
+	
+	// fetch the image if we're visible onscreen
+	if (!downloadStarted && !loaded && imgDownload) {
+		CST_Rect rect = { this->xAbs, this->yAbs, this->width, this->height };
+		if (!CST_isRectOffscreen(&rect)) {
+			fetch();
+		}
+	}
+	
+	return ret;
 }
 
 void NetImageElement::imgDownloadComplete(DownloadOperation *download)

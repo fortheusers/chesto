@@ -139,12 +139,14 @@ void Texture::render(Element* parent)
 	if (hidden)
 		return;
 
-	// rect of element's size
+	float effectiveScale = getEffectiveScale();
+
+	// rect of element's size (scaled)
 	CST_Rect rect;
 	rect.x = this->xAbs;
 	rect.y = this->yAbs;
-	rect.w = this->width;
-	rect.h = this->height;
+	rect.w = (int)(this->width * effectiveScale);
+	rect.h = (int)(this->height * effectiveScale);
 
 	if (CST_isRectOffscreen(&rect))
 		return;

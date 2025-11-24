@@ -9,14 +9,14 @@ CST_Color Button::colors[2] = {
 };
 
 Button::Button(std::string message, int button, bool dark, int size, int width)
-	: text(message, (size / SCALER), &colors[dark])
+	: text(message, size, &colors[dark])
 	, dark(dark)
 	, physical(button)
 	, icon(getControllerButtonImageForPlatform(button, !dark, false))
 {
 
-	super::appendProtected(&text);
-	super::appendProtected(&icon);
+	super::addStackMember(&text);
+	super::addStackMember(&icon);
 
 	// on initialization, store the last gamepad info
 	myLastSeenGamepad = "";
@@ -37,7 +37,8 @@ Button::Button(std::string message, int button, bool dark, int size, int width)
 
 void Button::updateBounds()
 {
-	int PADDING = 10 / SCALER;
+	float effectiveScale = getEffectiveScale();
+	int PADDING = (int)(10 * effectiveScale);
 
 	int bWidth = PADDING * 0.5 * (icon.width != 0); // gap space between button
 	
@@ -180,7 +181,8 @@ bool Button::process(InputEvents* event)
 		myLastSeenGamepad = InputEvents::lastGamepadKey;
 	}
 
-	return super::process(event) || ret;
+	bool parentHandled = super::process(event);
+	return parentHandled || ret;
 }
   
 const std::string Button::getText()

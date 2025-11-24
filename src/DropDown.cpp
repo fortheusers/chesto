@@ -103,30 +103,20 @@ void DropDownChoices::rebuildUI() {
 	
 	// overlay and shade bg color
 	// also TODO: a common way to have the dim background exist and fade in
-	auto overlay = std::make_unique<Element>();
+	auto overlay = createNode<Element>();
     overlay->width = SCREEN_WIDTH;
     overlay->height = SCREEN_HEIGHT;
     overlay->backgroundColor = fromRGB(0, 0, 0);
     overlay->backgroundOpacity = 0x70;
     overlay->cornerRadius = 1; // needed to force transparency
     overlay->hasBackground = true;
-	overlay->isAbsolute = true; // doesn't move
-    scrollContainer->append(std::move(overlay));
-	
-	auto backBtn = std::make_unique<Button>(i18n("dropdown.back"), B_BUTTON, isDarkMode, 15);
-	backBtn->constrain(ALIGN_BOTTOM | ALIGN_LEFT, 10);
-	backBtn->setAction([]() {
-		// hides the dropdown without any callback
-		RootDisplay::popScreen();
-	});
-	scrollContainer->append(std::move(backBtn));
 	
 	// header text if specified
 	if (!header.empty()) {
 		auto headerText = std::make_unique<TextElement>(header.c_str(), 28);
 		headerText->constrain(ALIGN_CENTER_HORIZONTAL);
 		headerText->position(0, SCREEN_HEIGHT / 5 - 60);
-		scrollContainer->append(std::move(headerText));
+		scrollContainer->addNode(std::move(headerText));
 	}
 	
 	// vertical container for the choices
@@ -146,8 +136,17 @@ void DropDownChoices::rebuildUI() {
 	// position the start of the dropdown in the upper fifth of the screen
 	container->y = SCREEN_HEIGHT / 5;
 	
-	scrollContainer->append(std::move(containerPtr));
-	append(std::move(scrollContainer));
+	scrollContainer->addNode(std::move(containerPtr));
+
+	// not a part of the scrollable area
+	auto backBtn = createNode<Button>(i18n("dropdown.back"), B_BUTTON, isDarkMode, 15);
+	backBtn->constrain(ALIGN_BOTTOM | ALIGN_LEFT, 10);
+	backBtn->setAction([]() {
+		// hides the dropdown without any callback
+		RootDisplay::popScreen();
+	});
+
+	addNode(std::move(scrollContainer));
 }
 
 void DropDownChoices::render(Element* parent) {

@@ -23,6 +23,7 @@
 #include "Screen.hpp"
 #include "DownloadQueue.hpp"
 #include "Button.hpp"
+#include "TextElement.hpp"
 #include <vector>
 
 namespace Chesto {
@@ -33,12 +34,13 @@ RootDisplay* RootDisplay::mainDisplay = NULL;
 bool RootDisplay::isDebug = false;
 
 std::vector<std::unique_ptr<Screen>> RootDisplay::screenStack;
-std::vector<RootDisplay::PendingScreenOp> RootDisplay::pendingScreenOps;
+std::vector<std::function<void()>> RootDisplay::deferredActions;
 bool RootDisplay::isProcessingEvents = false;
 
 int RootDisplay::screenWidth = 1280;
 int RootDisplay::screenHeight = 720;
 float RootDisplay::dpiScale = 1.0f;
+float RootDisplay::globalScale = 1.0f;
 
 bool RootDisplay::idleCursorPulsing = false;
 
@@ -125,10 +127,12 @@ void RootDisplay::setScreenResolution(int width, int height)
 	// update the renderer, but respect the DPI scaling
 	CST_SetWindowSize(window, SCREEN_WIDTH / RootDisplay::dpiScale, SCREEN_HEIGHT / RootDisplay::dpiScale);
 
-	// inform all screens of the resolution change
-	for (auto& screen : screenStack) {
-		screen->rebuildUI();
-	}
+	RootDisplay::deferAction([]() {
+		// inform all screens of the resolution change
+		for (auto& screen : screenStack) {
+			screen->rebuildUI();
+		}
+	});
 }
 
 // Screen stack management
@@ -136,21 +140,21 @@ void RootDisplay::pushScreen(std::unique_ptr<Screen> screen)
 {
 	if (!screen) return;
 	
-	if (isProcessingEvents) {
-		// Defer operation until after event processing
-		pendingScreenOps.push_back({ScreenOp::PUSH, std::move(screen)});
-	} else {
-		// Safe to execute immediately
-		screenStack.push_back(std::move(screen));
-		if (mainDisplay) mainDisplay->needsRedraw = true;
-	}
+	// PUSHes are not deferred! They go right onto the stack and render immediately
+	screenStack.push_back(std::move(screen));
+	if (mainDisplay) mainDisplay->needsRedraw = true;
 }
 
 void RootDisplay::popScreen()
 {
 	if (isProcessingEvents) {
-		// Defer operation until after event processing
-		pendingScreenOps.push_back({ScreenOp::POP, nullptr});
+		// Defer POP until after event processing
+		deferAction([]() {
+			if (!screenStack.empty()) {
+				screenStack.pop_back();
+				if (mainDisplay) mainDisplay->needsRedraw = true;
+			}
+		});
 	} else {
 		// Safe to execute immediately
 		if (!screenStack.empty()) {
@@ -164,38 +168,32 @@ void RootDisplay::clearScreens()
 {
 	if (isProcessingEvents) {
 		// Defer operation until after event processing
-		pendingScreenOps.push_back({ScreenOp::CLEAR, nullptr});
+		deferAction([]() {
+			screenStack.clear();
+			if (mainDisplay) mainDisplay->needsRedraw = true;
+		});
 	} else {
-		// Safe to execute immediately
 		screenStack.clear();
 		if (mainDisplay) mainDisplay->needsRedraw = true;
 	}
 }
 
-void RootDisplay::processPendingScreenOps()
+void RootDisplay::deferAction(std::function<void()> action)
 {
-	// Process all pending operations in order
-	for (auto& op : pendingScreenOps) {
-		switch (op.op) {
-			case ScreenOp::PUSH:
-				if (op.screen) {
-					screenStack.push_back(std::move(op.screen));
-				}
-				break;
-			case ScreenOp::POP:
-				if (!screenStack.empty()) {
-					screenStack.pop_back();
-				}
-				break;
-			case ScreenOp::CLEAR:
-				screenStack.clear();
-				break;
-		}
-	}
+	// Queue the action to be executed after event processing
+	deferredActions.push_back(std::move(action));
+}
+
+void RootDisplay::processDeferredActions()
+{
+	// Execute all deferred actions, on a copy
+	auto actionsToRun = std::move(deferredActions);
+	deferredActions.clear();
 	
-	if (!pendingScreenOps.empty()) {
-		pendingScreenOps.clear();
-		if (mainDisplay) mainDisplay->needsRedraw = true;
+	for (auto& action : actionsToRun) {
+		if (action) {
+			action();
+		}
 	}
 }
 
@@ -211,9 +209,10 @@ bool RootDisplay::hasScreens()
 
 RootDisplay::~RootDisplay()
 {
-	// Clean up screens before destroying download queue
+	// Clean up screens and root element children before destroying download queue
 	// This ensures NetImageElements can cancel downloads properly
 	screenStack.clear();
+	elements.clear();
 	
 	// Now safe to destroy download queue
 	DownloadQueue::quit();
@@ -227,9 +226,6 @@ RootDisplay::~RootDisplay()
 
 bool RootDisplay::process(InputEvents* event)
 {
-	// While this is true, screen operations will be delayed
-	isProcessingEvents = true;
-
 	// process either the subscreen or the children elements, always return true if "dragging"
 	// (may be a mouse cursor or wiimote pointing and moving on the screen)
 
@@ -241,9 +237,6 @@ bool RootDisplay::process(InputEvents* event)
 		// keep processing child elements
 		result = super::process(event) || event->isTouchDrag();
 	}
-	
-	isProcessingEvents = false;
-	processPendingScreenOps(); // process deferred screen operations
 	
 	return result;
 }
@@ -325,33 +318,40 @@ int RootDisplay::mainLoop()
 	while (isAppRunning)
 	{
 		bool atLeastOneNewEvent = false;
-		bool viewChanged = false;
+	bool viewChanged = false;
 
-		int frameStart = CST_GetTicks();
+	int frameStart = CST_GetTicks();
 
-		// update download queue
-		DownloadQueue::downloadQueue->process();
+	// update download queue
+	DownloadQueue::downloadQueue->process();
 
-		// get any new input events
-		while (events->update())
-		{
-			// process the inputs of the supplied event
-			viewChanged |= this->process(events.get());
-			atLeastOneNewEvent = true;
+	// get any new input events
+	while (events->update())
+	{
+		isProcessingEvents = true;
+		
+		// process the inputs of the supplied event
+		viewChanged |= this->process(events.get());
+		atLeastOneNewEvent = true;
+		
+		isProcessingEvents = false;
 
-			// if we see a minus, exit immediately!
-			if (this->canUseSelectToExit && events->pressed(SELECT_BUTTON)) {
-				requestQuit();
-			}
+		// if we see a minus, exit immediately!
+		if (this->canUseSelectToExit && events->pressed(SELECT_BUTTON)) {
+			requestQuit();
 		}
-
-		// one more event update if nothing changed or there were no previous events seen
+	}		// one more event update if nothing changed or there were no previous events seen
 		// needed to non-input related processing that might update the screen to take place
 		if ((!atLeastOneNewEvent && !viewChanged))
 		{
+			isProcessingEvents = true;
 			events->update();
 			viewChanged |= this->process(events.get());
+			isProcessingEvents = false;
 		}
+		
+		// Event processing done, so run any deferred actions
+		processDeferredActions();
 
 		// draw the display if we processed an event or the view
 		if (viewChanged)

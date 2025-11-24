@@ -17,7 +17,7 @@ Element* Container::add(std::unique_ptr<Element> elem)
 
 	Element* rawPtr = elem.get();
 	rawPtr->setPosition(newPosX, newPosY);
-	child(std::move(elem)); // transfers ownership to the container
+	addNode(std::move(elem)); // transfers ownership
 
 	this->width = (layout == ROW_LAYOUT) ? this->width + rawPtr->width + padding : std::max(this->width, rawPtr->width);
 	this->height = (layout == COL_LAYOUT) ? this->height + rawPtr->height + padding :  std::max(this->height, rawPtr->height);

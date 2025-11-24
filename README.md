@@ -48,7 +48,7 @@ If a touch event is successfully received, the Element will be highlighted and t
 The [ImageElement](src/ImageElement.hpp) class can be used to display images either from disk or the network. For example, a romfs image can be instantiated like this:
 
 ```C++
-auto icon = createChild<ImageElement>(RAMFS "res/icon.png");
+auto icon = addNode<ImageElement>(RAMFS "res/icon.png");
 ```
 
 ### Network Images
@@ -56,7 +56,7 @@ The [NetworkImageElement](src/NetImageElement.cpp) class can be used to display 
 
 ```C++
 
-auto netIcon = createChild<NetImageElement>(
+auto netIcon = addNode<NetImageElement>(
      // URL to download
     "https://github.com/fortheusers/chesto/raw/main/logo.png",
     // Fallback image while downloading
@@ -75,7 +75,7 @@ The [TextElement](src/TextElement.hpp) class is used to display sentences or par
 ```C++
 CST_Color gray = { 80, 80, 80, 0xff };
 int fontSize = 12;
-auto status = createChild<TextElement>(
+auto status = addNode<TextElement>(
     "All good here!",   // text string
     12,                 // text size
     &gray,              // text color
@@ -88,7 +88,7 @@ The [Button](src/Button.hpp) class automatically subclasses Element and bundles 
 To create a button, give it the text, the button which corresponds to it, whether it's light or dark themed, and a font size. It can optionally also take a width as the last element, otherwise it will automatically fit the width to the inner text.
 
 ```C++
-auto start = createChild<Button>("Begin!", START_BUTTON, true, 20);
+auto start = addNode<Button>("Begin!", START_BUTTON, true, 20);
 start->setAction([]{
     std::cout << "Start button pressed!" << std::endl;
 });
@@ -98,7 +98,7 @@ start->setAction([]{
 The [DropDown](src/DropDown.hpp) class can be used to create a drop-down selection menu. It contains a list of string options, and an `onChange` callback that is invoked when the user selects a new option.
 
 ```C++
-auto dropdown = createChild<DropDown>(A_BUTTON,
+auto dropdown = addNode<DropDown>(A_BUTTON,
     std::vector<std::pair<std::string, std::string>>{
         // choices as (internal value, visual label) pairs
         {"option1", "First Option"},
@@ -154,7 +154,7 @@ There are a few layout-based containers, for drawing rows or columns of elements
 An example of a horizontal row, which uses `add` to put more children elements inside, with a 40px spacing between them:
 
 ```C++
-auto rows = createChild<Container>(COL_LAYOUT, 40);
+auto rows = addNode<Container>(COL_LAYOUT, 40);
 auto button1 = std::make_unique<Button>("Button 1", A_BUTTON, true, 20);
 rows->add(std::move(button1));
 auto button2 = std::make_unique<Button>("Button 2", B_BUTTON, true, 20);
@@ -168,7 +168,7 @@ The [ListElement](src/ListElement.hpp) class should be subclassed and used to co
 You can provide your own cursor logic here as well by overriding `process` in the LisitElement subclass, if you want the gamepad controls to do more than just scroll the page. It should play nicely with sub-elements that are marked as touchable.
 
 ```C++
-auto list = createChild<ListElement>();
+auto list = addNode<ListElement>();
 list->width = SCREEN_WIDTH;
 list->height = SCREEN_HEIGHT;
 list->child(std::move(rows)); // rows is a Container that has its own layout
@@ -212,7 +212,7 @@ RootDisplay::pushScreen(alert);
 A cross-platform onscreen keyboard is in [EKeyboard.cpp](src/EKeyboard.hpp). This was originally the vgedit keyboard! It's not currently implemented as a Screen, although it is an overlay. This means that you can push it on top of any existing Element/Screen, but still interact with the views below it.
 
 ```C++
-auto keyboard = createChild<EKeyboard>();
+auto keyboard = addNode<EKeyboard>();
 keyboard->typeAction = std::bind(&keyboardInputCallback, this);
 keyboard->preventEnterAndTab = true;
 keyboard->updateSize();
@@ -226,7 +226,7 @@ The [ProgressBar](src/ProgressBar.hpp) element takes a `percent` float between 0
 Can be created as follows. If `dimBg` is set, then the entire screen under this progress bar will be covered with a transparent gray sheet.
 
 ```C++
-auto pbar = createChild<ProgressBar>();
+auto pbar = addNode<ProgressBar>();
 pbar->width = 740;
 pbar->color = 0xff0000ff;
 pbar->dimBg = true;

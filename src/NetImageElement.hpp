@@ -23,8 +23,12 @@ public:
 	/// Start downloading the image (called in the constructor unless immediateLoad is false)
 	void fetch();
 
+	// TODO: introduce a boolean to control auto-loading described below
+	/// Checks if we're onscreen and start download if needed
+	bool process(InputEvents* event) override;
+
 	/// Render the image
-	void render(Element* parent);
+	void render(Element* parent) override;
 	bool loaded = false;
 	bool updateSizeAfterLoad = false;
 

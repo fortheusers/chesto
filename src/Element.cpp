@@ -33,6 +33,10 @@ bool Element::process(InputEvents* event)
 
 	// if we're hidden, don't process input
 	if (hidden) return ret;
+	
+	if (parent) {
+		this->recalcPosition(parent);
+	}
 
 	// if 3ds mock, ignore top screen inputs
 #ifdef _3DS_MOCK
@@ -44,14 +48,8 @@ bool Element::process(InputEvents* event)
 	{
 		ret |= onTouchDown(event);
 		ret |= onTouchDrag(event);
-		
-		bool touchUpHandled = onTouchUp(event);
-		ret |= touchUpHandled;
-		
-		if (touchUpHandled && (action != NULL || actionWithEvents != NULL)) {
-			// an action was fired, whicih may delete our element, so return right away
-			return true;
-		}
+		ret |= onTouchUp(event);
+		// if an action would modify or free elements before TouchUp fires, use RootDisplay::deferAction instead
 	}
 
 	// call process on subelements
@@ -117,8 +115,12 @@ void Element::render(Element* parent)
 	// if we're touchable, and we have some animation counter left, draw a rectangle+overlay
 	if (this->touchable && this->elasticCounter > THICK_HIGHLIGHT)
 	{
+		float effectiveScale = getEffectiveScale();
+		int scaledWidth = (int)(this->width * effectiveScale);
+		int scaledHeight = (int)(this->height * effectiveScale);
+		
 		auto marginSpacing = cornerRadius > 0 ? 0 : 5;
-		CST_Rect d = { this->xAbs - marginSpacing, this->yAbs - marginSpacing, this->width + marginSpacing*2, this->height + marginSpacing*2 };
+		CST_Rect d = { this->xAbs - marginSpacing, this->yAbs - marginSpacing, scaledWidth + marginSpacing*2, scaledHeight + marginSpacing*2 };
 		if (cornerRadius > 0) {
 			// draw a rounded highlight instead
 			CST_roundedBoxRGBA(renderer, d.x, d.y, d.x + d.w, d.y + d.h,
@@ -132,8 +134,12 @@ void Element::render(Element* parent)
 
 	if (this->touchable && this->elasticCounter > NO_HIGHLIGHT)
 	{
+		float effectiveScale = getEffectiveScale();
+		int scaledWidth = (int)(this->width * effectiveScale);
+		int scaledHeight = (int)(this->height * effectiveScale);
+		
 		auto marginSpacing = cornerRadius > 0 ? 0 : 5;
-		CST_Rect d = { this->xAbs - marginSpacing, this->yAbs - marginSpacing, this->width + marginSpacing*2, this->height + marginSpacing*2 };
+		CST_Rect d = { this->xAbs - marginSpacing, this->yAbs - marginSpacing, scaledWidth + marginSpacing*2, scaledHeight + marginSpacing*2 };
 		if (this->elasticCounter == THICK_HIGHLIGHT)
 		{
 			int ticks = CST_GetTicks() / 100;
@@ -175,12 +181,20 @@ void Element::recalcPosition(Element* parent) {
 		constraint->apply(this);
 	}
 
+	float effectiveScale = getEffectiveScale();
+
 	// calculate any absolute x/y positions after constraints are applied
 	if (parent && !isAbsolute)
 	{
-		this->xAbs = parent->xAbs + this->x;
-		this->yAbs = parent->yAbs + this->y;
+		if (constraints.empty()) {
+			this->xAbs = parent->xAbs + (int)(this->x * effectiveScale);
+			this->yAbs = parent->yAbs + (int)(this->y * effectiveScale);
+		} else {
+			this->xAbs = parent->xAbs + this->x;
+			this->yAbs = parent->yAbs + this->y;
+		}
 	} else {
+		// absolute positioning unaffected by scale or constraints
 		this->xAbs = this->x;
 		this->yAbs = this->y;
 	}
@@ -206,13 +220,19 @@ void Element::recalcPosition(Element* parent) {
 	}
 }
 
+float Element::getEffectiveScale() const {
+	// Combines global scale with per-element scale
+	return RootDisplay::globalScale * this->scale;
+}
+
 CST_Rect Element::getBounds()
 {
+	float effectiveScale = getEffectiveScale();
 	return {
 		.x = this->xAbs,
 		.y = this->yAbs,
-		.w = this->width,
-		.h = this->height,
+		.w = (int)(this->width * effectiveScale),
+		.h = (int)(this->height * effectiveScale),
 	};
 }
 
@@ -245,7 +265,11 @@ bool Element::onTouchDown(InputEvents* event)
 	if (!event->isTouchDown())
 		return false;
 
-	if (!event->touchIn(this->xAbs, this->yAbs, this->width, this->height))
+	float effectiveScale = getEffectiveScale();
+	int scaledWidth = (int)(this->width * effectiveScale);
+	int scaledHeight = (int)(this->height * effectiveScale);
+
+	if (!event->touchIn(this->xAbs, this->yAbs, scaledWidth, scaledHeight))
 		return false;
 
 	// mouse pushed down, set variable
@@ -267,9 +291,13 @@ bool Element::onTouchDrag(InputEvents* event)
 	if (!event->isTouchDrag())
 		return false;
 
+	float effectiveScale = getEffectiveScale();
+	int scaledWidth = (int)(this->width * effectiveScale);
+	int scaledHeight = (int)(this->height * effectiveScale);
+
 	// if we're not in a deeplight (a touchdown event), draw our own drag highlight
 	if (this->elasticCounter != DEEP_HIGHLIGHT) {
-		if (event->touchIn(this->xAbs, this->yAbs, this->width, this->height)) {
+		if (event->touchIn(this->xAbs, this->yAbs, scaledWidth, scaledHeight)) {
 			// if there's currently _no_ highlight, and we're in a drag event on this element,
 			// so we should turn on the hover highlight
 			this->elasticCounter = THICK_HIGHLIGHT;
@@ -321,13 +349,17 @@ bool Element::onTouchUp(InputEvents* event)
 
 	bool ret = false;
 
+	float effectiveScale = getEffectiveScale();
+	int scaledWidth = (int)(this->width * effectiveScale);
+	int scaledHeight = (int)(this->height * effectiveScale);
+
 	// ensure we were dragging first (originally checked the treshold above here, but now that actively invalidates it)
 	if (this->dragging)
 	{
 		// check that this click is in the right coordinates for this square
 		// and that a subscreen isn't already being shown
 		// TODO: allow buttons to activae this too?
-		if (event->touchIn(this->xAbs, this->yAbs, this->width, this->height))
+		if (event->touchIn(this->xAbs, this->yAbs, scaledWidth, scaledHeight))
 		{
 			// elasticCounter must be nonzero to allow a click through (highlight must be shown)
 			if (this->elasticCounter > 0)
@@ -337,15 +369,13 @@ bool Element::onTouchUp(InputEvents* event)
 				this->dragging = false;
 				this->elasticCounter = 0;
 				
-				// invoke this element's action
+				// dear future reader: if you're getting a UAF here, try using RootDisplay::deferAction() to schedule your action to run outside of the event processing loop
 				if (action != NULL) {
 					this->action();
-					// returns early since an action may delete 'this'
 					return true;
 				}
 				if (actionWithEvents != NULL) {
 					this->actionWithEvents(event);
-					// returns early since an action may delete 'this'
 					return true;
 				}
 				
@@ -366,30 +396,38 @@ bool Element::onTouchUp(InputEvents* event)
 	return ret;
 }
 
-void Element::append(std::unique_ptr<Element> element)
+void Element::addNode(std::unique_ptr<Element> node)
 {
-	if (!element) return;
+	if (!node) {
+		#ifdef DEBUG
+		printf("[Chesto] Warning: Attempted to add null node to %p\n", this);
+		#endif
+		return;
+	}
 	
-	// check if element already exists (by raw pointer comparison)
-	Element* rawPtr = element.get();
+	Element* rawPtr = node.get();
+	
+	// check if element already exists
 	for (const auto& existing : elements) {
 		if (existing.get() == rawPtr) {
+			#ifdef DEBUG
+			printf("[Chesto] Warning: Node %p already exists in parent %p\n", rawPtr, this);
+			#endif
 			return;
 		}
 	}
 	
-	// convert to unique_ptr with custom deleter that respects isProtected flag
-	Element* ptr = element.release();
-	std::unique_ptr<Element, std::function<void(Element*)>> convertedElement(
+	rawPtr->parent = this;
+	
+	// transfers ownership and sets up safe deleter
+	Element* ptr = node.release();
+	elements.push_back(std::unique_ptr<Element, std::function<void(Element*)>>(
 		ptr,
 		safeElementDeleter
-	);
-	
-	ptr->parent = this;
-	elements.push_back(std::move(convertedElement));
+	));
 }
 
-void Element::appendProtected(Element* element)
+void Element::addStackMember(Element* element)
 {
 	if (!element) return;
 	
@@ -424,39 +462,11 @@ void Element::remove(Element *element)
 		elements.erase(position);
 }
 
-void Element::wipeAll(bool delSelf)
+void Element::removeAll()
 {
-	// Deletes all children (unique_ptr handles the deletion)
-	elements.clear();
-
-	if (delSelf && !isProtected) {
-		delete this; // (...is this ok?)
-	}
-}
-
-void Element::removeAll(bool)
-{
-	// unique_ptrs automatically handle clean up
 	elements.clear();
 	constraints.clear();
 	animations.clear();
-}
-
-Element* Element::child(std::unique_ptr<Element> child)
-{
-	if (child) {
-		child->parent = this;
-		child->recalcPosition(this);
-		
-		// convert to unique_ptr with shared safe deleter
-		// TODO: reconcile child() and append() methods
-		Element* ptr = child.release();
-		elements.push_back(std::unique_ptr<Element, std::function<void(Element*)>>(
-			ptr,
-			safeElementDeleter
-		));
-	}
-	return this;
 }
 
 Element* Element::setPosition(int x, int y)
@@ -469,23 +479,6 @@ Element* Element::setAction(std::function<void()> func)
 {
 	this->action = func;
 	return this;
-}
-
-Element* Element::centerHorizontallyIn(Element* parent)
-{
-	this->x = parent->width / 2 - this->width / 2;
-	return this;
-}
-
-Element* Element::centerVerticallyIn(Element* parent)
-{
-	this->y = parent->height / 2 - this->height / 2;
-	return this;
-}
-
-Element* Element::centerIn(Element* parent)
-{
-	return centerHorizontallyIn(parent)->centerVerticallyIn(parent);
 }
 
 Element* Element::setAbsolute(bool isAbs)

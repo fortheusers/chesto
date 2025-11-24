@@ -41,7 +41,9 @@ void Constraint::apply(Element* element) {
     auto target = targets.empty() ? element->parent : targets[0];
     auto isSpecificTarget = !targets.empty();
     int posX = 0, posY = 0;
-    int width = RootDisplay::screenWidth, height = RootDisplay::screenHeight; // default to screen size
+    int width = RootDisplay::screenWidth, height = RootDisplay::screenHeight; // default to screen size, TODO: is this good?
+
+    float effectiveScale = element->getEffectiveScale();
 
     auto paddingOffset = this->paddingOffset; // copy so we don't flicker/modify it on the fly
     
@@ -58,23 +60,26 @@ void Constraint::apply(Element* element) {
             paddingOffset = -paddingOffset;
 
             //also, if it's top or left, we need to account for our own height/width
-            if (positioningFlags & ALIGN_TOP)    posY -= element->height;
-            if (positioningFlags & ALIGN_LEFT)   posX -= element->width;
+            if (positioningFlags & ALIGN_TOP)    posY -= (int)(element->height * effectiveScale);
+            if (positioningFlags & ALIGN_LEFT)   posX -= (int)(element->width * effectiveScale);
             // if it's bottom or right, we need to account for the target's height/width
-            if (positioningFlags & ALIGN_BOTTOM) posY += target->height;
-            if (positioningFlags & ALIGN_RIGHT)  posX += target->width;
+            if (positioningFlags & ALIGN_BOTTOM) posY += (int)(target->height * effectiveScale);
+            if (positioningFlags & ALIGN_RIGHT)  posX += (int)(target->width * effectiveScale);
         }
     }
 
+    // padding offset needs scale too
+    int scaledPadding = (int)(paddingOffset * effectiveScale);
+
     // look at the flags and decide what to do
-    if (positioningFlags & ALIGN_LEFT)     element->x = posX + paddingOffset;
-    if (positioningFlags & ALIGN_RIGHT)    element->x = posX + width - element->width - paddingOffset;
-    if (positioningFlags & ALIGN_TOP)      element->y = posY + paddingOffset;
-    if (positioningFlags & ALIGN_BOTTOM)   element->y = posY + height - element->height - paddingOffset;
+    if (positioningFlags & ALIGN_LEFT)     element->x = posX + scaledPadding;
+    if (positioningFlags & ALIGN_RIGHT)    element->x = posX + width - (int)(element->width * effectiveScale) - scaledPadding;
+    if (positioningFlags & ALIGN_TOP)      element->y = posY + scaledPadding;
+    if (positioningFlags & ALIGN_BOTTOM)   element->y = posY + height - (int)(element->height * effectiveScale) - scaledPadding;
 
     // For centering, position relative to parent's content area (like centerHorizontallyIn)
-    if (positioningFlags & ALIGN_CENTER_HORIZONTAL)  element->x = width / 2  -  element->width / 2;
-    if (positioningFlags & ALIGN_CENTER_VERTICAL)    element->y = height / 2 - element->height / 2;
+    if (positioningFlags & ALIGN_CENTER_HORIZONTAL)  element->x = width / 2  -  (int)(element->width * effectiveScale) / 2;
+    if (positioningFlags & ALIGN_CENTER_VERTICAL)    element->y = height / 2 - (int)(element->height * effectiveScale) / 2;
 
     // some manual offset constraints, that just move the element
     if (positioningFlags & OFFSET_LEFT)    element->x += paddingOffset;
