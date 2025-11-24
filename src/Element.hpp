@@ -21,12 +21,6 @@
 #define RAMFS "resin/"
 #endif
 
-#if defined(_3DS) || defined(_3DS_MOCK)
-#define SCALER 2
-#else
-#define SCALER 1
-#endif
-
 namespace Chesto {
 
 class Constraint;

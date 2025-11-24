@@ -324,7 +324,7 @@ bool Element::onTouchDrag(InputEvents* event)
 	}
 
 	// minimum amount of wiggle allowed by finger before calling off a touch event
-	int TRESHOLD = 40 / SCALER / SCALER;
+	int TRESHOLD = 40 * effectiveScale;
 
 	// we've dragged out of the icon, invalidate the click by invoking onTouchUp early
 	// check if we haven't drifted too far from the starting variable (treshold: 40)

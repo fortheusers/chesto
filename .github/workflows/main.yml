@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - namespace-smart-pointers
   pull_request:
     branches:
       - main
