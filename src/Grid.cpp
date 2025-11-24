@@ -87,7 +87,7 @@ bool Grid::process(InputEvents* event)
 	}
 	
 	// cursor logic from HBAS's AppList
-	int origHighlighted = highlighted;
+	// int origHighlighted = highlighted;
 	
 	// start highlight if none
 	if (highlighted < 0 && !elements.empty()) {
