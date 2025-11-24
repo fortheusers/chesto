@@ -80,7 +80,7 @@ RootDisplay::RootDisplay()
 #endif
 	// the main input handler
 	this->events = std::make_unique<InputEvents>();
-
+	
 	// TODO: initialize this in a way that doesn't block the main thread
 	// always load english first, to initialize defaults
 	TextElement::loadI18nCache("en-us");
@@ -124,6 +124,11 @@ void RootDisplay::setScreenResolution(int width, int height)
 
 	// update the renderer, but respect the DPI scaling
 	CST_SetWindowSize(window, SCREEN_WIDTH / RootDisplay::dpiScale, SCREEN_HEIGHT / RootDisplay::dpiScale);
+
+	// inform all screens of the resolution change
+	for (auto& screen : screenStack) {
+		screen->rebuildUI();
+	}
 }
 
 // Screen stack management

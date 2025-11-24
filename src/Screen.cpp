@@ -25,4 +25,10 @@ int Screen::getScreenHeight() const
 	return RootDisplay::screenHeight;
 }
 
+void Screen::rebuildUI() {
+	this->width = RootDisplay::screenWidth;
+	this->height = RootDisplay::screenHeight;
+	this->removeAll();
+}
+
 } // namespace Chesto
