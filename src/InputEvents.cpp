@@ -4,16 +4,16 @@
 #include <algorithm>
 #include <limits>
 
+#if defined(__WIIU__) && defined(USE_KEYBOARD)
+#include "../libs/wiiu_kbd/keybdwrapper.h"
+#endif
+
 namespace Chesto {
 
 // computer key mappings
 CST_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_q };
 
 SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS, SDL_UP_STICK, SDL_DOWN_STICK, SDL_LEFT_STICK, SDL_RIGHT_STICK, SDL_ZR,  };
-
-#if defined(__WIIU__) && defined(USE_KEYBOARD)
-#include "../libs/wiiu_kbd/keybdwrapper.h"
-#endif
 
 // our own "buttons" that correspond to the above SDL ones
 unsigned int nintendo_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, ZL_BUTTON, SELECT_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, ZR_BUTTON };
