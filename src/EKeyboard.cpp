@@ -570,13 +570,12 @@ void EKeyboard::generateEKeyboard()
 		// upside exclamation mark (U+00A1) and onward https://unicode-table.com/en/
 		// TODO: don't hardcode amount here, or hardcode a better one
 		int offset = 47 * (mode - 1) + 0x00a1;
-		char chars[47 + (mode == 2)];
-		for (int x = 0; x < 47 + (mode == 2); x++)
+		int len = 47 + (mode == 2);
+		keys.resize(len);
+		for (int x = 0; x < len; x++)
 		{
-			chars[x] = offset + x;
+			keys[x] = offset + x;
 		}
-
-		keys = string(chars);
 	}
 
 	breaks[3] += (mode == 2); // one more key for bottom row of mode 2
@@ -633,3 +632,4 @@ EKeyboard::~EKeyboard()
 }
 
 } // namespace Chesto
+
