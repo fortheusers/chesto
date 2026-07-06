@@ -2,7 +2,7 @@ CXX = g++
 
 CFLAGS   += -g -Wall -DPC
 INCLUDES += /usr/local/include /opt/homebrew/include C:/MSYS2/mingw64/include
-LDFLAGS  += -L /opt/homebrew/lib -L /usr/local/lib -L C:/MSYS2/mingw64/lib $(LIBS)
+LDFLAGS  += -L /opt/homebrew/lib -Wl,-rpath,/opt/homebrew/lib -L /usr/local/lib -Wl,-rpath,/usr/local/lib -L C:/MSYS2/mingw64/lib $(LIBS)
 
 CFLAGS += -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer
 LDFLAGS += -fsanitize=address -fsanitize=undefined
