@@ -42,10 +42,11 @@ public:
 	bool onTouchDrag(InputEvents* event);
 	bool onTouchUp(InputEvents* event);
 
-	// hide the element
-	void hide() { this->hidden = true; }
 	// unhide the element
-	void unhide() { this->hidden = false; }
+	virtual void unhide() { this->hidden = false; }
+
+	// hide the element
+	virtual void hide() { this->hidden = true; }
 
 	// render the element's background
 	void renderBackground(bool fill = true);

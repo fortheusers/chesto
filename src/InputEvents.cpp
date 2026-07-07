@@ -178,6 +178,12 @@ bool InputEvents::processSDLEvents()
 	this->xPos = (int)scaledX;
 	this->yPos = (int)scaledY;
 
+	if (this->type == SDL_TEXTINPUT) {
+		this->textInputString = event.text.text;
+	} else {
+		this->textInputString = "";
+	}
+
 	toggleHeldButtons();
 
 	return true;
@@ -187,6 +193,7 @@ bool InputEvents::update()
 {
 	this->type = 0;
 	this->keyCode = -1;
+	this->textInputString = "";
 	this->noop = true;
 
 	// process SDL or directional events
@@ -335,6 +342,11 @@ bool InputEvents::isTouchUp()
 bool InputEvents::isTouch()
 {
 	return isTouchDown() || isTouchDrag() || isTouchUp();
+}
+
+bool InputEvents::isTextInput()
+{
+	return this->type == SDL_TEXTINPUT;
 }
 
 bool InputEvents::isScroll()

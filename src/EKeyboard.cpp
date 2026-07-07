@@ -9,6 +9,23 @@ EKeyboard::EKeyboard() : EKeyboard::EKeyboard(NULL)
 	storeOwnText = true;
 }
 
+void EKeyboard::unhide()
+{
+	this->hidden = false;
+	if (useSystemOSK && SDL_HasScreenKeyboardSupport()) {
+		textInput.clear();
+		SDL_StartTextInput();
+	}
+}
+
+void EKeyboard::hide()
+{
+	this->hidden = true;
+	if (useSystemOSK && SDL_HasScreenKeyboardSupport()) {
+		SDL_StopTextInput();
+	}
+}
+
 EKeyboard::EKeyboard(std::function<void(char)> typeAction)
 {
 	this->x = 30;
@@ -27,7 +44,7 @@ EKeyboard::EKeyboard(std::function<void(char)> typeAction)
 
 void EKeyboard::render(Element*)
 {
-	if (hidden || immersiveMode)
+	if (hidden || immersiveMode || (useSystemOSK && SDL_HasScreenKeyboardSupport()))
 		return;
 
 	CST_Rect dimens = { this->x, this->y, this->width + 305, this->height + 140 };
@@ -154,6 +171,17 @@ bool EKeyboard::process(InputEvents* event)
 	// don't do anything if we're hidden, or there's a sidebar and it's active
 	if (hidden)
 		return false;
+
+	if (useSystemOSK && SDL_HasScreenKeyboardSupport()) {
+		if (event->isTextInput()) {
+			// if we have SDL TextInput events, respond to them by typing one char at a time
+			for (char c : event->textInputString) {
+				just_type(c);
+			}
+			return true;
+		}
+		return false; // return early, skips our builtin usb keyboard handling
+	}
 
 	// our keyboard will be processing its own key events (not button events)
 	InputEvents::bypassKeyEvents = true;
@@ -629,6 +657,9 @@ const std::string& EKeyboard::getTextInput()
 EKeyboard::~EKeyboard()
 {
 	InputEvents::bypassKeyEvents = false;
+	if (useSystemOSK && SDL_HasScreenKeyboardSupport()) {
+		SDL_StopTextInput();
+	}
 }
 
 } // namespace Chesto

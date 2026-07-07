@@ -12,8 +12,8 @@ public:
 	EKeyboard();
 	EKeyboard(std::function<void(char)> typeAction);
 	~EKeyboard();
-	void render(Element* parent);
-	bool process(InputEvents* event);
+	void render(Element* parent) override;
+	bool process(InputEvents* event) override;
 
 	// setup field variables
 	void updateSize();
@@ -104,6 +104,11 @@ public:
 	void type(int y, int x);
 	void generateEKeyboard();
 	void backspace();
+
+	bool useSystemOSK = true; // if true, and an on-screen keyboard is available, use it instead of Chesto's
+	
+	virtual void unhide() override;
+	virtual void hide() override;
 };
 
 } // namespace Chesto

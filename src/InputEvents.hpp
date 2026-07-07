@@ -100,6 +100,8 @@ public:
 	bool isTouchDrag();
 	bool isTouch();
 
+	bool isTextInput();
+
 	bool isScroll();
 	bool isKeyDown();
 	bool isKeyUp();
@@ -115,6 +117,8 @@ public:
 	CST_Keycode keyCode = -1;
 	CST_Keymod mod = -1;
 	SDL_Event event; // underlying SDL event
+
+	std::string textInputString;
 
 	bool held_directions[4] = { false, false, false, false };
 	Uint32 held_type;
