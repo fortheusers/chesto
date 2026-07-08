@@ -92,9 +92,11 @@ all	:	$(OUTPUT).pfs0 $(PWD)/$(BINARY).nro
 
 $(OUTPUT).pfs0	:	$(OUTPUT).nso
 
-$(BINARY).nso	:	$(OUTPUT).elf
+$(OUTPUT).nso	:	$(OUTPUT).elf
 
 $(PWD)/$(BINARY).nro	:	$(OUTPUT).elf $(OUTPUT).nacp
+	@elf2nro $(OUTPUT).elf $(PWD)/$(BINARY).nro $(NROFLAGS)
+	@echo built ... $(notdir $@)
 
 $(OUTPUT).elf	:	$(OFILES)
 
